@@ -16,6 +16,7 @@
       --success: #16a34a;
       --danger: #dc2626;
       --warning: #d97706;
+      --purple: #9333ea;
       --text: #f8fafc;
       --border: #334155;
     }
@@ -24,40 +25,53 @@
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
     .container { max-width: 1000px; margin: 0 auto; }
     
-    h1, h2, h3 { text-align: center; margin-top: 5px; }
+    h1, h2, h3, h4 { text-align: center; margin-top: 5px; }
     
     .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
-    .btn { background: var(--accent); color: white; font-weight: bold; padding: 14px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 10px; }
+    .btn { background: var(--accent); color: white; font-weight: bold; padding: 14px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 10px; transition: transform 0.1s; }
+    .btn:active { transform: scale(0.98); }
     .btn-success { background: var(--success); }
     .btn-danger { background: var(--danger); font-size: 0.9rem; padding: 6px 12px; width: auto; }
     .btn-warning { background: var(--warning); }
+    .btn-purple { background: var(--purple); }
     
     select, input, textarea { width: 100%; padding: 14px; font-size: 1.1rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 8px; }
     
-    /* Navigation / Tabs sur la vue Prof */
     .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
     .tab-btn { flex: 1; padding: 12px; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; }
     .tab-btn.active { background: var(--accent); }
 
-    /* Hub QR Code */
     .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
     .qr-card { background: var(--card); border-radius: 12px; padding: 15px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
     .qr-card div { background: white; padding: 10px; border-radius: 8px; margin: 10px 0; }
 
-    /* Vue Prof & Tableaux */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; background: var(--card); border-radius: 8px; overflow: hidden; }
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
     th { background: #0284c7; color: white; }
     tr:nth-child(even) { background: #1e293b; }
 
-    /* Timer */
     .timer-display { font-size: 3rem; font-weight: bold; text-align: center; color: #38bdf8; font-family: monospace; margin: 10px 0; }
     .timer-controls { display: flex; gap: 10px; }
     .timer-controls button { flex: 1; }
 
-    /* Badges */
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin: 2px; }
     .badge-win { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a; }
+    .badge-tag { background: #334155; color: #f1f5f9; border: 1px solid #475569; }
+
+    .flash-banner { background: linear-gradient(90deg, #9333ea, #db2777); padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; animation: pulse 2s infinite; margin-bottom: 15px; display: none; }
+    @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+
+    .stats-box { background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 0.95rem; border: 1px solid var(--border); }
+    .suggestion-item { background: #1e293b; padding: 8px 12px; border-radius: 6px; margin-top: 6px; border-left: 4px solid var(--accent); font-size: 0.9rem; }
+
+    /* Interface Match VS */
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-top: 15px; }
+    .vs-circle { background: #0284c7; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; color: white; margin: 0 auto; }
+
+    /* Toast Notification */
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+    .toast { background: #16a34a; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-top: 10px; animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   </style>
 
   <!-- Firebase SDKs -->
@@ -65,11 +79,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // ⚠️ REMPLACE PAR TA CONFIGURATION FIREBASE EXACTE
+    // ⚠️ CONFIGURATION FIREBASE À REMPLACER
     const firebaseConfig = {
-      apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
-      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
-      projectId: "tournoi-defis-tt"
+      apiKey: "VOTRE_API_KEY",
+      databaseURL: "https://VOTRE_PROJET-default-rtdb.firebaseio.com",
+      projectId: "VOTRE_PROJET"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -79,8 +93,25 @@
     const role = urlParams.get('role') || 'prof';
     const tableId = urlParams.get('id') || '1';
 
+    // Notification Toast (Remplace les alertes natives)
+    function showToast(message, type = 'success') {
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      if (type === 'danger') toast.style.background = '#dc2626';
+      if (type === 'warning') toast.style.background = '#d97706';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
     // Barème Tournoi Défis EPS
-    function calculatePointsDelta(pWinner, pLoser) {
+    function calculatePointsDelta(pWinner, pLoser, isFlash = false) {
       const diff = pWinner - pLoser;
       let vGain = 5;
 
@@ -96,7 +127,43 @@
       else if (diff >= -9) vGain = 8;
       else vGain = 9;
 
-      return { gainWinner: vGain + 1, lossLoser: -vGain + 1, rawDelta: vGain };
+      const multiplier = isFlash ? 2 : 1;
+      return { 
+        gainWinner: (vGain * multiplier) + 1, 
+        lossLoser: (-vGain * multiplier) + 1, 
+        rawGain: vGain * multiplier 
+      };
+    }
+
+    // Calcul automatique des Badges
+    function getPlayerBadges(player, allMatches, initialRankMap) {
+      const badges = [];
+      const pMatches = allMatches.filter(m => m.winnerId === player.id || m.loserId === player.id);
+      
+      if (pMatches.length >= 8) badges.push('🔥 Inoxydable');
+
+      let currentStreak = 0, maxStreak = 0;
+      const sorted = [...pMatches].sort((a,b) => a.timestamp - b.timestamp);
+      sorted.forEach(m => {
+        if (m.winnerId === player.id) {
+          currentStreak++;
+          if (currentStreak > maxStreak) maxStreak = currentStreak;
+        } else {
+          currentStreak = 0;
+        }
+      });
+      if (maxStreak >= 5) badges.push('🛡️️ La Muraille');
+
+      if (pMatches.some(m => m.winnerId === player.id && m.rawGain >= 9)) {
+        badges.push('⚡ Chasseur de Têtes');
+      }
+
+      if (initialRankMap && initialRankMap[player.id]) {
+        const gainPts = player.points - initialRankMap[player.id].startPoints;
+        if (gainPts >= 15) badges.push('🚀 Remontada');
+      }
+
+      return badges;
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -106,14 +173,14 @@
     });
 
     /* =========================================================
-       1. VUE HUB (GÉNÉRATEUR DE QR CODES & LIENS POUR TABLES)
+       1. VUE HUB (QR CODES)
        ========================================================= */
     function initHubUI() {
       const baseUrl = window.location.origin + window.location.pathname;
       document.getElementById('app').innerHTML = `
         <div class="container">
           <h1>📱 Hub de Connexion des iPad Tables</h1>
-          <p style="text-align:center;">Scannez le QR Code depuis l'iPad d'une table pour configurer l'application instantanément.</p>
+          <p style="text-align:center;">Scannez le QR Code depuis l'iPad d'une table pour la configurer.</p>
           <div class="card">
             <label>Nombre de tables dans le gymnase :</label>
             <input type="number" id="nb-tables" value="8" min="1" max="24">
@@ -141,8 +208,7 @@
 
           new QRCode(document.getElementById(`qrcode-t${i}`), {
             text: tableUrl,
-            width: 140,
-            height: 140
+            width: 140, height: 140
           });
         }
       }
@@ -152,19 +218,30 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE (INTERFACE ÉLÈVES)
+       2. VUE IPAD TABLE (Ergonomie optimisée + Sans Reload)
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
         <div class="container">
+          <div id="flash-banner" class="flash-banner">⚡ DÉFI FLASH EN COURS : POINTS DE VICTOIRE DOUBLÉS ! ⚡</div>
           <h2>🏓 Table ${tableId} — Saisie du Défi</h2>
+          
           <div class="card">
-            <label>Joueur A :</label>
-            <select id="p1-select"><option value="">-- Sélectionner un joueur --</option></select>
-            
-            <label style="margin-top:15px; display:block;">Joueur B :</label>
-            <select id="p2-select"><option value="">-- Sélectionner un joueur --</option></select>
+            <div class="vs-container">
+              <div>
+                <label>Joueur A</label>
+                <select id="p1-select"><option value="">-- Choisir --</option></select>
+              </div>
+              <div class="vs-circle">VS</div>
+              <div>
+                <label>Joueur B</label>
+                <select id="p2-select"><option value="">-- Choisir --</option></select>
+              </div>
+            </div>
+
+            <div id="p1-stats" class="stats-box" style="display:none;"></div>
+            <div id="p2-stats" class="stats-box" style="display:none;"></div>
           </div>
 
           <div class="card" id="match-actions" style="display:none;">
@@ -177,46 +254,109 @@
 
       let players = {};
       let playedMatches = [];
+      let isFlashActive = false;
+
+      onValue(ref(db, 'config/flashMode'), (snap) => {
+        isFlashActive = snap.val() || false;
+        document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
+      });
 
       onValue(ref(db, 'players'), (snap) => {
         players = snap.val() || {};
-        updatePlayerDropdowns(players);
+        updatePlayerDropdowns();
       });
 
       onValue(ref(db, 'history'), (snap) => {
         playedMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
+        updateSelectedPlayerStats();
       });
 
-      function updatePlayerDropdowns(playersData) {
+      function updatePlayerDropdowns() {
         const p1 = document.getElementById('p1-select');
         const p2 = document.getElementById('p2-select');
-        const options = Object.keys(playersData).map(id => `<option value="${id}">${playersData[id].name} (${playersData[id].points} pts)</option>`).join('');
-        p1.innerHTML = '<option value="">-- Sélectionner le Joueur 1 --</option>' + options;
-        p2.innerHTML = '<option value="">-- Sélectionner le Joueur 2 --</option>' + options;
+        const v1 = p1.value;
+        const v2 = p2.value;
+
+        // Tri alphabétique des joueurs pour faciliter la recherche
+        const sortedKeys = Object.keys(players).sort((a,b) => players[a].name.localeCompare(players[b].name));
+        const options = sortedKeys.map(id => `<option value="${id}">${players[id].name} (${players[id].points} pts)</option>`).join('');
+
+        p1.innerHTML = '<option value="">-- Choisir Joueur A --</option>' + options;
+        p2.innerHTML = '<option value="">-- Choisir Joueur B --</option>' + options;
+
+        p1.value = v1;
+        p2.value = v2;
       }
 
-      document.addEventListener('change', () => {
-        const id1 = document.getElementById('p1-select').value;
-        const id2 = document.getElementById('p2-select').value;
-        const actions = document.getElementById('match-actions');
+      function renderPlayerStatsAndSuggestions(playerId, containerId) {
+        const box = document.getElementById(containerId);
+        if (!playerId || !players[playerId]) {
+          box.style.display = 'none';
+          return;
+        }
 
-        if (id1 && id2 && id1 !== id2) {
-          // Règle EPS : Un seul défi entre deux mêmes personnes par séance
-          const alreadyPlayed = playedMatches.some(m => 
-            (m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1)
-          );
+        const p = players[playerId];
+        p.id = playerId;
+        const pMatches = playedMatches.filter(m => m.winnerId === playerId || m.loserId === playerId);
+        const wins = pMatches.filter(m => m.winnerId === playerId).length;
+        const losses = pMatches.length - wins;
+        const winRate = pMatches.length > 0 ? Math.round((wins / pMatches.length) * 100) : 0;
+        
+        const badges = getPlayerBadges(p, playedMatches, players);
+        const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join(' ') || '<em>Aucun badge</em>';
 
-          if (alreadyPlayed) {
-            alert("⚠️ Vous avez déjà défié ce joueur pendant cette séance !");
+        const allPlayerIds = Object.keys(players).filter(id => id !== playerId);
+        const unplayedIds = allPlayerIds.filter(otherId => {
+          return !playedMatches.some(m => (m.winnerId === playerId && m.loserId === otherId) || (m.winnerId === otherId && m.loserId === playerId));
+        });
+
+        unplayedIds.sort((a,b) => Math.abs(players[a].points - p.points) - Math.abs(players[b].points - p.points));
+        
+        let suggestionsHtml = '';
+        if (unplayedIds.length > 0) {
+          const target = players[unplayedIds[0]];
+          const diff = target.points - p.points;
+          const label = diff > 0 ? `à battre (+${diff} pts)` : `à portée (${diff} pts)`;
+          suggestionsHtml = `<div class="suggestion-item">🎯 <strong>Défi suggéré :</strong> ${target.name} (${target.points} pts - ${label})</div>`;
+        }
+
+        box.innerHTML = `
+          <strong>📊 ${p.name} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badgesHtml}
+          ${suggestionsHtml}
+        `;
+        box.style.display = 'block';
+      }
+
+      function updateSelectedPlayerStats() {
+        renderPlayerStatsAndSuggestions(document.getElementById('p1-select').value, 'p1-stats');
+        renderPlayerStatsAndSuggestions(document.getElementById('p2-select').value, 'p2-stats');
+      }
+
+      document.addEventListener('change', (e) => {
+        if (e.target.id === 'p1-select' || e.target.id === 'p2-select') {
+          updateSelectedPlayerStats();
+          
+          const id1 = document.getElementById('p1-select').value;
+          const id2 = document.getElementById('p2-select').value;
+          const actions = document.getElementById('match-actions');
+
+          if (id1 && id2 && id1 !== id2) {
+            const alreadyPlayed = playedMatches.some(m => 
+              (m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1)
+            );
+
+            if (alreadyPlayed) {
+              showToast("⚠️ Défi déjà effectué durant cette séance !", "warning");
+              actions.style.display = "none";
+              return;
+            }
+
+            document.getElementById('btn-p1-win').textContent = `Victoire de ${players[id1].name}`;
+            document.getElementById('btn-p2-win').textContent = `Victoire de ${players[id2].name}`;
+            actions.style.display = "block";
+          } else {
             actions.style.display = "none";
-            return;
           }
-
-          document.getElementById('btn-p1-win').textContent = `Victoire de ${players[id1].name}`;
-          document.getElementById('btn-p2-win').textContent = `Victoire de ${players[id2].name}`;
-          actions.style.display = "block";
-        } else {
-          actions.style.display = "none";
         }
       });
 
@@ -224,15 +364,13 @@
         const w = players[winnerId];
         const l = players[loserId];
 
-        const { gainWinner, lossLoser } = calculatePointsDelta(w.points, l.points);
+        const { gainWinner, lossLoser, rawGain } = calculatePointsDelta(w.points, l.points, isFlashActive);
 
-        // Mises à jour dans la BDD
         await set(ref(db, `players/${winnerId}/points`), w.points + gainWinner);
         await set(ref(db, `players/${loserId}/points`), l.points + lossLoser);
         await set(ref(db, `players/${winnerId}/matches`), (w.matches || 0) + 1);
         await set(ref(db, `players/${loserId}/matches`), (l.matches || 0) + 1);
 
-        // Historique avec points exacts pour permettre l'annulation
         await push(ref(db, 'history'), {
           table: tableId,
           winnerId,
@@ -241,11 +379,19 @@
           loserName: l.name,
           gainWinner,
           lossLoser,
+          rawGain,
+          isFlash: isFlashActive,
           timestamp: Date.now()
         });
 
-        alert(`Match enregistré !\n${w.name} : +${gainWinner} pts\n${l.name} : ${lossLoser} pts`);
-        location.reload();
+        showToast(`Match enregistré ! ${w.name} (+${gainWinner} pts)`);
+
+        // Réinitialisation fluide sans rechargement de page
+        document.getElementById('p1-select').value = "";
+        document.getElementById('p2-select').value = "";
+        document.getElementById('p1-stats').style.display = "none";
+        document.getElementById('p2-stats').style.display = "none";
+        document.getElementById('match-actions').style.display = "none";
       }
 
       document.getElementById('app').addEventListener('click', (e) => {
@@ -257,7 +403,7 @@
     }
 
     /* =========================================================
-       3. VUE IPAD PROFESSEUR (GESTION & CHRONOMÈTRE)
+       3. VUE IPAD PROFESSEUR (Supervision, Badges & Top Progressions)
        ========================================================= */
     function initProfUI() {
       const baseUrl = window.location.origin + window.location.pathname;
@@ -267,33 +413,36 @@
           <h1>📊 Supervision Professeur</h1>
           
           <div class="nav-tabs">
-            <div class="tab-btn active" onclick="switchTab('ranking')">Classement</div>
+            <div class="tab-btn active" onclick="switchTab('ranking')">Classement & Badges</div>
+            <div class="tab-btn" onclick="switchTab('progress')">🚀 Top Progressions</div>
             <div class="tab-btn" onclick="switchTab('history')">Historique & Corrections</div>
-            <div class="tab-btn" onclick="switchTab('setup')">Gestion ÉLèves</div>
+            <div class="tab-btn" onclick="switchTab('setup')">Gestion Élèves</div>
             <a href="${baseUrl}?role=hub" target="_blank" class="tab-btn" style="text-decoration:none;">📱 Hub QR Codes</a>
           </div>
 
-          <!-- Tab 1: Timer + Classement -->
+          <!-- Tab 1: Timer, Flash & Classement -->
           <div id="tab-ranking">
             <div class="card">
-              <h3>⏱️ Chronomètre de Rotation</h3>
+              <h3>⏱️ Chronomètre & Mode Défi Flash</h3>
               <div class="timer-display" id="timer-val">10:00</div>
               <div class="timer-controls">
                 <button class="btn btn-success" id="btn-timer-start">Démarrer</button>
                 <button class="btn btn-warning" id="btn-timer-pause">Pause</button>
                 <button class="btn btn-danger" id="btn-timer-reset">RAZ (10 min)</button>
               </div>
+              <button class="btn btn-purple" id="btn-toggle-flash" style="margin-top:15px;">⚡ Activer le Défi Flash (5 min - Pts x2)</button>
             </div>
 
             <div class="card">
-              <h3>Classement en Direct</h3>
+              <h3>Classement en Direct & Badges</h3>
               <table>
                 <thead>
                   <tr>
                     <th>Rang</th>
                     <th>Nom Prénom</th>
-                    <th>Points</th>
-                    <th>Matchs Joués</th>
+                    <th>Capital Points</th>
+                    <th>Matchs</th>
+                    <th>Badges Obtenus</th>
                   </tr>
                 </thead>
                 <tbody id="ranking-body"></tbody>
@@ -301,7 +450,26 @@
             </div>
           </div>
 
-          <!-- Tab 2: Historique & Annulation -->
+          <!-- Tab 2: Top Progressions -->
+          <div id="tab-progress" style="display:none;">
+            <div class="card">
+              <h3>🚀 Top 5 des Plus Fortes Progressions de la Séance</h3>
+              <p style="font-size:0.9rem; color:#94a3b8; text-align:center;">Calculé par rapport au capital de départ attribué lors de l'initialisation.</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rang Progression</th>
+                    <th>Nom Prénom</th>
+                    <th>Points Gagnés</th>
+                    <th>Capital Actuel</th>
+                  </tr>
+                </thead>
+                <tbody id="progress-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 3: Historique -->
           <div id="tab-history" style="display:none;">
             <div class="card">
               <h3>Flux des Matchs et Correction</h3>
@@ -311,7 +479,7 @@
                     <th>Table</th>
                     <th>Vainqueur</th>
                     <th>Perdant</th>
-                    <th>Écart Pts</th>
+                    <th>Points</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -320,11 +488,11 @@
             </div>
           </div>
 
-          <!-- Tab 3: Configuration de Classe -->
+          <!-- Tab 4: Configuration -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
               <h3>Initialiser une Nouvelle Classe</h3>
-              <p style="font-size:0.9rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne). Le 1er aura 100 pts, le 2e 99 pts, etc.</p>
+              <p style="font-size:0.9rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne). Capital initial dégressif (100, 99...).</p>
               <textarea id="import-names" rows="6" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
               <button class="btn btn-success" id="btn-init-class">Initialiser la Classe (Capital 100, 99...)</button>
             </div>
@@ -332,9 +500,9 @@
         </div>
       `;
 
-      // Gestion des Onglets
       window.switchTab = (tab) => {
         document.getElementById('tab-ranking').style.display = tab === 'ranking' ? 'block' : 'none';
+        document.getElementById('tab-progress').style.display = tab === 'progress' ? 'block' : 'none';
         document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
         document.getElementById('tab-setup').style.display = tab === 'setup' ? 'block' : 'none';
         
@@ -342,48 +510,77 @@
         if (event && event.target) event.target.classList.add('active');
       };
 
-      // 1. Live Ranking
-      onValue(ref(db, 'players'), (snap) => {
-        const players = snap.val() || {};
-        const sorted = Object.values(players).sort((a, b) => b.points - a.points);
-
-        const tbody = document.getElementById('ranking-body');
-        tbody.innerHTML = sorted.map((p, index) => `
-          <tr>
-            <td><strong>${index + 1}</strong></td>
-            <td>${p.name}</td>
-            <td><span class="badge badge-win">${p.points} pts</span></td>
-            <td>${p.matches || 0}</td>
-          </tr>
-        `).join('');
-      });
-
-      // 2. Historique & Annulation de Match
       let playersData = {};
-      onValue(ref(db, 'players'), (snap) => playersData = snap.val() || {});
+      let historyMatches = [];
 
       onValue(ref(db, 'history'), (snap) => {
-        const history = snap.val() || {};
-        const tbody = document.getElementById('history-body');
-        const entries = Object.entries(history).reverse();
+        historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, ...val }));
+        renderHistoryTable();
+      });
 
-        tbody.innerHTML = entries.map(([matchKey, m]) => `
+      onValue(ref(db, 'players'), (snap) => {
+        playersData = snap.val() || {};
+        renderRankingTable();
+        renderProgressTable();
+      });
+
+      function renderRankingTable() {
+        const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
+        const tbody = document.getElementById('ranking-body');
+        
+        tbody.innerHTML = sorted.map((p, index) => {
+          const badges = getPlayerBadges(p, historyMatches, playersData);
+          const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join(' ') || '-';
+          return `
+            <tr>
+              <td><strong>${index + 1}</strong></td>
+              <td>${p.name}</td>
+              <td><span class="badge badge-win">${p.points} pts</span></td>
+              <td>${p.matches || 0}</td>
+              <td>${badgesHtml}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function renderProgressTable() {
+        const list = Object.entries(playersData).map(([id, p]) => {
+          const startPts = p.startPoints !== undefined ? p.startPoints : 100;
+          return { name: p.name, ptsGained: p.points - startPts, currentPts: p.points };
+        }).sort((a,b) => b.ptsGained - a.ptsGained).slice(0, 5);
+
+        const tbody = document.getElementById('progress-body');
+        tbody.innerHTML = list.map((p, idx) => `
           <tr>
-            <td>Table ${m.table}</td>
+            <td><strong>#${idx + 1}</strong></td>
+            <td>${p.name}</td>
+            <td><strong style="color:#4ade80;">+${p.ptsGained} pts</strong></td>
+            <td>${p.currentPts} pts</td>
+          </tr>
+        `).join('');
+      }
+
+      function renderHistoryTable() {
+        const tbody = document.getElementById('history-body');
+        const entries = [...historyMatches].reverse();
+
+        tbody.innerHTML = entries.map((m) => `
+          <tr>
+            <td>Table ${m.table} ${m.isFlash ? '⚡' : ''}</td>
             <td><strong>${m.winnerName}</strong> (+${m.gainWinner})</td>
             <td>${m.loserName} (${m.lossLoser})</td>
             <td>+${m.gainWinner - 1} / ${m.lossLoser - 1}</td>
             <td>
-              <button class="btn-danger" onclick="cancelMatch('${matchKey}', '${m.winnerId}', '${m.loserId}', ${m.gainWinner}, ${m.lossLoser})">
+              <button class="btn-danger" onclick="cancelMatch('${m.key}', '${m.winnerId}', '${m.loserId}', ${m.gainWinner}, ${m.lossLoser})">
                 Annuler
               </button>
             </td>
           </tr>
         `).join('');
-      });
+      }
 
       window.cancelMatch = async (matchKey, wId, lId, gainW, lossL) => {
-        if (confirm("Annuler ce match et rétablir les points d'origine des élèves ?")) {
+        if (confirm("Annuler ce match et rétablir les points d'origine ?")) {
           const w = playersData[wId];
           const l = playersData[lId];
 
@@ -397,31 +594,40 @@
           }
 
           await remove(ref(db, `history/${matchKey}`));
-          alert("Match annulé et points réajustés !");
+          showToast("Match annulé avec succès", "warning");
         }
       };
 
-      // 3. Initialisation de Classe
+      let flashActive = false;
+      document.getElementById('btn-toggle-flash').onclick = () => {
+        flashActive = !flashActive;
+        set(ref(db, 'config/flashMode'), flashActive);
+        document.getElementById('btn-toggle-flash').textContent = flashActive 
+          ? "⚡ DÉFI FLASH ACTIF (Cliquer pour désactiver)" 
+          : "⚡ Activer le Défi Flash (5 min - Pts x2)";
+      };
+
       document.getElementById('btn-init-class').onclick = async () => {
         const names = document.getElementById('import-names').value.split('\n').filter(n => n.trim() !== '');
-        if (names.length === 0) return alert("Veuillez saisir au moins un nom.");
+        if (names.length === 0) return showToast("Saisir au moins un nom", "danger");
 
-        if (confirm("Attention : cela va réinitialiser le classement et l'historique actuel !")) {
+        if (confirm("Réinitialiser le tournoi avec cette nouvelle classe ?")) {
           let startPoints = 100;
           const newPlayers = {};
           names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
-            newPlayers[id] = { name: name.trim(), points: startPoints--, matches: 0 };
+            newPlayers[id] = { name: name.trim(), points: startPoints, startPoints: startPoints, matches: 0 };
+            startPoints--;
           });
 
           await set(ref(db, 'players'), newPlayers);
           await remove(ref(db, 'history'));
-          alert("Classe créée avec succès !");
+          await set(ref(db, 'config/flashMode'), false);
+          showToast("Nouvelle classe créée avec succès !");
           switchTab('ranking');
         }
       };
 
-      // 4. Chronomètre
       let timerSeconds = 600;
       let timerInterval = null;
 
@@ -440,7 +646,7 @@
             } else {
               clearInterval(timerInterval);
               timerInterval = null;
-              alert("🔔 Fin de la rotation ! Changement de table.");
+              showToast("🔔 Fin de la rotation !", "warning");
             }
           }, 1000);
         }
