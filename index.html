@@ -81,9 +81,9 @@
 
     // ⚠️ CONFIGURATION FIREBASE À REMPLACER
     const firebaseConfig = {
-      apiKey: "VOTRE_API_KEY",
-      databaseURL: "https://VOTRE_PROJET-default-rtdb.firebaseio.com",
-      projectId: "VOTRE_PROJET"
+      apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
+      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
+      projectId: "tournoi-defis-tt"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -173,50 +173,54 @@
     });
 
     /* =========================================================
-       1. VUE HUB (QR CODES)
-       ========================================================= */
-    function initHubUI() {
-      const baseUrl = window.location.origin + window.location.pathname;
-      document.getElementById('app').innerHTML = `
-        <div class="container">
-          <h1>📱 Hub de Connexion des iPad Tables</h1>
-          <p style="text-align:center;">Scannez le QR Code depuis l'iPad d'une table pour la configurer.</p>
-          <div class="card">
-            <label>Nombre de tables dans le gymnase :</label>
-            <input type="number" id="nb-tables" value="8" min="1" max="24">
-            <button class="btn" id="btn-gen-qr">Générer les QR Codes</button>
-          </div>
-          <div class="qr-grid" id="qr-container"></div>
-        </div>
+   1. VUE HUB (QR CODES - URLS CORRIGÉES)
+   ========================================================= */
+function initHubUI() {
+  // Récupère l'URL exacte actuelle sans les anciens paramètres
+  const currentUrl = window.location.href.split('?')[0];
+
+  document.getElementById('app').innerHTML = `
+    <div class="container">
+      <h1>📱 Hub de Connexion des iPad Tables</h1>
+      <p style="text-align:center;">Scannez le QR Code depuis l'iPad d'une table pour la configurer.</p>
+      <div class="card">
+        <label>Nombre de tables dans le gymnase :</label>
+        <input type="number" id="nb-tables" value="8" min="1" max="24">
+        <button class="btn" id="btn-gen-qr">Générer les QR Codes</button>
+      </div>
+      <div class="qr-grid" id="qr-container"></div>
+    </div>
+  `;
+
+  function generateQRCodes() {
+    const count = parseInt(document.getElementById('nb-tables').value) || 8;
+    const container = document.getElementById('qr-container');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= count; i++) {
+      // Construction robuste de l'URL pour la table
+      const tableUrl = `${currentUrl}?role=table&id=${i}`;
+      
+      const card = document.createElement('div');
+      card.className = 'qr-card';
+      card.innerHTML = `
+        <h3>Table ${i}</h3>
+        <div id="qrcode-t${i}"></div>
+        <a href="${tableUrl}" target="_blank" style="color:#38bdf8; font-size:0.9rem; word-break:break-all;">Lien direct Table ${i}</a>
       `;
+      container.appendChild(card);
 
-      function generateQRCodes() {
-        const count = parseInt(document.getElementById('nb-tables').value) || 8;
-        const container = document.getElementById('qr-container');
-        container.innerHTML = '';
-
-        for (let i = 1; i <= count; i++) {
-          const tableUrl = `${baseUrl}?role=table&id=${i}`;
-          const card = document.createElement('div');
-          card.className = 'qr-card';
-          card.innerHTML = `
-            <h3>Table ${i}</h3>
-            <div id="qrcode-t${i}"></div>
-            <a href="${tableUrl}" target="_blank" style="color:#38bdf8; font-size:0.9rem; word-break:break-all;">Lien direct Table ${i}</a>
-          `;
-          container.appendChild(card);
-
-          new QRCode(document.getElementById(`qrcode-t${i}`), {
-            text: tableUrl,
-            width: 140, height: 140
-          });
-        }
-      }
-
-      document.getElementById('btn-gen-qr').onclick = generateQRCodes;
-      generateQRCodes();
+      new QRCode(document.getElementById(`qrcode-t${i}`), {
+        text: tableUrl,
+        width: 140, 
+        height: 140
+      });
     }
+  }
 
+  document.getElementById('btn-gen-qr').onclick = generateQRCodes;
+  generateQRCodes();
+}
     /* =========================================================
        2. VUE IPAD TABLE (Ergonomie optimisée + Sans Reload)
        ========================================================= */
