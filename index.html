@@ -34,6 +34,7 @@
     .btn-danger { background: var(--danger); font-size: 0.85rem; padding: 5px 10px; width: auto; }
     .btn-warning { background: var(--warning); }
     .btn-purple { background: var(--purple); }
+    .btn-secondary { background: #475569; }
     
     select, input, textarea { width: 100%; padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
     
@@ -45,7 +46,6 @@
     .qr-card { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
     .qr-card div { background: white; padding: 8px; border-radius: 6px; margin: 8px 0; }
 
-    /* Grille multi-colonnes pour le classement (Affichage 28+ joueurs sans scroll) */
     .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 6px; overflow: hidden; font-size: 0.85rem; }
     th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
@@ -61,26 +61,129 @@
 
     .stats-box { background: #0f172a; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
     .suggestion-item { background: #1e293b; padding: 6px 10px; border-radius: 6px; margin-top: 4px; border-left: 3px solid var(--accent); font-size: 0.85rem; }
+    .quest-box { background: #3b0764; border: 1px solid #a855f7; border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 0.85rem; color: #f3e8ff; }
+    .handicap-box { background: #0284c722; border: 1px solid #0284c7; border-radius: 8px; padding: 8px; text-align: center; font-weight: bold; margin-top: 8px; color: #38bdf8; }
 
-    /* Interface Match VS */
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .toggle-row:last-child { border-bottom: none; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 1Voici le fichier `index.html` mis à jour intégrant la configuration Firebase, les options paramétrables pour la ludification (handicaps, arbitrage obligatoire, quêtes secrètes) et la fonction d'export CSV pour vos évaluations EPS.
+
+---
+
+### Mises à jour intégrées
+
+1. **Configuration Firebase** : Intégration de vos clés de projet dans le script.
+2. **Module d'Options Ludiques** (configurables depuis l'onglet Prof) :
+   * **Handicaps de points** : Calcule un bonus de départ automatique pour le joueur le moins bien classé selon l'écart de points.
+   * **Arbitrage obligatoire** : Requiert la sélection d'un troisième élève comme arbitre pour enregistrer le résultat d'un match.
+   * **Quêtes secrètes** : Attribue une mission aléatoire par séance rapportant un bonus de points si elle est remplie.
+3. **Export CSV** : Bouton dans l'onglet Prof pour télécharger l'ensemble des données (classement, points, progression, matchs joués) au format compatible Excel/Pronote.
+
+---
+
+### Code complet du fichier `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tournoi Défis Tennis de Table EPS</title>
+  
+  <!-- Bibliothèque QR Code -->
+  <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
+  
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --purple: #9333ea;
+      --text: #f8fafc;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    h1, h2, h3 { text-align: center; margin: 5px 0 12px 0; font-size: 1.4rem; }
+    
+    .card { background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+    .btn { background: var(--accent); color: white; font-weight: bold; padding: 12px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; transition: transform 0.1s, background 0.2s; }
+    .btn:active { transform: scale(0.98); }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); font-size: 0.85rem; padding: 5px 10px; width: auto; }
+    .btn-warning { background: var(--warning); }
+    .btn-purple { background: var(--purple); }
+    .btn-secondary { background: #475569; }
+    
+    select, input, textarea { width: 100%; padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
+    
+    .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; }
+    .checkbox-label input { width: auto; margin: 0; }
+
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tab-btn { flex: 1; min-width: 120px; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.9rem; }
+    .tab-btn.active { background: var(--accent); }
+
+    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+    .qr-card { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+    .qr-card div { background: white; padding: 8px; border-radius: 6px; margin: 8px 0; }
+
+    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 6px; overflow: hidden; font-size: 0.85rem; }
+    th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #0284c7; color: white; font-weight: 600; }
+    tr:nth-child(even) { background: #1a2436; }
+
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin: 1px; }
+    .badge-win { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a; }
+    .badge-tag { background: #334155; color: #f1f5f9; border: 1px solid #475569; }
+
+    .flash-banner { background: linear-gradient(90deg, #9333ea, #db2777); padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; animation: pulse 2s infinite; margin-bottom: 10px; display: none; }
+    @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+
+    .stats-box { background: #0f172a; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
+    .suggestion-item { background: #1e293b; padding: 6px 10px; border-radius: 6px; margin-top: 4px; border-left: 3px solid var(--accent); font-size: 0.85rem; }
+    .handicap-box { background: #7c2d12; color: #fdba74; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; margin-top: 8px; font-weight: bold; text-align: center; }
+
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
     .vs-circle { background: #0284c7; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; }
 
-    /* Toast Notification */
     #toast-container { position: fixed; bottom: 15px; right: 15px; z-index: 9999; }
     .toast { background: #16a34a; color: white; padding: 10px 16px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-top: 8px; animation: slideIn 0.3s ease-out; }
     @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media print {
+      body { background: white !important; color: black !important; padding: 0; }
+      .nav-tabs, button, .btn, #toast-container, .flash-banner, .no-print { display: none !important; }
+      .card { border: none !important; background: transparent !important; padding: 0 !important; }
+      table { border: 1px solid #000 !important; color: black !important; background: white !important; font-size: 10pt !important; }
+      th { background: #ddd !important; color: black !important; border: 1px solid #000 !important; }
+      td { border: 1px solid #ccc !important; }
+      .badge { border: 1px solid #000 !important; color: black !important; background: #eee !important; }
+      .print-title { display: block !important; text-align: center; font-size: 16pt; margin-bottom: 15px; font-weight: bold; }
+    }
+    .print-title { display: none; }
   </style>
 
   <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js)";
+    import { getDatabase, ref, onValue, set, push, remove } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js)";
 
-    // ⚠️ CONFIGURATION FIREBASE À REMPLACER
+    // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
-      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
+      databaseURL: "[https://tournoi-defis-tt-default-rtdb.firebaseio.com](https://tournoi-defis-tt-default-rtdb.firebaseio.com)",
       projectId: "tournoi-defis-tt"
     };
 
@@ -90,6 +193,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const role = urlParams.get('role') || 'prof';
     const tableId = urlParams.get('id') || '1';
+
+    const QUEST_LIST = [
+      { id: 'q1', text: '🎯 Bat un joueur mieux classé que toi', bonus: 3 },
+      { id: 'q2', text: '🛡️ Enchaîne 2 victoires consécutives', bonus: 3 },
+      { id: 'q3', text: '🏓 Arbitre au moins 2 matchs', bonus: 3 },
+      { id: 'q4', text: '⚡ Réalise un défi contre un adversaire inédit', bonus: 2 }
+    ];
 
     function showToast(message, type = 'success') {
       let container = document.getElementById('toast-container');
@@ -107,7 +217,6 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // Barème Tournoi Défis EPS
     function calculatePointsDelta(pWinner, pLoser, isFlash = false) {
       const diff = pWinner - pLoser;
       let vGain = 5;
@@ -239,11 +348,18 @@
 
             <div id="p1-stats" class="stats-box" style="display:none;"></div>
             <div id="p2-stats" class="stats-box" style="display:none;"></div>
+
+            <div id="handicap-box" class="handicap-box" style="display:none;"></div>
+
+            <div id="referee-box" style="margin-top:12px; display:none;">
+              <label>⚖️ Arbitre du match (Obligatoire) :</label>
+              <select id="referee-select"><option value="">-- Sélectionner l'arbitre --</option></select>
+            </div>
           </div>
 
           <div class="card" id="match-actions" style="display:none;">
             <h3>Désigner le Vainqueur (Match en 11 pts)</h3>
-            <button class="btn btn-success" id="btn-p1-win"></button>
+            <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
             <button class="btn btn-success" id="btn-p2-win"></button>
           </div>
         </div>
@@ -252,10 +368,18 @@
       let players = {};
       let playedMatches = [];
       let isFlashActive = false;
+      let sessionNumber = 1;
+      let options = { handicap: false, referee: false, quests: false };
 
-      onValue(ref(db, 'config/flashMode'), (snap) => {
-        isFlashActive = snap.val() || false;
+      onValue(ref(db, 'config'), (snap) => {
+        const cfg = snap.val() || {};
+        isFlashActive = cfg.flashMode || false;
+        sessionNumber = cfg.sessionNumber || 1;
+        options = cfg.options || { handicap: false, referee: false, quests: false };
+
         document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
+        document.getElementById('referee-box').style.display = options.referee ? 'block' : 'none';
+        updateHandicapDisplay();
       });
 
       onValue(ref(db, 'players'), (snap) => {
@@ -271,17 +395,47 @@
       function updatePlayerDropdowns() {
         const p1 = document.getElementById('p1-select');
         const p2 = document.getElementById('p2-select');
+        const refSel = document.getElementById('referee-select');
         const v1 = p1.value;
         const v2 = p2.value;
+        const vRef = refSel.value;
 
         const sortedKeys = Object.keys(players).sort((a,b) => players[a].name.localeCompare(players[b].name));
-        const options = sortedKeys.map(id => `<option value="${id}">${players[id].name} (${players[id].points} pts)</option>`).join('');
+        const optionsHtml = sortedKeys.map(id => `<option value="${id}">${players[id].name} (${players[id].points} pts)</option>`).join('');
 
-        p1.innerHTML = '<option value="">-- Choisir Joueur A --</option>' + options;
-        p2.innerHTML = '<option value="">-- Choisir Joueur B --</option>' + options;
+        p1.innerHTML = '<option value="">-- Choisir Joueur A --</option>' + optionsHtml;
+        p2.innerHTML = '<option value="">-- Choisir Joueur B --</option>' + optionsHtml;
+        refSel.innerHTML = '<option value="">-- Choisir l\'Arbitre --</option>' + optionsHtml;
 
         p1.value = v1;
         p2.value = v2;
+        refSel.value = vRef;
+      }
+
+      function updateHandicapDisplay() {
+        const hBox = document.getElementById('handicap-box');
+        if (!options.handicap) {
+          hBox.style.display = 'none';
+          return;
+        }
+
+        const id1 = document.getElementById('p1-select').value;
+        const id2 = document.getElementById('p2-select').value;
+
+        if (id1 && id2 && id1 !== id2 && players[id1] && players[id2]) {
+          const p1 = players[id1];
+          const p2 = players[id2];
+          const diff = Math.abs(p1.points - p2.points);
+
+          if (diff >= 6) {
+            const handicap = Math.min(Math.floor(diff / 3), 4);
+            const weaker = p1.points < p2.points ? p1.name : p2.name;
+            hBox.textContent = `⚖️ Handicap activé : ${weaker} commence avec +${handicap} pts d'avance !`;
+            hBox.style.display = 'block';
+            return;
+          }
+        }
+        hBox.style.display = 'none';
       }
 
       function renderPlayerStatsAndSuggestions(playerId, containerId) {
@@ -301,9 +455,20 @@
         const badges = getPlayerBadges(p, playedMatches);
         const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join(' ') || '<em>Aucun</em>';
 
+        let questHtml = '';
+        if (options.quests && p.questId) {
+          const q = QUEST_LIST.find(x => x.id === p.questId);
+          if (q) {
+            questHtml = `<div style="margin-top:4px; color:#facc15; font-size:0.8rem;">🎯 <strong>Quête :</strong> ${q.text} (+${q.bonus} pts)</div>`;
+          }
+        }
+
         const allPlayerIds = Object.keys(players).filter(id => id !== playerId);
         const unplayedIds = allPlayerIds.filter(otherId => {
-          return !playedMatches.some(m => (m.winnerId === playerId && m.loserId === otherId) || (m.winnerId === otherId && m.loserId === playerId));
+          return !playedMatches.some(m => 
+            (m.session === sessionNumber || !m.session) && 
+            ((m.winnerId === playerId && m.loserId === otherId) || (m.winnerId === otherId && m.loserId === playerId))
+          );
         });
 
         unplayedIds.sort((a,b) => Math.abs(players[a].points - p.points) - Math.abs(players[b].points - p.points));
@@ -318,6 +483,7 @@
 
         box.innerHTML = `
           <strong>📊 ${p.name} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badgesHtml}
+          ${questHtml}
           ${suggestionsHtml}
         `;
         box.style.display = 'block';
@@ -326,6 +492,7 @@
       function updateSelectedPlayerStats() {
         renderPlayerStatsAndSuggestions(document.getElementById('p1-select').value, 'p1-stats');
         renderPlayerStatsAndSuggestions(document.getElementById('p2-select').value, 'p2-stats');
+        updateHandicapDisplay();
       }
 
       document.addEventListener('change', (e) => {
@@ -337,11 +504,12 @@
           const actions = document.getElementById('match-actions');
 
           if (id1 && id2 && id1 !== id2) {
-            const alreadyPlayed = playedMatches.some(m => 
-              (m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1)
+            const alreadyPlayedSession = playedMatches.some(m => 
+              (m.session === sessionNumber || !m.session) &&
+              ((m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1))
             );
 
-            if (alreadyPlayed) {
+            if (alreadyPlayedSession) {
               showToast("⚠️ Défi déjà effectué durant cette séance !", "warning");
               actions.style.display = "none";
               return;
@@ -357,8 +525,15 @@
       });
 
       async function recordMatch(winnerId, loserId) {
+        if (options.referee) {
+          const refId = document.getElementById('referee-select').value;
+          if (!refId) return showToast("⚠️ Veuillez désigner un arbitre !", "danger");
+          if (refId === winnerId || refId === loserId) return showToast("⚠️ L'arbitre doit être un joueur tiers !", "danger");
+        }
+
         const w = players[winnerId];
         const l = players[loserId];
+        const refId = document.getElementById('referee-select').value;
 
         const { gainWinner, lossLoser, rawGain } = calculatePointsDelta(w.points, l.points, isFlashActive);
 
@@ -367,10 +542,17 @@
         await set(ref(db, `players/${winnerId}/matches`), (w.matches || 0) + 1);
         await set(ref(db, `players/${loserId}/matches`), (l.matches || 0) + 1);
 
+        if (options.referee && refId && players[refId]) {
+          await set(ref(db, `players/${refId}/refereeCount`), (players[refId].refereeCount || 0) + 1);
+        }
+
         await push(ref(db, 'history'), {
           table: tableId,
+          session: sessionNumber,
           winnerId,
           loserId,
+          refereeId: options.referee ? refId : null,
+          refereeName: options.referee && players[refId] ? players[refId].name : null,
           winnerName: w.name,
           loserName: l.name,
           gainWinner,
@@ -384,8 +566,10 @@
 
         document.getElementById('p1-select').value = "";
         document.getElementById('p2-select').value = "";
+        document.getElementById('referee-select').value = "";
         document.getElementById('p1-stats').style.display = "none";
         document.getElementById('p2-stats').style.display = "none";
+        document.getElementById('handicap-box').style.display = "none";
         document.getElementById('match-actions').style.display = "none";
       }
 
@@ -398,28 +582,33 @@
     }
 
     /* =========================================================
-       3. VUE IPAD PROFESSEUR (Layout 2 Colonnes Sans Scroll)
+       3. VUE IPAD PROFESSEUR
        ========================================================= */
     function initProfUI() {
       const baseUrl = window.location.origin + window.location.pathname;
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
         <div class="container">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h1 style="margin:0;">📊 Supervision Professeur</h1>
             <button class="btn btn-purple" id="btn-toggle-flash" style="width:auto; padding:8px 16px; margin:0;">⚡ Activer Défi Flash (Pts x2)</button>
           </div>
           
-          <div class="nav-tabs">
+          <div class="nav-tabs no-print">
             <div class="tab-btn active" onclick="switchTab('ranking')">Classement & Badges</div>
             <div class="tab-btn" onclick="switchTab('progress')">🚀 Top Progressions</div>
             <div class="tab-btn" onclick="switchTab('history')">Historique & Corrections</div>
-            <div class="tab-btn" onclick="switchTab('setup')">Gestion Élèves</div>
+            <div class="tab-btn" onclick="switchTab('setup')">Gestion Séance / Options</div>
             <a href="${baseUrl}?role=hub" target="_blank" class="tab-btn" style="text-decoration:none;">📱 Hub QR Codes</a>
           </div>
 
-          <!-- Tab 1: Classement sur 2 colonnes (Visualisation globale sans scroll) -->
+          <!-- Tab 1: Classement -->
           <div id="tab-ranking">
+            <div class="print-title" id="print-title-ranking">Classement Général - Tennis de Table EPS</div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;" class="no-print">
+              <button class="btn btn-success" onclick="exportToCSV()" style="width:auto; padding:6px 12px; font-size:0.85rem;">📥 Exporter en CSV (Pronote)</button>
+              <button class="btn btn-secondary" onclick="window.print()" style="width:auto; padding:6px 12px; font-size:0.85rem;">🖨️ Imprimer le Classement</button>
+            </div>
             <div class="ranking-grid">
               <div>
                 <table>
@@ -440,17 +629,17 @@
             </div>
           </div>
 
-          <!-- Tab 2: Top Progressions (Calcul Exact) -->
+          <!-- Tab 2: Top Progressions -->
           <div id="tab-progress" style="display:none;">
             <div class="card">
               <h3>🚀 Top 5 des Plus Fortes Progressions de la Séance</h3>
-              <p style="font-size:0.85rem; color:#94a3b8; text-align:center;">Calcul basé sur l'écart exact entre les points actuels et le capital initial attribué.</p>
+              <p style="font-size:0.85rem; color:#94a3b8; text-align:center;" class="no-print">Calcul basé sur l'écart exact entre les points actuels et le capital initial attribué.</p>
               <table>
                 <thead>
                   <tr>
-                    <th>Rang Progression</th>
+                    <th>Rang</th>
                     <th>Nom Prénom</th>
-                    <th>Écart Exact (Points Gagnés)</th>
+                    <th>Écart Exact</th>
                     <th>Capital Initial</th>
                     <th>Capital Actuel</th>
                   </tr>
@@ -462,15 +651,21 @@
 
           <!-- Tab 3: Historique -->
           <div id="tab-history" style="display:none;">
+            <div class="print-title">Historique des Matchs de la Séance</div>
+            <div style="display:flex; justify-content:flex-end; margin-bottom:8px;" class="no-print">
+              <button class="btn btn-secondary" onclick="window.print()" style="width:auto; padding:6px 12px; font-size:0.85rem;">🖨️ Imprimer l'Historique</button>
+            </div>
             <div class="card">
               <h3>Flux des Matchs et Correction</h3>
               <table>
                 <thead>
                   <tr>
+                    <th>Séance</th>
                     <th>Table</th>
                     <th>Vainqueur</th>
                     <th>Perdant</th>
-                    <th>Action</th>
+                    <th>Arbitre</th>
+                    <th class="no-print">Action</th>
                   </tr>
                 </thead>
                 <tbody id="history-body"></tbody>
@@ -478,13 +673,38 @@
             </div>
           </div>
 
-          <!-- Tab 4: Configuration -->
+          <!-- Tab 4: Configuration & Passage de séance -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
-              <h3>Initialiser une Nouvelle Classe</h3>
-              <p style="font-size:0.85rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne). Capital initial dégressif (100, 99...).</p>
-              <textarea id="import-names" rows="6" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
-              <button class="btn btn-success" id="btn-init-class">Initialiser la Classe (Capital 100, 99...)</button>
+              <h3>🎮 Options de Ludification & Règles</h3>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-handicap">
+                <span><strong>1. Handicaps automatiques</strong> (donne un bonus de départ au joueur moins bien classé)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-referee">
+                <span><strong>2. Arbitrage obligatoire</strong> (un joueur tiers doit être désigné sur la table)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-quests">
+                <span><strong>3. Quêtes secrètes de séance</strong> (attribue des objectifs individuels bonus)</span>
+              </label>
+              <button class="btn btn-success" id="btn-save-options" style="margin-top:12px;">Enregistrer les Options</button>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+              <h3>🔄 Passer à la Séance Suivante</h3>
+              <p style="font-size:0.85rem; color:#94a3b8;">
+                Conserve les scores actuels de chaque élève comme nouveau point de départ, et autorise à nouveau les affrontements (revanches).
+              </p>
+              <button class="btn btn-warning" id="btn-next-session">Démarrer une Nouvelle Séance (Activer Revanches & Fixer les Caps)</button>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+              <h3>🆕 Initialiser une Toute Nouvelle Classe</h3>
+              <p style="font-size:0.85rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne). Recommence avec un capital dégressif (100, 99...).</p>
+              <textarea id="import-names" rows="5" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
+              <button class="btn btn-danger" id="btn-init-class" style="width:100%; font-size:1rem; padding:12px;">Réinitialiser Tout le Tournoi</button>
             </div>
           </div>
         </div>
@@ -502,6 +722,19 @@
 
       let playersData = {};
       let historyMatches = [];
+      let currentSession = 1;
+      let options = { handicap: false, referee: false, quests: false };
+
+      onValue(ref(db, 'config'), (snap) => {
+        const cfg = snap.val() || {};
+        currentSession = cfg.sessionNumber || 1;
+        options = cfg.options || { handicap: false, referee: false, quests: false };
+
+        document.getElementById('print-title-ranking').textContent = `Classement Général - Séance ${currentSession} - Tennis de Table EPS`;
+        document.getElementById('opt-handicap').checked = !!options.handicap;
+        document.getElementById('opt-referee').checked = !!options.referee;
+        document.getElementById('opt-quests').checked = !!options.quests;
+      });
 
       onValue(ref(db, 'history'), (snap) => {
         historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, ...val }));
@@ -514,10 +747,8 @@
         renderProgressTable();
       });
 
-      // Rendu du classement réparti équitablement sur 2 colonnes
       function renderRankingTable() {
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
-        
         const half = Math.ceil(sorted.length / 2);
         const col1 = sorted.slice(0, half);
         const col2 = sorted.slice(half);
@@ -542,7 +773,6 @@
         document.getElementById('ranking-body-2').innerHTML = createRowsHtml(col2, half);
       }
 
-      // Calcul Exact des Progressions (Points Actuels - Points de Départ)
       function renderProgressTable() {
         const list = Object.entries(playersData).map(([id, p]) => {
           const startPts = p.startPoints !== undefined ? p.startPoints : 100;
@@ -572,11 +802,13 @@
 
         tbody.innerHTML = entries.map((m) => `
           <tr>
-            <td>Table ${m.table} ${m.isFlash ? '⚡' : ''}</td>
+            <td>S${m.session || 1}</td>
+            <td>T${m.table} ${m.isFlash ? '⚡' : ''}</td>
             <td><strong>${m.winnerName}</strong> (+${m.gainWinner})</td>
             <td>${m.loserName} (${m.lossLoser})</td>
-            <td>
-              <button class="btn-danger" onclick="cancelMatch('${m.key}', '${m.winnerId}', '${m.loserId}', ${m.gainWinner}, ${m.lossLoser})">
+            <td>${m.refereeName || '-'}</td>
+            <td class="no-print">
+              <button class="btn-danger" onclick="cancelMatch('${m.key}', '${m.winnerId}', '${m.loserId}', ${m.gainWinner}, ${m.lossLoser}, '${m.refereeId || ''}')">
                 Annuler
               </button>
             </td>
@@ -584,7 +816,7 @@
         `).join('');
       }
 
-      window.cancelMatch = async (matchKey, wId, lId, gainW, lossL) => {
+      window.cancelMatch = async (matchKey, wId, lId, gainW, lossL, refId) => {
         if (confirm("Annuler ce match et rétablir les points d'origine ?")) {
           const w = playersData[wId];
           const l = playersData[lId];
@@ -597,10 +829,40 @@
             await set(ref(db, `players/${lId}/points`), l.points - lossL);
             await set(ref(db, `players/${lId}/matches`), Math.max(0, (l.matches || 1) - 1));
           }
+          if (refId && playersData[refId]) {
+            await set(ref(db, `players/${refId}/refereeCount`), Math.max(0, (playersData[refId].refereeCount || 1) - 1));
+          }
 
           await remove(ref(db, `history/${matchKey}`));
           showToast("Match annulé avec succès", "warning");
         }
+      };
+
+      window.exportToCSV = () => {
+        const sorted = Object.entries(playersData).map(([id, p]) => {
+          const start = p.startPoints !== undefined ? p.startPoints : 100;
+          return {
+            Nom: p.name,
+            PointsActuels: p.points,
+            CapitalDepart: start,
+            Progression: p.points - start,
+            MatchsJoues: p.matches || 0,
+            Arbitrages: p.refereeCount || 0
+          };
+        }).sort((a,b) => b.PointsActuels - a.PointsActuels);
+
+        let csvContent = "data:text/csv;charset=utf-8,Nom;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\n";
+        sorted.forEach(r => {
+          csvContent += `"${r.Nom}";${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `tournoi_tt_seance_${currentSession}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       };
 
       let flashActive = false;
@@ -612,21 +874,63 @@
           : "⚡ Activer Défi Flash (Pts x2)";
       };
 
+      document.getElementById('btn-save-options').onclick = async () => {
+        const h = document.getElementById('opt-handicap').checked;
+        const r = document.getElementById('opt-referee').checked;
+        const q = document.getElementById('opt-quests').checked;
+
+        await set(ref(db, 'config/options'), { handicap: h, referee: r, quests: q });
+
+        if (q) {
+          for (let id in playersData) {
+            const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+            await set(ref(db, `players/${id}/questId`), randomQuest.id);
+          }
+        }
+
+        showToast("Options de ludification mises à jour !");
+      };
+
+      document.getElementById('btn-next-session').onclick = async () => {
+        if (confirm("Passer à la séance suivante ? Les points actuels deviendront le nouveau point de départ pour le calcul des progrès, et les duels pourront rejouer.")) {
+          for (let id in playersData) {
+            await set(ref(db, `players/${id}/startPoints`), playersData[id].points);
+            if (options.quests) {
+              const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+              await set(ref(db, `players/${id}/questId`), randomQuest.id);
+            }
+          }
+          await set(ref(db, 'config/sessionNumber'), currentSession + 1);
+          await set(ref(db, 'config/flashMode'), false);
+
+          showToast(`Séance ${currentSession + 1} démarrée ! Revanches autorisées.`);
+        }
+      };
+
       document.getElementById('btn-init-class').onclick = async () => {
         const names = document.getElementById('import-names').value.split('\n').filter(n => n.trim() !== '');
         if (names.length === 0) return showToast("Saisir au moins un nom", "danger");
 
-        if (confirm("Réinitialiser le tournoi avec cette nouvelle classe ?")) {
+        if (confirm("ATTENTION : Cela effacera toutes les données actuelles du tournoi.")) {
           let startPoints = 100;
           const newPlayers = {};
           names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
-            newPlayers[id] = { name: name.trim(), points: startPoints, startPoints: startPoints, matches: 0 };
+            const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+            newPlayers[id] = { 
+              name: name.trim(), 
+              points: startPoints, 
+              startPoints: startPoints, 
+              matches: 0,
+              refereeCount: 0,
+              questId: randomQuest.id 
+            };
             startPoints--;
           });
 
           await set(ref(db, 'players'), newPlayers);
           await remove(ref(db, 'history'));
+          await set(ref(db, 'config/sessionNumber'), 1);
           await set(ref(db, 'config/flashMode'), false);
           showToast("Nouvelle classe créée avec succès !");
           switchTab('ranking');
