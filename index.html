@@ -38,95 +38,6 @@
     
     select, input, textarea { width: 100%; padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
     
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-    .tab-btn { flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.95rem; }
-    .tab-btn.active { background: var(--accent); }
-
-    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-    .qr-card { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
-    .qr-card div { background: white; padding: 8px; border-radius: 6px; margin: 8px 0; }
-
-    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 6px; overflow: hidden; font-size: 0.85rem; }
-    th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #0284c7; color: white; font-weight: 600; }
-    tr:nth-child(even) { background: #1a2436; }
-
-    .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin: 1px; }
-    .badge-win { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a; }
-    .badge-tag { background: #334155; color: #f1f5f9; border: 1px solid #475569; }
-
-    .flash-banner { background: linear-gradient(90deg, #9333ea, #db2777); padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; animation: pulse 2s infinite; margin-bottom: 10px; display: none; }
-    @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-
-    .stats-box { background: #0f172a; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
-    .suggestion-item { background: #1e293b; padding: 6px 10px; border-radius: 6px; margin-top: 4px; border-left: 3px solid var(--accent); font-size: 0.85rem; }
-    .quest-box { background: #3b0764; border: 1px solid #a855f7; border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 0.85rem; color: #f3e8ff; }
-    .handicap-box { background: #0284c722; border: 1px solid #0284c7; border-radius: 8px; padding: 8px; text-align: center; font-weight: bold; margin-top: 8px; color: #38bdf8; }
-
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .toggle-row:last-child { border-bottom: none; }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 1Voici le fichier `index.html` mis à jour intégrant la configuration Firebase, les options paramétrables pour la ludification (handicaps, arbitrage obligatoire, quêtes secrètes) et la fonction d'export CSV pour vos évaluations EPS.
-
----
-
-### Mises à jour intégrées
-
-1. **Configuration Firebase** : Intégration de vos clés de projet dans le script.
-2. **Module d'Options Ludiques** (configurables depuis l'onglet Prof) :
-   * **Handicaps de points** : Calcule un bonus de départ automatique pour le joueur le moins bien classé selon l'écart de points.
-   * **Arbitrage obligatoire** : Requiert la sélection d'un troisième élève comme arbitre pour enregistrer le résultat d'un match.
-   * **Quêtes secrètes** : Attribue une mission aléatoire par séance rapportant un bonus de points si elle est remplie.
-3. **Export CSV** : Bouton dans l'onglet Prof pour télécharger l'ensemble des données (classement, points, progression, matchs joués) au format compatible Excel/Pronote.
-
----
-
-### Code complet du fichier `index.html`
-
-```html
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tournoi Défis Tennis de Table EPS</title>
-  
-  <!-- Bibliothèque QR Code -->
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
-  
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --purple: #9333ea;
-      --text: #f8fafc;
-      --border: #334155;
-    }
-
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    
-    h1, h2, h3 { text-align: center; margin: 5px 0 12px 0; font-size: 1.4rem; }
-    
-    .card { background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
-    .btn { background: var(--accent); color: white; font-weight: bold; padding: 12px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; transition: transform 0.1s, background 0.2s; }
-    .btn:active { transform: scale(0.98); }
-    .btn-success { background: var(--success); }
-    .btn-danger { background: var(--danger); font-size: 0.85rem; padding: 5px 10px; width: auto; }
-    .btn-warning { background: var(--warning); }
-    .btn-purple { background: var(--purple); }
-    .btn-secondary { background: #475569; }
-    
-    select, input, textarea { width: 100%; padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
-    
     .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; }
     .checkbox-label input { width: auto; margin: 0; }
 
@@ -177,13 +88,13 @@
 
   <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js)";
-    import { getDatabase, ref, onValue, set, push, remove } from "[https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js)";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
-      databaseURL: "[https://tournoi-defis-tt-default-rtdb.firebaseio.com](https://tournoi-defis-tt-default-rtdb.firebaseio.com)",
+      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
       projectId: "tournoi-defis-tt"
     };
 
