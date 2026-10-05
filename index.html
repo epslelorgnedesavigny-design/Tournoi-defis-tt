@@ -91,7 +91,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
       databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
@@ -105,12 +104,18 @@
     const role = urlParams.get('role') || 'prof';
     const tableId = urlParams.get('id') || '1';
 
+    let currentGroup = localStorage.getItem('eps_current_group') || 'Classe_1';
+
     const QUEST_LIST = [
       { id: 'q1', text: '🎯 Bat un joueur mieux classé que toi', bonus: 3 },
       { id: 'q2', text: '🛡️ Enchaîne 2 victoires consécutives', bonus: 3 },
       { id: 'q3', text: '🏓 Arbitre au moins 2 matchs', bonus: 3 },
       { id: 'q4', text: '⚡ Réalise un défi contre un adversaire inédit', bonus: 2 }
     ];
+
+    function getGroupPath(subpath) {
+      return `groups/${currentGroup}/${subpath}`;
+    }
 
     function showToast(message, type = 'success') {
       let container = document.getElementById('toast-container');
@@ -242,7 +247,10 @@
       appDiv.innerHTML = `
         <div class="container">
           <div id="flash-banner" class="flash-banner">⚡ DÉFI FLASH EN COURS : POINTS DE VICTOIRE DOUBLÉS ! ⚡</div>
-          <h2>🏓 Table ${tableId} — Saisie du Défi</h2>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>🏓 Table ${tableId}</h2>
+            <span id="group-indicator" class="badge badge-tag" style="font-size:0.9rem;"></span>
+          </div>
           
           <div class="card">
             <div class="vs-container">
@@ -282,26 +290,36 @@
       let sessionNumber = 1;
       let options = { handicap: false, referee: false, quests: false };
 
-      onValue(ref(db, 'config'), (snap) => {
-        const cfg = snap.val() || {};
-        isFlashActive = cfg.flashMode || false;
-        sessionNumber = cfg.sessionNumber || 1;
-        options = cfg.options || { handicap: false, referee: false, quests: false };
-
-        document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
-        document.getElementById('referee-box').style.display = options.referee ? 'block' : 'none';
-        updateHandicapDisplay();
+      onValue(ref(db, 'activeGroup'), (snap) => {
+        if (snap.val()) {
+          currentGroup = snap.val();
+          document.getElementById('group-indicator').textContent = `Groupe : ${currentGroup}`;
+          attachGroupListeners();
+        }
       });
 
-      onValue(ref(db, 'players'), (snap) => {
-        players = snap.val() || {};
-        updatePlayerDropdowns();
-      });
+      function attachGroupListeners() {
+        onValue(ref(db, getGroupPath('config')), (snap) => {
+          const cfg = snap.val() || {};
+          isFlashActive = cfg.flashMode || false;
+          sessionNumber = cfg.sessionNumber || 1;
+          options = cfg.options || { handicap: false, referee: false, quests: false };
 
-      onValue(ref(db, 'history'), (snap) => {
-        playedMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
-        updateSelectedPlayerStats();
-      });
+          document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
+          document.getElementById('referee-box').style.display = options.referee ? 'block' : 'none';
+          updateHandicapDisplay();
+        });
+
+        onValue(ref(db, getGroupPath('players')), (snap) => {
+          players = snap.val() || {};
+          updatePlayerDropdowns();
+        });
+
+        onValue(ref(db, getGroupPath('history')), (snap) => {
+          playedMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
+          updateSelectedPlayerStats();
+        });
+      }
 
       function updatePlayerDropdowns() {
         const p1 = document.getElementById('p1-select');
@@ -427,7 +445,7 @@
             }
 
             document.getElementById('btn-p1-win').textContent = `Victoire de ${players[id1].name}`;
-            document.getElementById('btn-p2-win').textContent = `Victoire de ${players[id2].name}`;
+            document.getElementById('btn-p2-win').textContent = `Victoire de ${players[2].name}`;
             actions.style.display = "block";
           } else {
             actions.style.display = "none";
@@ -448,16 +466,16 @@
 
         const { gainWinner, lossLoser, rawGain } = calculatePointsDelta(w.points, l.points, isFlashActive);
 
-        await set(ref(db, `players/${winnerId}/points`), w.points + gainWinner);
-        await set(ref(db, `players/${loserId}/points`), l.points + lossLoser);
-        await set(ref(db, `players/${winnerId}/matches`), (w.matches || 0) + 1);
-        await set(ref(db, `players/${loserId}/matches`), (l.matches || 0) + 1);
+        await set(ref(db, getGroupPath(`players/${winnerId}/points`)), w.points + gainWinner);
+        await set(ref(db, getGroupPath(`players/${loserId}/points`)), l.points + lossLoser);
+        await set(ref(db, getGroupPath(`players/${winnerId}/matches`)), (w.matches || 0) + 1);
+        await set(ref(db, getGroupPath(`players/${loserId}/matches`)), (l.matches || 0) + 1);
 
         if (options.referee && refId && players[refId]) {
-          await set(ref(db, `players/${refId}/refereeCount`), (players[refId].refereeCount || 0) + 1);
+          await set(ref(db, getGroupPath(`players/${refId}/refereeCount`)), (players[refId].refereeCount || 0) + 1);
         }
 
-        await push(ref(db, 'history'), {
+        await push(ref(db, getGroupPath('history')), {
           table: tableId,
           session: sessionNumber,
           winnerId,
@@ -500,6 +518,16 @@
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
         <div class="container">
+          <div class="card no-print" style="margin-bottom:12px; background:#0f172a;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:250px;">
+                <label style="white-space:nowrap; font-weight:bold;">🏫 Classe / Groupe :</label>
+                <select id="group-select"></select>
+              </div>
+              <button class="btn btn-secondary" id="btn-add-group" style="width:auto; padding:8px 12px; font-size:0.85rem;">+ Nouveau Groupe</button>
+            </div>
+          </div>
+
           <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h1 style="margin:0;">📊 Supervision Professeur</h1>
             <button class="btn btn-purple" id="btn-toggle-flash" style="width:auto; padding:8px 16px; margin:0;">⚡ Activer Défi Flash (Pts x2)</button>
@@ -611,11 +639,19 @@
               <button class="btn btn-warning" id="btn-next-session">Démarrer une Nouvelle Séance (Activer Revanches & Fixer les Caps)</button>
             </div>
 
-            <div class="card" style="margin-top:15px;">
-              <h3>🆕 Initialiser une Toute Nouvelle Classe</h3>
-              <p style="font-size:0.85rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne). Recommence avec un capital dégressif (100, 99...).</p>
+            <div class="card" style="margin-top:15px; border: 1px solid var(--danger);">
+              <h3 style="color:#f87171;">⚠️ Réinitialiser ou Créer un Tournoi</h3>
+              <p style="font-size:0.85rem; color:#94a3b8;">Collez la liste de vos élèves (un nom par ligne) pour ce groupe.</p>
               <textarea id="import-names" rows="5" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
-              <button class="btn btn-danger" id="btn-init-class" style="width:100%; font-size:1rem; padding:12px;">Réinitialiser Tout le Tournoi</button>
+              
+              <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                <button class="btn btn-danger" id="btn-reset-tournament" style="flex:1; min-width:200px;">
+                  💥 Réinitialiser Totalement le Tournoi
+                </button>
+                <button class="btn btn-success" id="btn-init-class" style="flex:1; min-width:200px;">
+                  ➕ Charger la Liste des Élèves
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -636,27 +672,58 @@
       let currentSession = 1;
       let options = { handicap: false, referee: false, quests: false };
 
-      onValue(ref(db, 'config'), (snap) => {
-        const cfg = snap.val() || {};
-        currentSession = cfg.sessionNumber || 1;
-        options = cfg.options || { handicap: false, referee: false, quests: false };
-
-        document.getElementById('print-title-ranking').textContent = `Classement Général - Séance ${currentSession} - Tennis de Table EPS`;
-        document.getElementById('opt-handicap').checked = !!options.handicap;
-        document.getElementById('opt-referee').checked = !!options.referee;
-        document.getElementById('opt-quests').checked = !!options.quests;
+      onValue(ref(db, 'groups'), (snap) => {
+        const groups = snap.val() || { "Classe_1": true };
+        const select = document.getElementById('group-select');
+        select.innerHTML = Object.keys(groups).map(g => `<option value="${g}" ${g === currentGroup ? 'selected' : ''}>${g.replace('_', ' ')}</option>`).join('');
       });
 
-      onValue(ref(db, 'history'), (snap) => {
-        historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, ...val }));
-        renderHistoryTable();
-      });
+      document.getElementById('group-select').onchange = (e) => {
+        currentGroup = e.target.value;
+        localStorage.setItem('eps_current_group', currentGroup);
+        set(ref(db, 'activeGroup'), currentGroup);
+        attachListeners();
+        showToast(`Groupe actif : ${currentGroup}`);
+      };
 
-      onValue(ref(db, 'players'), (snap) => {
-        playersData = snap.val() || {};
-        renderRankingTable();
-        renderProgressTable();
-      });
+      document.getElementById('btn-add-group').onclick = async () => {
+        const name = prompt("Nom de la nouvelle classe / groupe (ex: 4E_B, EPS_Matin) :");
+        if (name && name.trim()) {
+          const formatted = name.trim().replace(/\s+/g, '_');
+          currentGroup = formatted;
+          localStorage.setItem('eps_current_group', currentGroup);
+          await set(ref(db, `groups/${formatted}`), true);
+          await set(ref(db, 'activeGroup'), currentGroup);
+          attachListeners();
+          showToast(`Groupe ${formatted} créé !`);
+        }
+      };
+
+      function attachListeners() {
+        onValue(ref(db, getGroupPath('config')), (snap) => {
+          const cfg = snap.val() || {};
+          currentSession = cfg.sessionNumber || 1;
+          options = cfg.options || { handicap: false, referee: false, quests: false };
+
+          document.getElementById('print-title-ranking').textContent = `Classement Général - ${currentGroup} (Séance ${currentSession}) - Tennis de Table EPS`;
+          document.getElementById('opt-handicap').checked = !!options.handicap;
+          document.getElementById('opt-referee').checked = !!options.referee;
+          document.getElementById('opt-quests').checked = !!options.quests;
+        });
+
+        onValue(ref(db, getGroupPath('history')), (snap) => {
+          historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, ...val }));
+          renderHistoryTable();
+        });
+
+        onValue(ref(db, getGroupPath('players')), (snap) => {
+          playersData = snap.val() || {};
+          renderRankingTable();
+          renderProgressTable();
+        });
+      }
+
+      attachListeners();
 
       function renderRankingTable() {
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
@@ -733,18 +800,18 @@
           const l = playersData[lId];
 
           if (w) {
-            await set(ref(db, `players/${wId}/points`), w.points - gainW);
-            await set(ref(db, `players/${wId}/matches`), Math.max(0, (w.matches || 1) - 1));
+            await set(ref(db, getGroupPath(`players/${wId}/points`)), w.points - gainW);
+            await set(ref(db, getGroupPath(`players/${wId}/matches`)), Math.max(0, (w.matches || 1) - 1));
           }
           if (l) {
-            await set(ref(db, `players/${lId}/points`), l.points - lossL);
-            await set(ref(db, `players/${lId}/matches`), Math.max(0, (l.matches || 1) - 1));
+            await set(ref(db, getGroupPath(`players/${lId}/points`)), l.points - lossL);
+            await set(ref(db, getGroupPath(`players/${lId}/matches`)), Math.max(0, (l.matches || 1) - 1));
           }
           if (refId && playersData[refId]) {
-            await set(ref(db, `players/${refId}/refereeCount`), Math.max(0, (playersData[refId].refereeCount || 1) - 1));
+            await set(ref(db, getGroupPath(`players/${refId}/refereeCount`)), Math.max(0, (playersData[refId].refereeCount || 1) - 1));
           }
 
-          await remove(ref(db, `history/${matchKey}`));
+          await remove(ref(db, getGroupPath(`history/${matchKey}`)));
           showToast("Match annulé avec succès", "warning");
         }
       };
@@ -770,7 +837,7 @@
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `tournoi_tt_seance_${currentSession}.csv`);
+        link.setAttribute("download", `tournoi_tt_${currentGroup}_seance_${currentSession}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -779,7 +846,7 @@
       let flashActive = false;
       document.getElementById('btn-toggle-flash').onclick = () => {
         flashActive = !flashActive;
-        set(ref(db, 'config/flashMode'), flashActive);
+        set(ref(db, getGroupPath('config/flashMode')), flashActive);
         document.getElementById('btn-toggle-flash').textContent = flashActive 
           ? "⚡ DÉFI FLASH ACTIF" 
           : "⚡ Activer Défi Flash (Pts x2)";
@@ -790,12 +857,12 @@
         const r = document.getElementById('opt-referee').checked;
         const q = document.getElementById('opt-quests').checked;
 
-        await set(ref(db, 'config/options'), { handicap: h, referee: r, quests: q });
+        await set(ref(db, getGroupPath('config/options')), { handicap: h, referee: r, quests: q });
 
         if (q) {
           for (let id in playersData) {
             const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
-            await set(ref(db, `players/${id}/questId`), randomQuest.id);
+            await set(ref(db, getGroupPath(`players/${id}/questId`)), randomQuest.id);
           }
         }
 
@@ -805,16 +872,50 @@
       document.getElementById('btn-next-session').onclick = async () => {
         if (confirm("Passer à la séance suivante ? Les points actuels deviendront le nouveau point de départ pour le calcul des progrès, et les duels pourront rejouer.")) {
           for (let id in playersData) {
-            await set(ref(db, `players/${id}/startPoints`), playersData[id].points);
+            await set(ref(db, getGroupPath(`players/${id}/startPoints`)), playersData[id].points);
             if (options.quests) {
               const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
-              await set(ref(db, `players/${id}/questId`), randomQuest.id);
+              await set(ref(db, getGroupPath(`players/${id}/questId`)), randomQuest.id);
             }
           }
-          await set(ref(db, 'config/sessionNumber'), currentSession + 1);
-          await set(ref(db, 'config/flashMode'), false);
+          await set(ref(db, getGroupPath('config/sessionNumber')), currentSession + 1);
+          await set(ref(db, getGroupPath('config/flashMode')), false);
 
           showToast(`Séance ${currentSession + 1} démarrée ! Revanches autorisées.`);
+        }
+      };
+
+      // BOUTON RESET : Efface historique, badges et séances pour le groupe actif
+      document.getElementById('btn-reset-tournament').onclick = async () => {
+        if (confirm(`💥 ATTENTION : Voulez-vous vraiment RÉINITIALISER le tournoi pour le groupe "${currentGroup}" ?\n\nCela va effacer l'historique des matchs, les badges et remettre le compteur de séances à 1. Les élèves conserveront leur capital de départ.`)) {
+          if (confirm("Confirmation définitive : cette opération est irréversible !")) {
+            // Effacement de l'historique
+            await remove(ref(db, getGroupPath('history')));
+
+            // Remise à zéro des joueurs (points initiaux, matchs, badges)
+            for (let id in playersData) {
+              const startPts = playersData[id].startPoints !== undefined ? playersData[id].startPoints : 100;
+              const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+              await set(ref(db, getGroupPath(`players/${id}`)), {
+                name: playersData[id].name,
+                points: startPts,
+                startPoints: startPts,
+                matches: 0,
+                refereeCount: 0,
+                questId: randomQuest.id
+              });
+            }
+
+            // Remise à zéro de la configuration
+            await set(ref(db, getGroupPath('config')), {
+              sessionNumber: 1,
+              flashMode: false,
+              options: options
+            });
+
+            showToast("Tournoi totalement réinitialisé !", "warning");
+            switchTab('ranking');
+          }
         }
       };
 
@@ -822,7 +923,7 @@
         const names = document.getElementById('import-names').value.split('\n').filter(n => n.trim() !== '');
         if (names.length === 0) return showToast("Saisir au moins un nom", "danger");
 
-        if (confirm("ATTENTION : Cela effacera toutes les données actuelles du tournoi.")) {
+        if (confirm(`Charger cette nouvelle liste pour le groupe "${currentGroup}" ?`)) {
           let startPoints = 100;
           const newPlayers = {};
           names.forEach((name, idx) => {
@@ -839,11 +940,11 @@
             startPoints--;
           });
 
-          await set(ref(db, 'players'), newPlayers);
-          await remove(ref(db, 'history'));
-          await set(ref(db, 'config/sessionNumber'), 1);
-          await set(ref(db, 'config/flashMode'), false);
-          showToast("Nouvelle classe créée avec succès !");
+          await set(ref(db, getGroupPath('players')), newPlayers);
+          await remove(ref(db, getGroupPath('history')));
+          await set(ref(db, getGroupPath('config/sessionNumber')), 1);
+          await set(ref(db, getGroupPath('config/flashMode')), false);
+          showToast("Classe chargée avec succès !");
           switchTab('ranking');
         }
       };
