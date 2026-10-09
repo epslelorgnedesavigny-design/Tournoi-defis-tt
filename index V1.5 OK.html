@@ -13,6 +13,7 @@
       --bg: #0f172a;
       --card: #1e293b;
       --accent: #2563eb;
+      --accent-hover: #1d4ed8;
       --success: #16a34a;
       --danger: #dc2626;
       --warning: #d97706;
@@ -37,19 +38,18 @@
     .btn-warning { background: var(--warning); }
     .btn-purple { background: var(--purple); }
     .btn-secondary { background: #475569; }
-    .btn-sm { padding: 5px 8px; font-size: 0.8rem; width: auto; }
+    .btn-sm { padding: 6px 10px; font-size: 0.82rem; width: auto; }
 
     select, input, textarea { width: 100%; padding: 10px; font-size: 0.95rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
     
     .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 6px; }
     .checkbox-label input { width: auto; margin: 0; }
 
-    /* Control Bar & Group Management */
     .prof-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #0284c715; border: 1px solid #0284c744; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; }
     .group-pill { background: var(--accent); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
 
     .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-    .tab-btn { flex: 1; min-width: 100px; padding: 10px 4px; background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.82rem; transition: all 0.2s; }
+    .tab-btn { flex: 1; min-width: 110px; padding: 10px 6px; background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.85rem; transition: all 0.2s; }
     .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
     .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 15px; }
@@ -77,16 +77,6 @@
 
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
     .vs-circle { background: #0284c7; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; }
-
-    /* Liste Élèves Édition */
-    .student-manage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
-    .student-manage-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.88rem; }
-    .student-manage-item.is-absent { opacity: 0.4; text-decoration: line-through; background: #1e1e2e; }
-
-    /* Guide & Barème */
-    .rule-card { background: #0f172a; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
-    .rule-card h4 { margin: 0 0 4px 0; color: #38bdf8; font-size: 0.95rem; }
-    .rule-card p { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
 
     .danger-zone { border: 1px solid var(--danger); background: #450a0a22; padding: 12px; border-radius: 8px; margin-top: 15px; }
 
@@ -225,7 +215,7 @@
           <h1>📱 Hub de Connexion iPad Tables</h1>
           <p style="text-align:center; color:var(--muted);">Scannez le QR Code depuis l'iPad d'une table pour la configurer.</p>
           <div class="card">
-            <label>Nombre de tables dans le gymnase :</label>
+            <label>Nombre de tables configurées dans le gymnase :</label>
             <div style="display:flex; gap:10px; margin-top:6px;">
               <input type="number" id="nb-tables" value="8" min="1" max="24" style="margin-top:0;">
               <button class="btn btn-sm" id="btn-gen-qr" style="width:auto;">Générer</button>
@@ -263,7 +253,7 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE (Seuls les élèves PÉSENTS sont affichés)
+       2. VUE IPAD TABLE
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
@@ -353,12 +343,8 @@
         const v2 = p2.value;
         const vRef = refSel.value;
 
-        // FILTRAGE : Exclure les absents de la vue Table
-        const activePlayerKeys = Object.keys(players)
-          .filter(id => !players[id].absent)
-          .sort((a,b) => players[a].name.localeCompare(players[b].name));
-
-        const optionsHtml = activePlayerKeys.map(id => `<option value="${id}">${players[id].name} (${players[id].points} pts)</option>`).join('');
+        const sortedKeys = Object.keys(players).sort((a,b) => players[a].name.localeCompare(players[b].name));
+        const optionsHtml = sortedKeys.map(id => `<option value="${id}">${players[id].name} (${players[id].points} pts)</option>`).join('');
 
         p1.innerHTML = '<option value="">-- Joueur A --</option>' + optionsHtml;
         p2.innerHTML = '<option value="">-- Joueur B --</option>' + optionsHtml;
@@ -420,7 +406,7 @@
           }
         }
 
-        const allPlayerIds = Object.keys(players).filter(id => id !== playerId && !players[id].absent);
+        const allPlayerIds = Object.keys(players).filter(id => id !== playerId);
         const unplayedIds = allPlayerIds.filter(otherId => {
           return !playedMatches.some(m => 
             (m.session === sessionNumber || !m.session) && 
@@ -549,9 +535,9 @@
           
           <!-- Barre de pilotage & Sélection du groupe -->
           <div class="prof-bar no-print">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <span style="font-weight:bold; font-size:0.95rem;">🏫 Classe :</span>
-              <select id="group-select" style="width:auto; margin:0; padding:5px 10px; font-weight:bold;"></select>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <span style="font-weight:bold; font-size:1rem;">🏫 Classe Active :</span>
+              <select id="group-select" style="width:auto; margin:0; padding:6px 12px; font-weight:bold;"></select>
               <button class="btn btn-sm btn-secondary" id="btn-rename-group">✏️ Renommer</button>
               <button class="btn btn-sm btn-secondary" id="btn-add-group">+ Créer</button>
             </div>
@@ -565,19 +551,24 @@
           <div class="nav-tabs no-print">
             <div class="tab-btn active" onclick="switchTab('ranking')">🏆 Classement</div>
             <div class="tab-btn" onclick="switchTab('progress')">🚀 Progressions</div>
-            <div class="tab-btn" onclick="switchTab('rules')">📖 Barème & Règles</div>
             <div class="tab-btn" onclick="switchTab('history')">📜 Historique</div>
             <div class="tab-btn" onclick="switchTab('setup')">⚙️ Options EPS</div>
-            <div class="tab-btn" onclick="switchTab('groups')">👥 Gestion Élèves</div>
+            <div class="tab-btn" onclick="switchTab('groups')">🗂️ Gestion des Classes</div>
             <a href="${baseUrl}?role=hub" target="_blank" class="tab-btn" style="text-decoration:none; color: #38bdf8;">📱 Hub QR</a>
           </div>
 
           <!-- TAB 1: CLASSEMENT -->
           <div id="tab-ranking">
             <div class="print-title" id="print-title-ranking">Classement Général EPS</div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;" class="no-print">
-              <button class="btn btn-sm btn-success" onclick="exportToCSV()">📥 Export CSV (Pronote)</button>
-              <button class="btn btn-sm btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;" class="no-print">
+              <div style="display:flex; gap:6px; flex:1; max-width:400px;">
+                <input type="text" id="quick-student-name" placeholder="➕ Ajouter un élève..." style="margin-top:0; padding:6px 10px;">
+                <button class="btn btn-sm btn-success" id="btn-quick-add-student" style="white-space:nowrap;">Ajouter</button>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm btn-success" onclick="exportToCSV()">📥 Export CSV (Pronote)</button>
+                <button class="btn btn-sm btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+              </div>
             </div>
             <div class="ranking-grid">
               <div>
@@ -618,44 +609,7 @@
             </div>
           </div>
 
-          <!-- TAB 3: BARÈME ET RÈGLES DU TOURNOI -->
-          <div id="tab-rules" style="display:none;">
-            <div class="card">
-              <h3>📖 Barème, Badges & Règles du Tournoi Défis</h3>
-              
-              <div class="rule-card">
-                <h4>🏓 Règle du Barème Adaptatif (Victoires / Défaites)</h4>
-                <p>Le gain de points dépend du <strong>décalage de niveau</strong> entre les joueurs au moment du duel :</p>
-                <ul style="font-size:0.85rem; color:var(--muted); margin:6px 0; padding-left:20px;">
-                  <li><strong>Match équilibré / Mieux classé battu :</strong> Victoire rapportant de <strong>+5 à +10 points</strong> (1 pt de participation inclus).</li>
-                  <li><strong>Moins bien classé battu :</strong> Victoire rapportant de <strong>+2 à +4 points</strong>.</li>
-                  <li><strong>Défaite :</strong> Perte de points limitée (la participation accorde systématiquement +1 pt).</li>
-                </ul>
-              </div>
-
-              <div class="rule-card">
-                <h4>🎖️ Guide des Badges Automatiques</h4>
-                <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
-                  <li><strong>🔥 Inoxydable :</strong> Décerne aux élèves ayant disputé au moins 8 matchs dans la séance.</li>
-                  <li><strong>🛡️ Muraille :</strong> Obtenu lors d'une série d'au moins 5 victoires consécutives.</li>
-                  <li><strong>⚡ Chasseur :</strong> Victoire marquante contre un adversaire ayant au moins 10 points de plus.</li>
-                  <li><strong>🚀 Remontada :</strong> Progression d'au moins +15 points par rapport au capital de départ.</li>
-                </ul>
-              </div>
-
-              <div class="rule-card">
-                <h4>🎮 Catalogue des Variantes et Options</h4>
-                <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
-                  <li><strong>⚖️ Handicap :</strong> Avantage de +1 à +4 points offert d'entrée de set au joueur le moins fort si l'écart dépasse 6 pts.</li>
-                  <li><strong>👨‍⚖️ Arbitrage tiers :</strong> Obligation de saisir le nom d'un élève arbitre avant d'enregistrer le match.</li>
-                  <li><strong>🎯 Quêtes secrètes :</strong> Missions attribuées individuellement (+2 à +3 pts bonus si réussies).</li>
-                  <li><strong>⚡ Défi Flash :</strong> Mode déclenché par le prof où <strong>tous les points gagnés sont doublés</strong>.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 4: HISTORIQUE -->
+          <!-- TAB 3: HISTORIQUE -->
           <div id="tab-history" style="display:none;">
             <div class="card">
               <h3>Flux des Matchs & Corrections</h3>
@@ -675,7 +629,7 @@
             </div>
           </div>
 
-          <!-- TAB 5: OPTIONS EPS -->
+          <!-- TAB 4: OPTIONS EPS -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
               <h3>🎮 Variantes Pédagogiques</h3>
@@ -703,36 +657,40 @@
             </div>
           </div>
 
-          <!-- TAB 6: GESTION DES ÉLÈVES & CLASSES -->
+          <!-- TAB 5: GESTION DES CLASSES ET NETTOYAGE -->
           <div id="tab-groups" style="display:none;">
             <div class="card">
-              <h3>👥 Élèves de la classe (<span id="active-class-label"></span>)</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">Gérer la présence (les absents n'apparaissent pas sur les tables) ou supprimer les élèves partis :</p>
-              
-              <div id="student-manage-container" class="student-manage-list"></div>
+              <h3>➕ Ajouter un élève individuel</h3>
+              <p style="font-size:0.85rem; color:var(--muted);">Ajoute un élève en cours de cycle sans réinitialiser la classe :</p>
+              <div style="display:flex; gap:10px; margin-top:6px;">
+                <input type="text" id="add-single-student-name" placeholder="Nom Prénom de l'élève..." style="margin-top:0;">
+                <button class="btn btn-success" id="btn-add-single-student" style="width:auto; white-space:nowrap;">Ajouter à la classe</button>
+              </div>
             </div>
 
             <div class="card" style="margin-top:15px;">
-              <h3>➕ Importer / Remplacer la liste des élèves</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">Collez la liste des élèves (un nom par ligne) :</p>
-              <textarea id="import-names" rows="4" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
-              <button class="btn btn-success" id="btn-init-class" style="margin-top:8px;">Remplacer la liste complète</button>
+              <h3>➕ Charger / Remplacer toute la liste d'une classe</h3>
+              <p style="font-size:0.85rem; color:var(--muted);">Collez la liste des élèves pour la classe active (<strong id="active-class-label"></strong>) :</p>
+              <textarea id="import-names" rows="5" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
+              <button class="btn btn-success" id="btn-init-class" style="margin-top:8px;">Charger / Remplacer les élèves</button>
             </div>
 
             <div class="card danger-zone">
-              <h3 style="color:#f87171;">⚠️ Zone de Nettoyage</h3>
+              <h3 style="color:#f87171;">⚠️ Zone de Réinitialisation et Nettoyage</h3>
+              <p style="font-size:0.85rem; color:var(--muted);">Actions irréversibles sur la base de données :</p>
+              
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
                 <button class="btn btn-warning" id="btn-reset-session-data">
-                  🧹 Remise à zéro des Matchs
+                  🧹 Effacer Matchs de la Classe
                 </button>
                 <button class="btn btn-danger" id="btn-delete-current-group">
-                  🗑️ Supprimer la Classe
+                  🗑️ Supprimer la Classe Active
                 </button>
               </div>
 
               <div style="margin-top:15px; border-top: 1px dashed var(--danger); padding-top:12px; text-align:center;">
                 <button class="btn btn-danger" id="btn-delete-all-groups" style="background:#7f1d1d;">
-                  💥 SUPPRIMER TOUTES LES CLASSES
+                  💥 SUPPRIMER TOUTES LES CLASSES ET RÉINITIALISER TOUT
                 </button>
               </div>
             </div>
@@ -742,7 +700,7 @@
       `;
 
       window.switchTab = (tab) => {
-        const tabs = ['ranking', 'progress', 'rules', 'history', 'setup', 'groups'];
+        const tabs = ['ranking', 'progress', 'history', 'setup', 'groups'];
         tabs.forEach(t => {
           document.getElementById(`tab-${t}`).style.display = t === tab ? 'block' : 'none';
         });
@@ -758,8 +716,8 @@
       onValue(ref(db, 'groups'), (snap) => {
         const groups = snap.val() || { "Classe_1": true };
         const select = document.getElementById('group-select');
-        select.innerHTML = Object.keys(groups).map(g => `<option value="${g}" ${g === currentGroup ? 'selected' : ''}>${g.replace('_', ' ')}</option>`).join('');
-        document.getElementById('active-class-label').textContent = currentGroup.replace('_', ' ');
+        select.innerHTML = Object.keys(groups).map(g => `<option value="${g}" ${g === currentGroup ? 'selected' : ''}>${g.replace(/_/g, ' ')}</option>`).join('');
+        document.getElementById('active-class-label').textContent = currentGroup.replace(/_/g, ' ');
       });
 
       document.getElementById('group-select').onchange = (e) => {
@@ -767,33 +725,36 @@
         localStorage.setItem('eps_current_group', currentGroup);
         set(ref(db, 'activeGroup'), currentGroup);
         attachListeners();
-        showToast(`Classe changée : ${currentGroup.replace('_', ' ')}`);
+        showToast(`Classe changée : ${currentGroup.replace(/_/g, ' ')}`);
       };
 
       document.getElementById('btn-rename-group').onclick = async () => {
-        const newName = prompt("Nouveau nom pour cette classe :", currentGroup.replace('_', ' '));
+        const newName = prompt(`Nouveau nom pour la classe "${currentGroup.replace(/_/g, ' ')}" :`, currentGroup.replace(/_/g, ' '));
         if (newName && newName.trim()) {
           const formatted = newName.trim().replace(/\s+/g, '_');
           if (formatted === currentGroup) return;
 
-          // Copie vers la nouvelle clé et suppression de l'ancienne
-          await set(ref(db, `groups/${formatted}`), {
-            players: playersData,
-            history: historyMatches.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {}),
-            config: { sessionNumber: currentSession, flashMode: false, options }
-          });
-          await remove(ref(db, `groups/${currentGroup}`));
+          // Copie des données vers le nouveau chemin
+          const oldPath = getGroupPath('');
+          const newGroupPath = `groups/${formatted}`;
 
-          currentGroup = formatted;
-          localStorage.setItem('eps_current_group', currentGroup);
-          await set(ref(db, 'activeGroup'), currentGroup);
-          attachListeners();
-          showToast(`Classe renommée en : ${formatted.replace('_', ' ')}`);
+          const snap = await new Promise(res => onValue(ref(db, `groups/${currentGroup}`), s => res(s), { onlyOnce: true }));
+          const data = snap.val();
+
+          if (data) {
+            await set(ref(db, newGroupPath), data);
+            await remove(ref(db, `groups/${currentGroup}`));
+            currentGroup = formatted;
+            localStorage.setItem('eps_current_group', currentGroup);
+            await set(ref(db, 'activeGroup'), currentGroup);
+            attachListeners();
+            showToast(`Classe renommée en "${formatted.replace(/_/g, ' ')}"`);
+          }
         }
       };
 
       document.getElementById('btn-add-group').onclick = async () => {
-        const name = prompt("Nom de la nouvelle classe (ex: 4E A, EPS Jeudi) :");
+        const name = prompt("Nom de la nouvelle classe ou du groupe (ex: 4E A, EPS Jeudi) :");
         if (name && name.trim()) {
           const formatted = name.trim().replace(/\s+/g, '_');
           currentGroup = formatted;
@@ -801,8 +762,49 @@
           await set(ref(db, `groups/${formatted}`), true);
           await set(ref(db, 'activeGroup'), currentGroup);
           attachListeners();
-          showToast(`Classe ${formatted.replace('_', ' ')} créée !`);
+          showToast(`Classe ${formatted.replace(/_/g, ' ')} créée !`);
         }
+      };
+
+      async function addSingleStudent(studentName) {
+        if (!studentName || !studentName.trim()) return showToast("Indiquez un nom d'élève valide", "danger");
+        
+        const name = studentName.trim();
+        const existingCount = Object.keys(playersData).length;
+        const newId = `p_${Date.now()}`;
+
+        // Calcul d'un capital initial cohérent (ex. milieu de tableau ou 100 pts)
+        let startingPoints = 100;
+        if (existingCount > 0) {
+          const pointsList = Object.values(playersData).map(p => p.points);
+          const minPts = Math.min(...pointsList);
+          startingPoints = Math.max(80, minPts); // On l'intègre au niveau le plus bas ou 80 pts
+        }
+
+        const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+
+        await set(ref(db, getGroupPath(`players/${newId}`)), {
+          name,
+          points: startingPoints,
+          startPoints: startingPoints,
+          matches: 0,
+          refereeCount: 0,
+          questId: randomQuest.id
+        });
+
+        showToast(`${name} ajouté(e) avec ${startingPoints} pts !`);
+      }
+
+      document.getElementById('btn-quick-add-student').onclick = () => {
+        const input = document.getElementById('quick-student-name');
+        addSingleStudent(input.value);
+        input.value = '';
+      };
+
+      document.getElementById('btn-add-single-student').onclick = () => {
+        const input = document.getElementById('add-single-student-name');
+        addSingleStudent(input.value);
+        input.value = '';
       };
 
       function attachListeners() {
@@ -812,7 +814,7 @@
           options = cfg.options || { handicap: false, referee: false, quests: false };
 
           document.getElementById('session-pill').textContent = `Séance ${currentSession}`;
-          document.getElementById('print-title-ranking').textContent = `Classement Général - ${currentGroup.replace('_', ' ')} (Séance ${currentSession})`;
+          document.getElementById('print-title-ranking').textContent = `Classement Général - ${currentGroup.replace(/_/g, ' ')} (Séance ${currentSession})`;
           document.getElementById('opt-handicap').checked = !!options.handicap;
           document.getElementById('opt-referee').checked = !!options.referee;
           document.getElementById('opt-quests').checked = !!options.quests;
@@ -827,7 +829,6 @@
           playersData = snap.val() || {};
           renderRankingTable();
           renderProgressTable();
-          renderStudentManageList();
         });
       }
 
@@ -843,11 +844,10 @@
           return list.map((p, index) => {
             const badges = getPlayerBadges(p, historyMatches);
             const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join('') || '-';
-            const absentTag = p.absent ? ' <span style="color:#f87171; font-size:0.75rem;">(Absent)</span>' : '';
             return `
-              <tr style="${p.absent ? 'opacity:0.5;' : ''}">
+              <tr>
                 <td><strong>${index + 1 + offset}</strong></td>
-                <td>${p.name}${absentTag}</td>
+                <td>${p.name}</td>
                 <td><span class="badge badge-win">${p.points}</span></td>
                 <td>${p.matches || 0}</td>
                 <td>${badgesHtml}</td>
@@ -864,7 +864,7 @@
         const list = Object.entries(playersData).map(([id, p]) => {
           const startPts = p.startPoints !== undefined ? p.startPoints : 100;
           const ptsGained = p.points - startPts;
-          return { name: p.name, startPts, currentPts: p.points, ptsGained, absent: p.absent };
+          return { name: p.name, startPts, currentPts: p.points, ptsGained };
         }).sort((a,b) => b.ptsGained - a.ptsGained).slice(0, 5);
 
         const tbody = document.getElementById('progress-body');
@@ -872,9 +872,9 @@
           const formattedGain = p.ptsGained >= 0 ? `+${p.ptsGained}` : `${p.ptsGained}`;
           const colorStyle = p.ptsGained >= 0 ? 'color:#4ade80;' : 'color:#f87171;';
           return `
-            <tr style="${p.absent ? 'opacity:0.5;' : ''}">
+            <tr>
               <td><strong>#${idx + 1}</strong></td>
-              <td>${p.name} ${p.absent ? '(Absent)' : ''}</td>
+              <td>${p.name}</td>
               <td><strong style="${colorStyle}">${formattedGain} pts</strong></td>
               <td>${p.startPts} pts</td>
               <td>${p.currentPts} pts</td>
@@ -882,42 +882,6 @@
           `;
         }).join('');
       }
-
-      function renderStudentManageList() {
-        const container = document.getElementById('student-manage-container');
-        const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a,b) => a.name.localeCompare(b.name));
-
-        if (sorted.length === 0) {
-          container.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Aucun élève enregistré.</p>';
-          return;
-        }
-
-        container.innerHTML = sorted.map(p => `
-          <div class="student-manage-item ${p.absent ? 'is-absent' : ''}">
-            <span><strong>${p.name}</strong> (${p.points} pts)</span>
-            <div style="display:flex; gap:4px;">
-              <button class="btn btn-sm ${p.absent ? 'btn-success' : 'btn-warning'}" onclick="toggleAbsent('${p.id}', ${!p.absent})">
-                ${p.absent ? '👁️ Présent' : '🙈 Absent'}
-              </button>
-              <button class="btn btn-sm btn-danger" onclick="deleteStudent('${p.id}', '${p.name}')">
-                🗑️
-              </button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      window.toggleAbsent = async (playerId, absentStatus) => {
-        await set(ref(db, getGroupPath(`players/${playerId}/absent`)), absentStatus);
-        showToast(absentStatus ? "Élève marqué absent" : "Élève de retour", absentStatus ? "warning" : "success");
-      };
-
-      window.deleteStudent = async (playerId, playerName) => {
-        if (confirm(`Supprimer définitivement "${playerName}" de cette classe ?`)) {
-          await remove(ref(db, getGroupPath(`players/${playerId}`)));
-          showToast(`Élève ${playerName} supprimé.`, "warning");
-        }
-      };
 
       function renderHistoryTable() {
         const tbody = document.getElementById('history-body');
@@ -966,7 +930,6 @@
           const start = p.startPoints !== undefined ? p.startPoints : 100;
           return {
             Nom: p.name,
-            Statut: p.absent ? "Absent" : "Present",
             PointsActuels: p.points,
             CapitalDepart: start,
             Progression: p.points - start,
@@ -975,9 +938,9 @@
           };
         }).sort((a,b) => b.PointsActuels - a.PointsActuels);
 
-        let csvContent = "data:text/csv;charset=utf-8,Nom;Statut;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\n";
+        let csvContent = "data:text/csv;charset=utf-8,Nom;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\n";
         sorted.forEach(r => {
-          csvContent += `"${r.Nom}";${r.Statut};${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\n`;
+          csvContent += `"${r.Nom}";${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
@@ -1035,7 +998,7 @@
         const names = document.getElementById('import-names').value.split('\n').filter(n => n.trim() !== '');
         if (names.length === 0) return showToast("Saisir au moins un nom d'élève", "danger");
 
-        if (confirm(`Remplacer les élèves de la classe "${currentGroup.replace('_', ' ')}" ?`)) {
+        if (confirm(`Remplacer les élèves de la classe "${currentGroup.replace(/_/g, ' ')}" ?`)) {
           let startPoints = 100;
           const newPlayers = {};
           names.forEach((name, idx) => {
@@ -1047,7 +1010,6 @@
               startPoints: startPoints, 
               matches: 0,
               refereeCount: 0,
-              absent: false,
               questId: randomQuest.id 
             };
             startPoints--;
@@ -1064,7 +1026,7 @@
       };
 
       document.getElementById('btn-reset-session-data').onclick = async () => {
-        if (confirm(`Effacer les matchs et remettre les scores à zéro pour "${currentGroup.replace('_', ' ')}"`)) {
+        if (confirm(`Effacer les matchs et remettre les scores à zéro pour "${currentGroup.replace(/_/g, ' ')}"`)) {
           await remove(ref(db, getGroupPath('history')));
           for (let id in playersData) {
             const startPts = playersData[id].startPoints !== undefined ? playersData[id].startPoints : 100;
@@ -1078,7 +1040,7 @@
       };
 
       document.getElementById('btn-delete-current-group').onclick = async () => {
-        if (confirm(`Supprimer définitivement la classe "${currentGroup.replace('_', ' ')}" et toutes ses données ?`)) {
+        if (confirm(`Supprimer définitivement la classe "${currentGroup.replace(/_/g, ' ')}" et toutes ses données ?`)) {
           await remove(ref(db, `groups/${currentGroup}`));
           
           const snap = await new Promise(res => onValue(ref(db, 'groups'), snap => res(snap), { onlyOnce: true }));
