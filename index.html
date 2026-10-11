@@ -10,16 +10,16 @@
   
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
+      --bg: #090d16;
+      --card: #131c31;
       --accent: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --purple: #9333ea;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --purple: #a855f7;
       --text: #f8fafc;
       --muted: #94a3b8;
-      --border: #334155;
+      --border: #1e293b;
     }
 
     * { box-sizing: border-box; }
@@ -28,32 +28,32 @@
     
     h1, h2, h3 { text-align: center; margin: 5px 0 12px 0; font-size: 1.3rem; }
     
-    .card { background: var(--card); border-radius: 10px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.3); }
     
     .btn { background: var(--accent); color: white; font-weight: bold; padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s, transform 0.1s; }
     .btn:active { transform: scale(0.98); }
-    .btn-success { background: var(--success); }
+    .btn-success { background: var(--success); color: #022c14; }
     .btn-danger { background: var(--danger); }
-    .btn-warning { background: var(--warning); }
-    .btn-purple { background: var(--purple); }
-    .btn-secondary { background: #475569; }
+    .btn-warning { background: var(--warning); color: #271a00; }
+    .btn-purple { background: var(--purple); color: #ffffff; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
+    .btn-secondary { background: #334155; }
     .btn-sm { padding: 5px 8px; font-size: 0.8rem; width: auto; }
 
-    select, input, textarea { width: 100%; padding: 10px; font-size: 0.95rem; border-radius: 8px; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin-top: 4px; }
+    select, input, textarea { width: 100%; padding: 10px; font-size: 0.95rem; border-radius: 8px; border: 1px solid var(--border); background: #090d16; color: var(--text); margin-top: 4px; }
     
     .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 6px; }
     .checkbox-label input { width: auto; margin: 0; }
 
     /* Control Bar & Group Management */
-    .prof-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #0284c715; border: 1px solid #0284c744; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; }
-    .group-pill { background: var(--accent); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+    .prof-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; }
+    .group-pill { background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
 
     .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
     .tab-btn { flex: 1; min-width: 100px; padding: 10px 4px; background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.82rem; transition: all 0.2s; }
     .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
     .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 15px; }
-    .qr-card { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+    .qr-card { background: var(--card); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
     .qr-card div { background: white; padding: 8px; border-radius: 6px; margin: 8px 0; }
 
     .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -61,30 +61,32 @@
     
     table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; font-size: 0.85rem; }
     th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #0284c7; color: white; font-weight: 600; }
-    tr:nth-child(even) { background: #1a2436; }
+    th { background: #1e293b; color: var(--text); font-weight: 600; }
+    tr:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
 
-    .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin: 1px; }
-    .badge-win { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a; }
-    .badge-tag { background: #334155; color: #f1f5f9; border: 1px solid #475569; }
-
-    .flash-banner { background: linear-gradient(90deg, #9333ea, #db2777); padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; animation: pulse 2s infinite; margin-bottom: 10px; display: none; }
+    /* Badges visuels néon EPS */
+    .badge-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 0.75rem; margin-right: 2px; background: #1e293b; border: 1px solid var(--border); }
+    .badge-win { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.4); font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+    
+    .flash-banner { background: linear-gradient(90deg, #9333ea, #db2777); color: white; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; animation: pulse 2s infinite; margin-bottom: 10px; display: none; box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
     @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
 
-    .stats-box { background: #0f172a; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
-    .quest-box { background: #3b0764; border: 1px solid #a855f7; border-radius: 6px; padding: 8px; margin-top: 6px; font-size: 0.85rem; color: #f3e8ff; }
-    .handicap-box { background: #7c2d12; color: #fdba74; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; margin-top: 8px; font-weight: bold; text-align: center; }
+    .stats-box { background: #090d16; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
+    .quest-box { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; padding: 8px; margin-top: 6px; font-size: 0.85rem; color: #e9d5ff; }
+    .handicap-box { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); padding: 8px; border-radius: 8px; margin-top: 8px; font-weight: bold; text-align: center; }
 
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
-    .vs-circle { background: #0284c7; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; }
+    .vs-circle { background: var(--accent); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
-    /* Liste Élèves Édition */
+    /* Modal / Popup Bilans Élèves */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9998; padding: 15px; }
+    .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+
     .student-manage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
-    .student-manage-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.88rem; }
-    .student-manage-item.is-absent { opacity: 0.4; text-decoration: line-through; background: #1e1e2e; }
+    .student-manage-item { display: flex; justify-content: space-between; align-items: center; background: #090d16; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.88rem; }
+    .student-manage-item.is-absent { opacity: 0.4; text-decoration: line-through; background: #161e2e; }
 
-    /* Guide & Barème */
-    .rule-card { background: #0f172a; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+    .rule-card { background: #090d16; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
     .rule-card h4 { margin: 0 0 4px 0; color: #38bdf8; font-size: 0.95rem; }
     .rule-card p { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
 
@@ -92,14 +94,14 @@
     .bareme-table th, .bareme-table td { padding: 4px 6px; text-align: center; border: 1px solid var(--border); }
     .bareme-table th { background: #1e293b; color: #38bdf8; }
 
-    .gain-positive { color: #4ade80; font-weight: bold; }
-    .gain-negative { color: #f87171; font-weight: bold; }
+    .gain-positive { color: var(--success); font-weight: bold; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+    .gain-negative { color: var(--danger); font-weight: bold; }
     .gain-neutral { color: var(--muted); }
 
-    .danger-zone { border: 1px solid var(--danger); background: #450a0a22; padding: 12px; border-radius: 8px; margin-top: 15px; }
+    .danger-zone { border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px; }
 
     #toast-container { position: fixed; bottom: 15px; right: 15px; z-index: 9999; }
-    .toast { background: #16a34a; color: white; padding: 10px 16px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-top: 8px; animation: slideIn 0.3s ease-out; }
+    .toast { background: var(--success); color: #022c14; padding: 10px 16px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-top: 8px; animation: slideIn 0.3s ease-out; }
     @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     @media print {
@@ -109,7 +111,7 @@
       table { border: 1px solid #000 !important; color: black !important; background: white !important; font-size: 10pt !important; }
       th { background: #ddd !important; color: black !important; border: 1px solid #000 !important; }
       td { border: 1px solid #ccc !important; }
-      .badge { border: 1px solid #000 !important; color: black !important; background: #eee !important; }
+      .badge-win { border: 1px solid #000 !important; color: black !important; background: #eee !important; }
       .print-title { display: block !important; text-align: center; font-size: 16pt; margin-bottom: 15px; font-weight: bold; }
     }
     .print-title { display: none; }
@@ -132,6 +134,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const role = urlParams.get('role') || 'prof';
     const tableId = urlParams.get('id') || '1';
+    const studentQRId = urlParams.get('student') || null;
 
     let currentGroup = localStorage.getItem('eps_current_group') || 'Classe_1';
 
@@ -155,11 +158,39 @@
       }
       const toast = document.createElement('div');
       toast.className = 'toast';
-      if (type === 'danger') toast.style.background = '#dc2626';
-      if (type === 'warning') toast.style.background = '#d97706';
+      if (type === 'danger') toast.style.background = '#ef4444';
+      if (type === 'warning') toast.style.background = '#f59e0b';
       toast.textContent = message;
       container.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Effet Sonore Web Audio API (Jingle de victoire)
+    function playVictorySound() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do (aigu)
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+
+          gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.1 + 0.25);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(ctx.currentTime + idx * 0.1);
+          osc.stop(ctx.currentTime + idx * 0.1 + 0.25);
+        });
+      } catch (e) {
+        console.log("Audio non pris en charge ou bloqué par le navigateur", e);
+      }
     }
 
     function calculatePointsDelta(pWinner, pLoser, isFlash = false) {
@@ -186,11 +217,12 @@
       };
     }
 
-    function getPlayerBadges(player, allMatches) {
-      const badges = [];
+    // Générateur de Badges Visuels avec icônes
+    function getPlayerBadgesHTML(player, allMatches) {
+      let badgesHtml = '';
       const pMatches = allMatches.filter(m => m.winnerId === player.id || m.loserId === player.id);
       
-      if (pMatches.length >= 8) badges.push('🔥 Inoxydable');
+      if (pMatches.length >= 8) badgesHtml += '<span class="badge-icon" title="🔥 Inoxydable (8+ matchs)">🔥</span>';
 
       let currentStreak = 0, maxStreak = 0;
       const sorted = [...pMatches].sort((a,b) => a.timestamp - b.timestamp);
@@ -202,25 +234,101 @@
           currentStreak = 0;
         }
       });
-      if (maxStreak >= 5) badges.push('🛡️ Muraille');
+      if (maxStreak >= 5) badgesHtml += '<span class="badge-icon" title="🛡️ Muraille (5+ victoires d\'affilée)">🛡️</span>';
 
       if (pMatches.some(m => m.winnerId === player.id && m.rawGain >= 9)) {
-        badges.push('⚡ Chasseur');
+        badgesHtml += '<span class="badge-icon" title="⚡ Chasseur (Gros exploit)">⚡</span>';
       }
 
       const startPts = player.startPoints !== undefined ? player.startPoints : 100;
       if ((player.points - startPts) >= 15) {
-        badges.push('🚀 Remontada');
+        badgesHtml += '<span class="badge-icon" title="🚀 Remontada (+15 pts)">🚀</span>';
       }
 
-      return badges;
+      return badgesHtml || '<span style="color:var(--muted); font-size:0.75rem;">-</span>';
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      if (role === 'table') initTableUI();
+      if (studentQRId) initStudentQRView();
+      else if (role === 'table') initTableUI();
       else if (role === 'hub') initHubUI();
       else initProfUI();
     });
+
+    /* =========================================================
+       0. VUE CARNET ÉLÈVE (VIA QR CODE PERSONNEL)
+       ========================================================= */
+    function initStudentQRView() {
+      const appDiv = document.getElementById('app');
+      appDiv.innerHTML = `
+        <div class="container" style="max-width:500px; margin-top:20px;">
+          <div class="card" style="text-align:center;">
+            <h2 style="color:#38bdf8;">🪪 Bilan Élève — Tournoi EPS</h2>
+            <div id="student-profile-card" style="margin-top:20px;">Chargement des données...</div>
+          </div>
+        </div>
+      `;
+
+      onValue(ref(db, 'activeGroup'), (snap) => {
+        if (snap.val()) {
+          currentGroup = snap.val();
+          loadStudentData();
+        }
+      });
+
+      function loadStudentData() {
+        onValue(ref(db, getGroupPath(`players/${studentQRId}`)), (snap) => {
+          const player = snap.val();
+          if (!player) {
+            document.getElementById('student-profile-card').innerHTML = "<p>Élève introuvable.</p>";
+            return;
+          }
+          player.id = studentQRId;
+
+          onValue(ref(db, getGroupPath('history')), (historySnap) => {
+            const matches = Object.entries(historySnap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
+            const pMatches = matches.filter(m => m.winnerId === studentQRId || m.loserId === studentQRId);
+            const wins = pMatches.filter(m => m.winnerId === studentQRId).length;
+            const losses = pMatches.length - wins;
+            const startPts = player.startPoints !== undefined ? player.startPoints : 100;
+            const progress = player.points - startPts;
+            const badges = getPlayerBadgesHTML(player, matches);
+
+            let questText = "Aucune quête en cours";
+            if (player.questId) {
+              const q = QUEST_LIST.find(x => x.id === player.questId);
+              if (q) questText = q.text;
+            }
+
+            document.getElementById('student-profile-card').innerHTML = `
+              <h1 style="font-size:1.8rem; margin-bottom:5px;">${player.name}</h1>
+              <p class="group-pill" style="display:inline-block; margin-bottom:15px;">Classe : ${currentGroup.replace('_', ' ')}</p>
+              
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div class="stats-box">
+                  <div style="font-size:0.8rem; color:var(--muted);">Points Actuels</div>
+                  <div style="font-size:1.5rem; font-weight:bold; color:var(--success);">${player.points} pts</div>
+                </div>
+                <div class="stats-box">
+                  <div style="font-size:0.8rem; color:var(--muted);">Progression</div>
+                  <div style="font-size:1.5rem; font-weight:bold; color:${progress >= 0 ? 'var(--success)' : 'var(--danger)'};">${progress >= 0 ? '+' + progress : progress} pts</div>
+                </div>
+              </div>
+
+              <div class="stats-box" style="text-align:left; margin-bottom:10px;">
+                <strong>📊 Bilan Matchs :</strong> ${wins} Victoires / ${losses} Défaites (${pMatches.length} joués)
+              </div>
+              <div class="stats-box" style="text-align:left; margin-bottom:10px;">
+                <strong>🎖️ Badges Débloqués :</strong> ${badges}
+              </div>
+              <div class="quest-box" style="text-align:left;">
+                <strong>🎯 Quête de Séance :</strong> ${questText}
+              </div>
+            `;
+          }, { onlyOnce: true });
+        }, { onlyOnce: true });
+      }
+    }
 
     /* =========================================================
        1. VUE HUB (QR CODES)
@@ -314,8 +422,7 @@
             <button class="btn btn-success" id="btn-p2-win"></button>
           </div>
 
-          <!-- BARÈME COMPLET POUR CONSULTATION SUR LA TABLE -->
-          <div class="card" style="margin-top:15px; background:#0f172a;">
+          <div class="card" style="margin-top:15px; background:#090d16;">
             <h4 style="margin:0 0 6px 0; color:#38bdf8; text-align:center;">📊 Barème des Points EPS</h4>
             <table class="bareme-table">
               <thead>
@@ -333,9 +440,6 @@
                 <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
               </tbody>
             </table>
-            <p style="font-size:0.75rem; color:var(--muted); text-align:center; margin:6px 0 0 0;">
-              * +1 point de participation inclus dans chaque match.
-            </p>
           </div>
         </div>
       `;
@@ -426,7 +530,7 @@
         hBox.style.display = 'none';
       }
 
-      function renderPlayerStatsAndSuggestions(playerId, containerId) {
+      function renderPlayerStatsAndQuests(playerId, containerId) {
         const box = document.getElementById(containerId);
         if (!playerId || !players[playerId]) {
           box.style.display = 'none';
@@ -440,10 +544,8 @@
         const losses = pMatches.length - wins;
         const winRate = pMatches.length > 0 ? Math.round((wins / pMatches.length) * 100) : 0;
         
-        const badges = getPlayerBadges(p, playedMatches);
-        const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join(' ') || '<em>Aucun</em>';
+        const badges = getPlayerBadgesHTML(p, playedMatches);
 
-        // Affichage systématique de la quête secrète quand sélectionné
         let questHtml = '';
         if (options.quests && p.questId) {
           const q = QUEST_LIST.find(x => x.id === p.questId);
@@ -453,15 +555,15 @@
         }
 
         box.innerHTML = `
-          <strong>📊 ${p.name} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badgesHtml}
+          <strong>📊 ${p.name} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badges}
           ${questHtml}
         `;
         box.style.display = 'block';
       }
 
       function updateSelectedPlayerStats() {
-        renderPlayerStatsAndSuggestions(document.getElementById('p1-select').value, 'p1-stats');
-        renderPlayerStatsAndSuggestions(document.getElementById('p2-select').value, 'p2-stats');
+        renderPlayerStatsAndQuests(document.getElementById('p1-select').value, 'p1-stats');
+        renderPlayerStatsAndQuests(document.getElementById('p2-select').value, 'p2-stats');
         updateHandicapDisplay();
       }
 
@@ -532,6 +634,7 @@
           timestamp: Date.now()
         });
 
+        playVictorySound();
         showToast(`Match enregistré ! ${w.name} (+${gainWinner} pts)`);
 
         document.getElementById('p1-select').value = "";
@@ -560,7 +663,6 @@
       appDiv.innerHTML = `
         <div class="container">
           
-          <!-- Barre de pilotage & Sélection du groupe -->
           <div class="prof-bar no-print">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
               <span style="font-weight:bold; font-size:0.95rem;">🏫 Classe :</span>
@@ -570,7 +672,7 @@
             </div>
 
             <div style="display:flex; align-items:center; gap:8px;">
-              <span id="session-pill" class="badge badge-tag" style="padding:6px 10px; font-size:0.85rem;">Séance 1</span>
+              <span id="session-pill" class="badge badge-win" style="padding:6px 10px; font-size:0.85rem;">Séance 1</span>
               <button class="btn btn-sm btn-purple" id="btn-toggle-flash">⚡ Défi Flash (Pts x2)</button>
             </div>
           </div>
@@ -596,7 +698,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts</th><th>M</th><th>Badges</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-1"></tbody>
                 </table>
@@ -604,7 +706,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts</th><th>M</th><th>Badges</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-2"></tbody>
                 </table>
@@ -612,7 +714,7 @@
             </div>
           </div>
 
-          <!-- TAB 2: PROGRESSIONS (TOUS LES ÉLÈVES AVEC VERTS/ROUGES) -->
+          <!-- TAB 2: PROGRESSIONS -->
           <div id="tab-progress" style="display:none;">
             <div class="card">
               <h3>🚀 Bilan des Progressions de la Séance</h3>
@@ -634,38 +736,28 @@
             </div>
           </div>
 
-          <!-- TAB 3: BARÈME ET RÈGLES DU TOURNOI -->
+          <!-- TAB 3: BARÈME ET RÈGLES -->
           <div id="tab-rules" style="display:none;">
             <div class="card">
               <h3>📖 Barème, Badges & Règles du Tournoi Défis</h3>
               
               <div class="rule-card">
-                <h4>🏓 Règle du Barème Adaptatif (Victoires / Défaites)</h4>
-                <p>Le gain de points dépend du <strong>décalage de niveau</strong> entre les joueurs au moment du duel :</p>
+                <h4>🏓 Règle du Barème Adaptatif</h4>
+                <p>Le gain de points dépend du décalage de niveau entre les joueurs :</p>
                 <ul style="font-size:0.85rem; color:var(--muted); margin:6px 0; padding-left:20px;">
-                  <li><strong>Match équilibré / Mieux classé battu :</strong> Victoire rapportant de <strong>+5 à +10 points</strong> (1 pt de participation inclus).</li>
-                  <li><strong>Moins bien classé battu :</strong> Victoire rapportant de <strong>+2 à +4 points</strong>.</li>
-                  <li><strong>Défaite :</strong> Perte de points limitée (la participation accorde systématiquement +1 pt).</li>
+                  <li><strong>Victoire contre favori ou égal :</strong> +5 à +10 points.</li>
+                  <li><strong>Victoire contre joueur plus faible :</strong> +2 à +4 points.</li>
+                  <li><strong>Défaite :</strong> Perte de points limitée (+1 point de participation inclus).</li>
                 </ul>
               </div>
 
               <div class="rule-card">
-                <h4>🎖️ Guide des Badges Automatiques</h4>
+                <h4>🎖️ Guide des Badges Visuels</h4>
                 <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
-                  <li><strong>🔥 Inoxydable :</strong> Décerne aux élèves ayant disputé au moins 8 matchs dans la séance.</li>
-                  <li><strong>🛡️ Muraille :</strong> Obtenu lors d'une série d'au moins 5 victoires consécutives.</li>
-                  <li><strong>⚡ Chasseur :</strong> Victoire marquante contre un adversaire ayant au moins 10 points de plus.</li>
-                  <li><strong>🚀 Remontada :</strong> Progression d'au moins +15 points par rapport au capital de départ.</li>
-                </ul>
-              </div>
-
-              <div class="rule-card">
-                <h4>🎮 Catalogue des Variantes et Options</h4>
-                <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
-                  <li><strong>⚖️ Handicap :</strong> Avantage de +1 à +4 points offert d'entrée de set au joueur le moins fort si l'écart dépasse 6 pts.</li>
-                  <li><strong>👨‍⚖️ Arbitrage tiers :</strong> Obligation de saisir le nom d'un élève arbitre avant d'enregistrer le match.</li>
-                  <li><strong>🎯 Quêtes secrètes :</strong> Missions attribuées individuellement (+2 à +3 pts bonus si réussies).</li>
-                  <li><strong>⚡ Défi Flash :</strong> Mode déclenché par le prof où <strong>tous les points gagnés sont doublés</strong>.</li>
+                  <li><strong>🔥 Inoxydable :</strong> 8 matchs ou plus disputés dans la séance.</li>
+                  <li><strong>🛡️ Muraille :</strong> Série de 5 victoires consécutives.</li>
+                  <li><strong>⚡ Chasseur :</strong> Victoire marquante face à un adversaire nettement supérieur.</li>
+                  <li><strong>🚀 Remontada :</strong> Progression d'au moins +15 points.</li>
                 </ul>
               </div>
             </div>
@@ -712,25 +804,19 @@
 
             <div class="card" style="margin-top:15px;">
               <h3>🔄 Gestion de la Séance</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">
-                Changement de séance : fixe les points actuels comme nouveau capital de départ pour le calcul des progrès et autorise à nouveau les duels.
-              </p>
               <button class="btn btn-warning" id="btn-next-session">Passer à la Séance Suivante</button>
             </div>
           </div>
 
-          <!-- TAB 6: GESTION DES ÉLÈVES & CLASSES -->
+          <!-- TAB 6: GESTION DES ÉLÈVES -->
           <div id="tab-groups" style="display:none;">
             <div class="card">
               <h3>👥 Élèves de la classe (<span id="active-class-label"></span>)</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">Gérer la présence (les absents n'apparaissent pas sur les tables) ou supprimer les élèves partis :</p>
-              
               <div id="student-manage-container" class="student-manage-list"></div>
             </div>
 
             <div class="card" style="margin-top:15px;">
               <h3>➕ Importer / Remplacer la liste des élèves</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">Collez la liste des élèves (un nom par ligne) :</p>
               <textarea id="import-names" rows="4" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
               <button class="btn btn-success" id="btn-init-class" style="margin-top:8px;">Remplacer la liste complète</button>
             </div>
@@ -738,22 +824,24 @@
             <div class="card danger-zone">
               <h3 style="color:#f87171;">⚠️ Zone de Nettoyage</h3>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                <button class="btn btn-warning" id="btn-reset-session-data">
-                  🧹 Remise à zéro des Matchs
-                </button>
-                <button class="btn btn-danger" id="btn-delete-current-group">
-                  🗑️ Supprimer la Classe
-                </button>
-              </div>
-
-              <div style="margin-top:15px; border-top: 1px dashed var(--danger); padding-top:12px; text-align:center;">
-                <button class="btn btn-danger" id="btn-delete-all-groups" style="background:#7f1d1d;">
-                  💥 SUPPRIMER TOUTES LES CLASSES
-                </button>
+                <button class="btn btn-warning" id="btn-reset-session-data">🧹 Remise à zéro Matchs</button>
+                <button class="btn btn-danger" id="btn-delete-current-group">🗑️ Supprimer la Classe</button>
               </div>
             </div>
           </div>
 
+        </div>
+
+        <!-- MODAL QR CODE INDIVIDUEL -->
+        <div class="modal-overlay" id="qr-modal">
+          <div class="modal-content" style="text-align:center;">
+            <h3 id="modal-student-name" style="margin-bottom:5px;">Carnet Élève</h3>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:15px;">Scannez ce QR code avec un smartphone pour voir son bilan en direct</p>
+            <div id="qrcode-student" style="background:white; padding:12px; display:inline-block; border-radius:8px; margin-bottom:15px;"></div>
+            <div>
+              <button class="btn btn-secondary" onclick="closeQRModal()">Fermer</button>
+            </div>
+          </div>
         </div>
       `;
 
@@ -856,16 +944,16 @@
 
         function createRowsHtml(list, offset) {
           return list.map((p, index) => {
-            const badges = getPlayerBadges(p, historyMatches);
-            const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join('') || '-';
-            const absentTag = p.absent ? ' <span style="color:#f87171; font-size:0.75rem;">(Absent)</span>' : '';
+            const badges = getPlayerBadgesHTML(p, historyMatches);
+            const absentTag = p.absent ? ' <span style="color:#ef4444; font-size:0.75rem;">(Absent)</span>' : '';
             return `
               <tr style="${p.absent ? 'opacity:0.5;' : ''}">
                 <td><strong>${index + 1 + offset}</strong></td>
                 <td>${p.name}${absentTag}</td>
-                <td><span class="badge badge-win">${p.points}</span></td>
+                <td><span class="badge-win">${p.points}</span></td>
                 <td>${p.matches || 0}</td>
-                <td>${badgesHtml}</td>
+                <td>${badges}</td>
+                <td class="no-print"><button class="btn btn-sm btn-secondary" onclick="openStudentQR('${p.id}', '${p.name}')">🪪</button></td>
               </tr>
             `;
           }).join('');
@@ -875,7 +963,25 @@
         document.getElementById('ranking-body-2').innerHTML = createRowsHtml(col2, half);
       }
 
-      /* RENDER PROGRESSIONS : TOUS LES ÉLÈVES AVEC GAIN VERT / ROUGE */
+      // Génération du QR Code individuel de l'élève
+      window.openStudentQR = (studentId, studentName) => {
+        document.getElementById('modal-student-name').textContent = `Bilan : ${studentName}`;
+        const container = document.getElementById('qrcode-student');
+        container.innerHTML = '';
+
+        const studentUrl = `${baseUrl}?role=prof&student=${studentId}`;
+        new QRCode(container, {
+          text: studentUrl,
+          width: 150, height: 150
+        });
+
+        document.getElementById('qr-modal').style.display = 'flex';
+      };
+
+      window.closeQRModal = () => {
+        document.getElementById('qr-modal').style.display = 'none';
+      };
+
       function renderProgressTable() {
         const list = Object.entries(playersData).map(([id, p]) => {
           const startPts = p.startPoints !== undefined ? p.startPoints : 100;
@@ -1119,23 +1225,6 @@
           await set(ref(db, 'activeGroup'), currentGroup);
           attachListeners();
           showToast("Classe supprimée", "warning");
-        }
-      };
-
-      document.getElementById('btn-delete-all-groups').onclick = async () => {
-        if (confirm("💥 SUPPRESSION TOTALE : Voulez-vous effacer TOUTES LES CLASSES du système ?")) {
-          if (confirm("Confirmation finale : Toutes les données de toutes les classes seront détruites !")) {
-            await remove(ref(db, 'groups'));
-            
-            currentGroup = "Classe_1";
-            await set(ref(db, "groups/Classe_1"), true);
-            localStorage.setItem('eps_current_group', currentGroup);
-            await set(ref(db, 'activeGroup'), currentGroup);
-            attachListeners();
-
-            showToast("Toutes les classes ont été effacées.", "danger");
-            switchTab('groups');
-          }
         }
       };
     }
