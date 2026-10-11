@@ -76,6 +76,9 @@
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
     .vs-circle { background: var(--accent); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
+    .poule-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .score-input { width: 50px; text-align: center; font-weight: bold; padding: 6px; }
+
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9998; padding: 15px; }
     .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 
@@ -374,7 +377,7 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE (Vérification anti-revanche & règles)
+       2. VUE IPAD TABLE (Défis libres & Tournoi de Poule avec Scores)
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
@@ -386,47 +389,83 @@
             <h2>🏓 Table ${tableId}</h2>
             <span id="group-indicator" class="group-pill"></span>
           </div>
-          
-          <div class="card">
-            <p style="text-align:center; font-size:0.8rem; color:#38bdf8; margin:0 0 10px 0;">
-              ⚡ Règle : Match en 11 pts (2 pts d'écart) • 2 services chacun • <strong>Défis obligatoires (pas de refus)</strong> • 1 seul match par adversaire et par séance.
-            </p>
-            <div class="vs-container">
-              <div>
-                <label style="font-weight:bold;">Joueur A</label>
-                <select id="p1-select"><option value="">-- Choisir --</option></select>
+
+          <!-- SELECTEUR DE MODE : LIBRE OU POULE -->
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="btn btn-sm" id="mode-free-btn" style="flex:1;">MODE DÉFIS LIBRES</button>
+            <button class="btn btn-sm btn-secondary" id="mode-poule-btn" style="flex:1;">MODE TOURNOI DE POULE</button>
+          </div>
+
+          <!-- CONTENU MODE DÉFIS LIBRES -->
+          <div id="free-mode-container">
+            <div class="card">
+              <p style="text-align:center; font-size:0.8rem; color:#38bdf8; margin:0 0 10px 0;">
+                ⚡ Règle : Match en 11 pts (2 pts d'écart) • 2 services chacun • <strong>Défis obligatoires</strong> • 1 seul match par adversaire et par séance.
+              </p>
+              <div class="vs-container">
+                <div>
+                  <label style="font-weight:bold;">Joueur A</label>
+                  <select id="p1-select"><option value="">-- Choisir --</option></select>
+                </div>
+                <div class="vs-circle">VS</div>
+                <div>
+                  <label style="font-weight:bold;">Joueur B</label>
+                  <select id="p2-select"><option value="">-- Choisir --</option></select>
+                </div>
               </div>
-              <div class="vs-circle">VS</div>
-              <div>
-                <label style="font-weight:bold;">Joueur B</label>
-                <select id="p2-select"><option value="">-- Choisir --</option></select>
+
+              <div id="p1-stats" class="stats-box" style="display:none;"></div>
+              <div id="p2-stats" class="stats-box" style="display:none;"></div>
+
+              <div id="handicap-box" class="handicap-box" style="display:none;"></div>
+
+              <div id="referee-box" style="margin-top:12px; display:none;">
+                <label>⚖️ Arbitre du match (Obligatoire) :</label>
+                <select id="referee-select"><option value="">-- Sélectionner l'arbitre --</option></select>
               </div>
             </div>
 
-            <div id="p1-stats" class="stats-box" style="display:none;"></div>
-            <div id="p2-stats" class="stats-box" style="display:none;"></div>
-
-            <div id="handicap-box" class="handicap-box" style="display:none;"></div>
-
-            <div id="referee-box" style="margin-top:12px; display:none;">
-              <label>⚖️ Arbitre du match (Obligatoire) :</label>
-              <select id="referee-select"><option value="">-- Sélectionner l'arbitre --</option></select>
+            <div class="card" id="match-actions" style="display:none;">
+              <h3>Désigner le Vainqueur</h3>
+              <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
+              <button class="btn btn-success" id="btn-p2-win"></button>
             </div>
           </div>
 
-          <div class="card" id="match-actions" style="display:none;">
-            <h3>Désigner le Vainqueur</h3>
-            <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
-            <button class="btn btn-success" id="btn-p2-win"></button>
+          <!-- CONTENU MODE TOURNOI DE POULE -->
+          <div id="poule-mode-container" style="display:none;">
+            <div class="card">
+              <label>Sélectionner la Poule / Table :</label>
+              <select id="poule-select-dropdown"><option value="">-- Choisir une poule --</option></select>
+            </div>
+
+            <div id="poule-details-container"></div>
           </div>
+
         </div>
       `;
 
       let players = {};
       let playedMatches = [];
+      let activePoules = {};
       let isFlashActive = false;
       let sessionNumber = 1;
       let options = { handicap: false, referee: false, quests: false };
+
+      // Switch mode Libre / Poule
+      document.getElementById('mode-free-btn').onclick = () => {
+        document.getElementById('free-mode-container').style.display = 'block';
+        document.getElementById('poule-mode-container').style.display = 'none';
+        document.getElementById('mode-free-btn').className = 'btn btn-sm';
+        document.getElementById('mode-poule-btn').className = 'btn btn-sm btn-secondary';
+      };
+
+      document.getElementById('mode-poule-btn').onclick = () => {
+        document.getElementById('free-mode-container').style.display = 'none';
+        document.getElementById('poule-mode-container').style.display = 'block';
+        document.getElementById('mode-free-btn').className = 'btn btn-sm btn-secondary';
+        document.getElementById('mode-poule-btn').className = 'btn btn-sm btn-purple';
+      };
 
       onValue(ref(db, 'activeGroup'), (snap) => {
         if (snap.val()) {
@@ -457,6 +496,11 @@
           playedMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
           updateSelectedPlayerStats();
         });
+
+        onValue(ref(db, getGroupPath('poules')), (snap) => {
+          activePoules = snap.val() || {};
+          renderPouleDropdown();
+        });
       }
 
       function updatePlayerDropdowns() {
@@ -480,6 +524,144 @@
         p1.value = v1;
         p2.value = v2;
         refSel.value = vRef;
+      }
+
+      function renderPouleDropdown() {
+        const dropdown = document.getElementById('poule-select-dropdown');
+        const currentVal = dropdown.value;
+        const pouleKeys = Object.keys(activePoules);
+
+        if (pouleKeys.length === 0) {
+          dropdown.innerHTML = '<option value="">-- Aucune poule générée par le prof --</option>';
+          document.getElementById('poule-details-container').innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:15px;">Le professeur n\'a pas encore généré les poules pour cette séance.</p>';
+          return;
+        }
+
+        dropdown.innerHTML = '<option value="">-- Sélectionner la Poule --</option>' +
+          pouleKeys.map((pKey, idx) => `<option value="${pKey}">Poule ${idx + 1} (${activePoules[pKey].players.length} joueurs)</option>`).join('');
+
+        // Sélection automatique de la poule associée au numéro de table
+        const defaultKey = `poule_${tableId}`;
+        if (activePoules[defaultKey]) dropdown.value = defaultKey;
+        else if (currentVal && activePoules[currentVal]) dropdown.value = currentVal;
+
+        renderPouleDetails();
+      }
+
+      document.getElementById('poule-select-dropdown').onchange = renderPouleDetails;
+
+      function renderPouleDetails() {
+        const pouleKey = document.getElementById('poule-select-dropdown').value;
+        const container = document.getElementById('poule-details-container');
+        if (!pouleKey || !activePoules[pouleKey]) {
+          container.innerHTML = '';
+          return;
+        }
+
+        const poule = activePoules[pouleKey];
+        const pList = poule.players; // [id1, id2, id3, id4]
+        const matches = poule.matches || [];
+
+        // Calcul des stats de la poule (Victoires, Points de poule, Goal-Average)
+        const stats = {};
+        pList.forEach(id => {
+          stats[id] = { id, name: players[id] ? players[id].name : id, victoires: 0, ptsPoule: 0, pour: 0, contre: 0, diff: 0, joues: 0 };
+        });
+
+        matches.forEach(m => {
+          if (m.scoreA !== undefined && m.scoreB !== undefined && m.scoreA !== "" && m.scoreB !== "") {
+            const scA = parseInt(m.scoreA);
+            const scB = parseInt(m.scoreB);
+            
+            stats[m.p1].joues++;
+            stats[m.p2].joues++;
+            stats[m.p1].pour += scA;
+            stats[m.p1].contre += scB;
+            stats[m.p2].pour += scB;
+            stats[m.p2].contre += scA;
+
+            if (scA > scB) {
+              stats[m.p1].victoires++;
+              stats[m.p1].ptsPoule += 3; // 3 pts pour victoire
+              stats[m.p2].ptsPoule += 1; // 1 pt pour défaite
+            } else if (scB > scA) {
+              stats[m.p2].victoires++;
+              stats[m.p2].ptsPoule += 3;
+              stats[m.p1].ptsPoule += 1;
+            }
+          }
+        });
+
+        Object.keys(stats).forEach(id => {
+          stats[id].diff = stats[id].pour - stats[id].contre;
+        });
+
+        const sortedStats = Object.values(stats).sort((a,b) => {
+          if (b.ptsPoule !== a.ptsPoule) return b.ptsPoule - a.ptsPoule;
+          return b.diff - a.diff; // Goal Average en cas d'égalité
+        });
+
+        container.innerHTML = `
+          <div class="card" style="margin-top:10px;">
+            <h3>📊 Rencontres de la Poule (11 Points)</h3>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+              ${matches.map((m, idx) => `
+                <div style="display:flex; align-items:center; justify-content:space-between; background:#090d16; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                  <span style="font-size:0.85rem; flex:1;"><strong>${players[m.p1] ? players[m.p1].name : m.p1}</strong></span>
+                  <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-a" value="${m.scoreA !== undefined ? m.scoreA : ''}" min="0" max="30">
+                  <span style="margin:0 6px; font-weight:bold;">-</span>
+                  <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-b" value="${m.scoreB !== undefined ? m.scoreB : ''}" min="0" max="30">
+                  <span style="font-size:0.85rem; flex:1; text-align:right;"><strong>${players[m.p2] ? players[m.p2].name : m.p2}</strong></span>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn-success" id="btn-save-poule-scores" style="margin-top:12px;">💾 Enregistrer les Scores</button>
+          </div>
+
+          <div class="card">
+            <h3>🏆 Classement Direct de la Poule</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Élève</th>
+                  <th>Pts Poule</th>
+                  <th>V.</th>
+                  <th>+ / -</th>
+                  <th>Diff</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sortedStats.map((st, idx) => `
+                  <tr>
+                    <td><strong>${idx + 1}</strong></td>
+                    <td>${st.name}</td>
+                    <td><span class="badge-win">${st.ptsPoule}</span></td>
+                    <td>${st.victoires}</td>
+                    <td>${st.pour}/${st.contre}</td>
+                    <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        document.getElementById('btn-save-poule-scores').onclick = async () => {
+          const updatedMatches = matches.map((m, idx) => {
+            const scA = document.getElementById(`sc-${pouleKey}-${idx}-a`).value;
+            const scB = document.getElementById(`sc-${pouleKey}-${idx}-b`).value;
+            return {
+              ...m,
+              scoreA: scA !== "" ? parseInt(scA) : "",
+              scoreB: scB !== "" ? parseInt(scB) : ""
+            };
+          });
+
+          await set(ref(db, getGroupPath(`poules/${pouleKey}/matches`)), updatedMatches);
+          playVictorySound();
+          showToast("Scores de poule enregistrés !");
+        };
       }
 
       function updateHandicapDisplay() {
@@ -554,7 +736,6 @@
           const actions = document.getElementById('match-actions');
 
           if (id1 && id2 && id1 !== id2) {
-            // RÈGLE : Interdiction de défier une seconde fois le même adversaire DANS LA MÊME SÉANCE
             const alreadyPlayedSession = playedMatches.some(m => 
               (m.session === sessionNumber || !m.session) &&
               ((m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1))
@@ -721,22 +902,16 @@
               <h3>📖 Barème, Badges & Règles Officielles du Tournoi</h3>
               
               <div class="rule-card">
-                <h4>🏓 Règles Fondamentales de Jeu</h4>
+                <h4>🏓 Formats : Défis Libres ou Tournois de Poules</h4>
                 <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
-                  <li><strong>Format des matchs :</strong> En 11 points avec 2 points d'écart obligatoire.</li>
-                  <li><strong>Service :</strong> Alternance de 2 services chacun.</li>
-                  <li><strong>Obligation de défi :</strong> Les défis sont obligatoires. Un joueur ne peut pas refuser d'affronter un adversaire qui le défie.</li>
-                  <li><strong>Anti-revanche :</strong> Un joueur ne peut affronter le même adversaire qu'une seule fois par séance. Il doit obligatoirement changer d'adversaire pour son match suivant.</li>
-                </ul>
-              </div>
-
-              <div class="rule-card">
-                <h4>🏓 Règle du Barème Adaptatif (Points)</h4>
-                <p>Le gain de points dépend du décalage de niveau entre les joueurs :</p>
-                <ul style="font-size:0.85rem; color:var(--muted); margin:6px 0; padding-left:20px;">
-                  <li><strong>Match équilibré / Mieux classé battu :</strong> Victoire rapportant de <strong>+5 à +10 points</strong>.</li>
-                  <li><strong>Moins bien classé battu :</strong> Victoire rapportant de <strong>+2 à +4 points</strong>.</li>
-                  <li><strong>Défaite :</strong> Perte de points limitée (+1 point de participation inclus).</li>
+                  <li><strong>Défis Libres :</strong> Choisis un adversaire direct, 1 seul défi par adversaire par séance.</li>
+                  <li><strong>Poules de Niveau (3 ou 4 joueurs) :</strong> Générées automatiquement selon le classement.
+                    <ul style="margin-top:4px;">
+                      <li>Poule de 4 joueurs : 1 match de 11 pts contre chacun (6 matchs total).</li>
+                      <li>Poule de 3 joueurs : 2 matchs aller-retour de 11 pts contre chacun (6 matchs total).</li>
+                    </ul>
+                  </li>
+                  <li><strong>Goal-Average :</strong> En poule, le départage se fait aux victoires puis à la différence de points marqués/encaissés.</li>
                 </ul>
               </div>
 
@@ -772,10 +947,18 @@
             </div>
           </div>
 
-          <!-- TAB 5: OPTIONS EPS -->
+          <!-- TAB 5: OPTIONS EPS ET GÉNÉRATION DE POULES -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
-              <h3>🎮 Variantes Pédagogiques</h3>
+              <h3>🏆 Génération Automatique des Poules de Niveau</h3>
+              <p style="font-size:0.85rem; color:var(--muted);">
+                Répartit automatiquement tous les élèves présents en poules physiques de 3 ou 4 joueurs selon leur classement actuel (Ex: Poule 1 / Or = Tables 1-2, etc.).
+              </p>
+              <button class="btn btn-purple" id="btn-generate-poules">⚡ Générer les Poules de Niveau (3 ou 4 joueurs)</button>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+              <h3>🎮 Variantes Pédagogiques (Défis Libres)</h3>
               <label class="checkbox-label">
                 <input type="checkbox" id="opt-handicap">
                 <span><strong>1. Handicaps automatiques</strong> (bonus aux joueurs moins bien classés)</span>
@@ -924,6 +1107,73 @@
       }
 
       attachListeners();
+
+      // ALGOMONTH: Génération Automatique des Poules de 3 ou 4 joueurs
+      document.getElementById('btn-generate-poules').onclick = async () => {
+        const activeStudents = Object.entries(playersData)
+          .map(([id, p]) => ({ id, ...p }))
+          .filter(p => !p.absent)
+          .sort((a,b) => b.points - a.points); // Tri par niveau actuel
+
+        if (activeStudents.length < 3) {
+          return showToast("⚠️ Pas assez d'élèves présents (min 3) !", "danger");
+        }
+
+        const total = activeStudents.length;
+        const poules = {};
+
+        // Découpage dynamique en groupes de 4 (et 3 pour le reste)
+        let num4 = Math.floor(total / 4);
+        let remainder = total % 4;
+
+        if (remainder === 1 && num4 > 0) {
+          num4--; // Convertit une poule de 4 en deux poules de 3 (4 + 1 = 3 + 2) -> 2 poules de 3
+        }
+
+        let studentIdx = 0;
+        let pouleNum = 1;
+
+        while (studentIdx < total) {
+          let size = 4;
+          if (remainder === 3 && studentIdx >= (total - 3)) size = 3;
+          else if (remainder === 2 && studentIdx >= (total - 6)) size = 3;
+          else if (remainder === 1 && studentIdx >= (total - 6)) size = 3;
+
+          const pGroup = activeStudents.slice(studentIdx, studentIdx + size).map(s => s.id);
+          const pKey = `poule_${pouleNum}`;
+
+          // Calcul des rencontres de la poule
+          const matches = [];
+          if (pGroup.length === 4) {
+            // Poule de 4 : 6 matchs (1 match contre chaque)
+            matches.push({ p1: pGroup[0], p2: pGroup[1] });
+            matches.push({ p1: pGroup[2], p2: pGroup[3] });
+            matches.push({ p1: pGroup[0], p2: pGroup[2] });
+            matches.push({ p1: pGroup[1], p2: pGroup[3] });
+            matches.push({ p1: pGroup[0], p2: pGroup[3] });
+            matches.push({ p1: pGroup[1], p2: pGroup[2] });
+          } else if (pGroup.length === 3) {
+            // Poule de 3 : 6 matchs (2 matchs aller-retour contre chaque)
+            matches.push({ p1: pGroup[0], p2: pGroup[1] });
+            matches.push({ p1: pGroup[1], p2: pGroup[2] });
+            matches.push({ p1: pGroup[2], p2: pGroup[0] });
+            matches.push({ p1: pGroup[1], p2: pGroup[0] });
+            matches.push({ p1: pGroup[2], p2: pGroup[1] });
+            matches.push({ p1: pGroup[0], p2: pGroup[2] });
+          }
+
+          poules[pKey] = {
+            players: pGroup,
+            matches: matches
+          };
+
+          studentIdx += size;
+          pouleNum++;
+        }
+
+        await set(ref(db, getGroupPath('poules')), poules);
+        showToast(`⚡ ${pouleNum - 1} Poules de Niveau générées avec succès !`);
+      };
 
       function renderRankingTable() {
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
@@ -1156,7 +1406,7 @@
         if (confirm(`Remplacer les élèves de la classe "${currentGroup.replace('_', ' ')}" ?`)) {
           let startPoints = 100;
           const newPlayers = {};
-          names.exports = names.forEach((name, idx) => {
+          names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
             const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
             newPlayers[id] = { 
@@ -1184,6 +1434,7 @@
       document.getElementById('btn-reset-session-data').onclick = async () => {
         if (confirm(`Effacer les matchs et remettre les scores à zéro pour "${currentGroup.replace('_', ' ')}"`)) {
           await remove(ref(db, getGroupPath('history')));
+          await remove(ref(db, getGroupPath('poules')));
           for (let id in playersData) {
             const startPts = playersData[id].startPoints !== undefined ? playersData[id].startPoints : 100;
             await set(ref(db, getGroupPath(`players/${id}/points`)), startPts);
@@ -1191,7 +1442,7 @@
             await set(ref(db, getGroupPath(`players/${id}/refereeCount`)), 0);
           }
           await set(ref(db, getGroupPath('config/sessionNumber')), 1);
-          showToast("Matchs effacés pour la classe active", "warning");
+          showToast("Matchs et poules effacés pour la classe active", "warning");
         }
       };
 
