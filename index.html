@@ -44,7 +44,6 @@
     .checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 6px; }
     .checkbox-label input { width: auto; margin: 0; }
 
-    /* Control Bar & Group Management */
     .prof-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; }
     .group-pill { background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
 
@@ -64,7 +63,6 @@
     th { background: #1e293b; color: var(--text); font-weight: 600; }
     tr:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
 
-    /* Badges visuels néon EPS */
     .badge-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 0.75rem; margin-right: 2px; background: #1e293b; border: 1px solid var(--border); }
     .badge-win { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.4); font-weight: bold; padding: 2px 6px; border-radius: 4px; }
     
@@ -78,7 +76,6 @@
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
     .vs-circle { background: var(--accent); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: white; margin: 0 auto; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
-    /* Modal / Popup Bilans Élèves */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9998; padding: 15px; }
     .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 
@@ -165,14 +162,13 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // Effet Sonore Web Audio API (Jingle de victoire)
     function playVictorySound() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
 
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do (aigu)
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -189,7 +185,7 @@
           osc.stop(ctx.currentTime + idx * 0.1 + 0.25);
         });
       } catch (e) {
-        console.log("Audio non pris en charge ou bloqué par le navigateur", e);
+        console.log("Audio non pris en charge", e);
       }
     }
 
@@ -217,7 +213,6 @@
       };
     }
 
-    // Générateur de Badges Visuels avec icônes
     function getPlayerBadgesHTML(player, allMatches) {
       let badgesHtml = '';
       const pMatches = allMatches.filter(m => m.winnerId === player.id || m.loserId === player.id);
@@ -256,7 +251,7 @@
     });
 
     /* =========================================================
-       0. VUE CARNET ÉLÈVE (VIA QR CODE PERSONNEL)
+       0. VUE CARNET ÉLÈVE
        ========================================================= */
     function initStudentQRView() {
       const appDiv = document.getElementById('app');
@@ -379,7 +374,7 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE
+       2. VUE IPAD TABLE (Vérification anti-revanche & règles)
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
@@ -393,6 +388,9 @@
           </div>
           
           <div class="card">
+            <p style="text-align:center; font-size:0.8rem; color:#38bdf8; margin:0 0 10px 0;">
+              ⚡ Règle : Match en 11 pts (2 pts d'écart) • 2 services chacun • <strong>Défis obligatoires (pas de refus)</strong> • 1 seul match par adversaire et par séance.
+            </p>
             <div class="vs-container">
               <div>
                 <label style="font-weight:bold;">Joueur A</label>
@@ -417,29 +415,9 @@
           </div>
 
           <div class="card" id="match-actions" style="display:none;">
-            <h3>Désigner le Vainqueur (Match en 11 pts)</h3>
+            <h3>Désigner le Vainqueur</h3>
             <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
             <button class="btn btn-success" id="btn-p2-win"></button>
-          </div>
-
-          <div class="card" style="margin-top:15px; background:#090d16;">
-            <h4 style="margin:0 0 6px 0; color:#38bdf8; text-align:center;">📊 Barème des Points EPS</h4>
-            <table class="bareme-table">
-              <thead>
-                <tr>
-                  <th>Écart de points</th>
-                  <th>Victoire</th>
-                  <th>Défaite</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>Écart >= 10 pts (Favorable)</td><td>+2 pts</td><td>-8 pts</td></tr>
-                <tr><td>Écart 4 à 9 pts (Favorable)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
-                <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
-                <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
-                <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
-              </tbody>
-            </table>
           </div>
         </div>
       `;
@@ -576,13 +554,14 @@
           const actions = document.getElementById('match-actions');
 
           if (id1 && id2 && id1 !== id2) {
+            // RÈGLE : Interdiction de défier une seconde fois le même adversaire DANS LA MÊME SÉANCE
             const alreadyPlayedSession = playedMatches.some(m => 
               (m.session === sessionNumber || !m.session) &&
               ((m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1))
             );
 
             if (alreadyPlayedSession) {
-              showToast("⚠️ Défi déjà fait cette séance !", "warning");
+              showToast("⚠️ Revanche interdite : cet adversaire a déjà été affronté cette séance !", "warning");
               actions.style.display = "none";
               return;
             }
@@ -736,17 +715,27 @@
             </div>
           </div>
 
-          <!-- TAB 3: BARÈME ET RÈGLES -->
+          <!-- TAB 3: BARÈME ET RÈGLES DU TOURNOI -->
           <div id="tab-rules" style="display:none;">
             <div class="card">
-              <h3>📖 Barème, Badges & Règles du Tournoi Défis</h3>
+              <h3>📖 Barème, Badges & Règles Officielles du Tournoi</h3>
               
               <div class="rule-card">
-                <h4>🏓 Règle du Barème Adaptatif</h4>
+                <h4>🏓 Règles Fondamentales de Jeu</h4>
+                <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
+                  <li><strong>Format des matchs :</strong> En 11 points avec 2 points d'écart obligatoire.</li>
+                  <li><strong>Service :</strong> Alternance de 2 services chacun.</li>
+                  <li><strong>Obligation de défi :</strong> Les défis sont obligatoires. Un joueur ne peut pas refuser d'affronter un adversaire qui le défie.</li>
+                  <li><strong>Anti-revanche :</strong> Un joueur ne peut affronter le même adversaire qu'une seule fois par séance. Il doit obligatoirement changer d'adversaire pour son match suivant.</li>
+                </ul>
+              </div>
+
+              <div class="rule-card">
+                <h4>🏓 Règle du Barème Adaptatif (Points)</h4>
                 <p>Le gain de points dépend du décalage de niveau entre les joueurs :</p>
                 <ul style="font-size:0.85rem; color:var(--muted); margin:6px 0; padding-left:20px;">
-                  <li><strong>Victoire contre favori ou égal :</strong> +5 à +10 points.</li>
-                  <li><strong>Victoire contre joueur plus faible :</strong> +2 à +4 points.</li>
+                  <li><strong>Match équilibré / Mieux classé battu :</strong> Victoire rapportant de <strong>+5 à +10 points</strong>.</li>
+                  <li><strong>Moins bien classé battu :</strong> Victoire rapportant de <strong>+2 à +4 points</strong>.</li>
                   <li><strong>Défaite :</strong> Perte de points limitée (+1 point de participation inclus).</li>
                 </ul>
               </div>
@@ -963,7 +952,6 @@
         document.getElementById('ranking-body-2').innerHTML = createRowsHtml(col2, half);
       }
 
-      // Génération du QR Code individuel de l'élève
       window.openStudentQR = (studentId, studentName) => {
         document.getElementById('modal-student-name').textContent = `Bilan : ${studentName}`;
         const container = document.getElementById('qrcode-student');
@@ -1168,7 +1156,7 @@
         if (confirm(`Remplacer les élèves de la classe "${currentGroup.replace('_', ' ')}" ?`)) {
           let startPoints = 100;
           const newPlayers = {};
-          names.forEach((name, idx) => {
+          names.exports = names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
             const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
             newPlayers[id] = { 
