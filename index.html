@@ -72,7 +72,7 @@
     @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
 
     .stats-box { background: #0f172a; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
-    .suggestion-item { background: #1e293b; padding: 6px 10px; border-radius: 6px; margin-top: 4px; border-left: 3px solid var(--accent); font-size: 0.85rem; }
+    .quest-box { background: #3b0764; border: 1px solid #a855f7; border-radius: 6px; padding: 8px; margin-top: 6px; font-size: 0.85rem; color: #f3e8ff; }
     .handicap-box { background: #7c2d12; color: #fdba74; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; margin-top: 8px; font-weight: bold; text-align: center; }
 
     .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
@@ -87,6 +87,14 @@
     .rule-card { background: #0f172a; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
     .rule-card h4 { margin: 0 0 4px 0; color: #38bdf8; font-size: 0.95rem; }
     .rule-card p { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+
+    .bareme-table { width: 100%; margin-top: 8px; font-size: 0.8rem; border-collapse: collapse; }
+    .bareme-table th, .bareme-table td { padding: 4px 6px; text-align: center; border: 1px solid var(--border); }
+    .bareme-table th { background: #1e293b; color: #38bdf8; }
+
+    .gain-positive { color: #4ade80; font-weight: bold; }
+    .gain-negative { color: #f87171; font-weight: bold; }
+    .gain-neutral { color: var(--muted); }
 
     .danger-zone { border: 1px solid var(--danger); background: #450a0a22; padding: 12px; border-radius: 8px; margin-top: 15px; }
 
@@ -263,7 +271,7 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE (Seuls les élèves PÉSENTS sont affichés)
+       2. VUE IPAD TABLE
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
@@ -304,6 +312,30 @@
             <h3>Désigner le Vainqueur (Match en 11 pts)</h3>
             <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
             <button class="btn btn-success" id="btn-p2-win"></button>
+          </div>
+
+          <!-- BARÈME COMPLET POUR CONSULTATION SUR LA TABLE -->
+          <div class="card" style="margin-top:15px; background:#0f172a;">
+            <h4 style="margin:0 0 6px 0; color:#38bdf8; text-align:center;">📊 Barème des Points EPS</h4>
+            <table class="bareme-table">
+              <thead>
+                <tr>
+                  <th>Écart de points</th>
+                  <th>Victoire</th>
+                  <th>Défaite</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Écart >= 10 pts (Favorable)</td><td>+2 pts</td><td>-8 pts</td></tr>
+                <tr><td>Écart 4 à 9 pts (Favorable)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
+                <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
+                <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
+                <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:0.75rem; color:var(--muted); text-align:center; margin:6px 0 0 0;">
+              * +1 point de participation inclus dans chaque match.
+            </p>
           </div>
         </div>
       `;
@@ -353,7 +385,6 @@
         const v2 = p2.value;
         const vRef = refSel.value;
 
-        // FILTRAGE : Exclure les absents de la vue Table
         const activePlayerKeys = Object.keys(players)
           .filter(id => !players[id].absent)
           .sort((a,b) => players[a].name.localeCompare(players[b].name));
@@ -412,36 +443,18 @@
         const badges = getPlayerBadges(p, playedMatches);
         const badgesHtml = badges.map(b => `<span class="badge badge-tag">${b}</span>`).join(' ') || '<em>Aucun</em>';
 
+        // Affichage systématique de la quête secrète quand sélectionné
         let questHtml = '';
         if (options.quests && p.questId) {
           const q = QUEST_LIST.find(x => x.id === p.questId);
           if (q) {
-            questHtml = `<div style="margin-top:4px; color:#facc15; font-size:0.8rem;">🎯 <strong>Quête :</strong> ${q.text}</div>`;
+            questHtml = `<div class="quest-box">🎯 <strong>Quête Secrète :</strong> ${q.text} (+${q.bonus} pts bonus)</div>`;
           }
-        }
-
-        const allPlayerIds = Object.keys(players).filter(id => id !== playerId && !players[id].absent);
-        const unplayedIds = allPlayerIds.filter(otherId => {
-          return !playedMatches.some(m => 
-            (m.session === sessionNumber || !m.session) && 
-            ((m.winnerId === playerId && m.loserId === otherId) || (m.winnerId === otherId && m.loserId === playerId))
-          );
-        });
-
-        unplayedIds.sort((a,b) => Math.abs(players[a].points - p.points) - Math.abs(players[b].points - p.points));
-        
-        let suggestionsHtml = '';
-        if (unplayedIds.length > 0) {
-          const target = players[unplayedIds[0]];
-          const diff = target.points - p.points;
-          const label = diff > 0 ? `à battre (+${diff} pts)` : `à portée (${diff} pts)`;
-          suggestionsHtml = `<div class="suggestion-item">🎯 <strong>Défi suggéré :</strong> ${target.name} (${target.points} pts - ${label})</div>`;
         }
 
         box.innerHTML = `
           <strong>📊 ${p.name} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badgesHtml}
           ${questHtml}
-          ${suggestionsHtml}
         `;
         box.style.display = 'block';
       }
@@ -599,16 +612,19 @@
             </div>
           </div>
 
-          <!-- TAB 2: PROGRESSIONS -->
+          <!-- TAB 2: PROGRESSIONS (TOUS LES ÉLÈVES AVEC VERTS/ROUGES) -->
           <div id="tab-progress" style="display:none;">
             <div class="card">
-              <h3>🚀 Top Progressions de la Séance</h3>
+              <h3>🚀 Bilan des Progressions de la Séance</h3>
+              <p style="font-size:0.85rem; color:var(--muted); text-align:center;">
+                Écart de points entre le capital actuel et le capital initial attribué en début de séance.
+              </p>
               <table>
                 <thead>
                   <tr>
                     <th>Rang</th>
                     <th>Nom Prénom</th>
-                    <th>Progression</th>
+                    <th>Progression Séance</th>
                     <th>Cap. Initial</th>
                     <th>Cap. Actuel</th>
                   </tr>
@@ -776,7 +792,6 @@
           const formatted = newName.trim().replace(/\s+/g, '_');
           if (formatted === currentGroup) return;
 
-          // Copie vers la nouvelle clé et suppression de l'ancienne
           await set(ref(db, `groups/${formatted}`), {
             players: playersData,
             history: historyMatches.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {}),
@@ -860,22 +875,31 @@
         document.getElementById('ranking-body-2').innerHTML = createRowsHtml(col2, half);
       }
 
+      /* RENDER PROGRESSIONS : TOUS LES ÉLÈVES AVEC GAIN VERT / ROUGE */
       function renderProgressTable() {
         const list = Object.entries(playersData).map(([id, p]) => {
           const startPts = p.startPoints !== undefined ? p.startPoints : 100;
           const ptsGained = p.points - startPts;
           return { name: p.name, startPts, currentPts: p.points, ptsGained, absent: p.absent };
-        }).sort((a,b) => b.ptsGained - a.ptsGained).slice(0, 5);
+        }).sort((a,b) => b.ptsGained - a.ptsGained);
 
         const tbody = document.getElementById('progress-body');
         tbody.innerHTML = list.map((p, idx) => {
-          const formattedGain = p.ptsGained >= 0 ? `+${p.ptsGained}` : `${p.ptsGained}`;
-          const colorStyle = p.ptsGained >= 0 ? 'color:#4ade80;' : 'color:#f87171;';
+          let gainClass = 'gain-neutral';
+          let formattedGain = `${p.ptsGained} pt`;
+          if (p.ptsGained > 0) {
+            gainClass = 'gain-positive';
+            formattedGain = `+${p.ptsGained} pts`;
+          } else if (p.ptsGained < 0) {
+            gainClass = 'gain-negative';
+            formattedGain = `${p.ptsGained} pts`;
+          }
+
           return `
             <tr style="${p.absent ? 'opacity:0.5;' : ''}">
               <td><strong>#${idx + 1}</strong></td>
               <td>${p.name} ${p.absent ? '(Absent)' : ''}</td>
-              <td><strong style="${colorStyle}">${formattedGain} pts</strong></td>
+              <td><span class="${gainClass}">${formattedGain}</span></td>
               <td>${p.startPts} pts</td>
               <td>${p.currentPts} pts</td>
             </tr>
