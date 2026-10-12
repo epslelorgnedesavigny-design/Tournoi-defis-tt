@@ -187,7 +187,6 @@
       5: { name: "5. EXPERT", class: "lvl-5", service: "Canon / Effet coupé", deplacements: "Replacement systématique", actions: "Variation, effets", tactique: "Construit dès le service" }
     };
 
-    // CALCUL NOTE PERFORMANCE POULE /6 SECON D'APRÈS LE BAREME
     function getPouleNote6(place, victoires) {
       if (place === 1) {
         if (victoires >= 3) return 6;
@@ -205,7 +204,7 @@
       return 2;
     }
 
-    const QUEST_LIST = [
+    const DEFAULT_QUESTS = [
       { id: 'q1', text: '🎯 Bat un joueur mieux classé que toi', bonus: 3 },
       { id: 'q2', text: '🛡️ Enchaîne 2 victoires consécutives', bonus: 3 },
       { id: 'q3', text: '🏓 Arbitre au moins 2 matchs', bonus: 3 },
@@ -351,7 +350,9 @@
           player.id = studentQRId;
 
           onValue(ref(db, getGroupPath('config')), (cfgSnap) => {
-            const grade = cfgSnap.val()?.gradeLevel || '6eme';
+            const cfg = cfgSnap.val() || {};
+            const grade = cfg.gradeLevel || '6eme';
+            const questList = cfg.quests || DEFAULT_QUESTS;
 
             onValue(ref(db, getGroupPath('history')), (historySnap) => {
               const matches = Object.entries(historySnap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
@@ -382,7 +383,13 @@
                 `;
               }
 
-              let pouleNoteHtml = player.pouleNote !== undefined ? `${player.pouleNote} / 6` : 'Non calculée';
+              let questTxt = 'Aucune quête en cours';
+              if (player.questId) {
+                const q = questList.find(x => x.id === player.questId);
+                if (q) questTxt = `${q.text} (+${q.bonus} pts bonus)`;
+              }
+
+              let pouleNoteHtml = player.pouleNote !== undefined ? `${player.pouleNote} / 6` : 'En cours de poule';
 
               document.getElementById('student-profile-card').innerHTML = `
                 <h1 style="font-size:1.8rem; margin-bottom:5px;">${player.name}</h1>
@@ -402,6 +409,10 @@
                 <div class="stats-box" style="text-align:left; margin-bottom:10px;">
                   <strong>🎯 Évaluation Niveau de Jeu :</strong>
                   ${evalHtml}
+                </div>
+
+                <div class="quest-box" style="text-align:left; margin-bottom:10px;">
+                  <strong>🎯 Quête Secrète Individuelle :</strong><br>${questTxt}
                 </div>
 
                 <div class="stats-box" style="text-align:left; margin-bottom:10px;">
@@ -557,7 +568,8 @@
       let activePoules = {};
       let isFlashActive = false;
       let sessionNumber = 1;
-      let options = { handicap: false, referee: false, quests: false };
+      let options = { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
+      let currentQuests = DEFAULT_QUESTS;
 
       document.getElementById('mode-free-btn').onclick = () => {
         document.getElementById('free-mode-container').style.display = 'block';
@@ -586,7 +598,8 @@
           const cfg = snap.val() || {};
           isFlashActive = cfg.flashMode || false;
           sessionNumber = cfg.sessionNumber || 1;
-          options = cfg.options || { handicap: false, referee: false, quests: false };
+          options = cfg.options || { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
+          currentQuests = cfg.quests || DEFAULT_QUESTS;
 
           document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
           document.getElementById('referee-box').style.display = options.referee ? 'block' : 'none';
@@ -672,8 +685,11 @@
           stats[id] = { id, name: players[id] ? players[id].name : id, victoires: 0, ptsPoule: 0, pour: 0, contre: 0, diff: 0, joues: 0 };
         });
 
+        let totalMatchesPlayed = 0;
+
         matches.forEach(m => {
           if (m.scoreA !== undefined && m.scoreB !== undefined && m.scoreA !== "" && m.scoreB !== "") {
+            totalMatchesPlayed++;
             const scA = parseInt(m.scoreA);
             const scB = parseInt(m.scoreB);
             
@@ -695,6 +711,8 @@
             }
           }
         });
+
+        const isPouleFinished = matches.length > 0 && totalMatchesPlayed === matches.length;
 
         Object.keys(stats).forEach(id => {
           stats[id].diff = stats[id].pour - stats[id].contre;
@@ -724,6 +742,12 @@
 
           <div class="card">
             <h3>🏆 Classement Direct de la Poule</h3>
+            ${!isPouleFinished ? `
+              <div style="text-align:center; padding:10px; background:#090d16; border-radius:8px; border:1px solid var(--warning); color:#fcd34d; font-size:0.85rem; margin-bottom:10px;">
+                ⏳ <strong>Poule en cours (${totalMatchesPlayed} / ${matches.length} matchs joués)</strong><br>
+                Les notes /6 seront calculées et révélées une fois tous les matchs terminés.
+              </div>
+            ` : ''}
             <table>
               <thead>
                 <tr>
@@ -732,7 +756,7 @@
                   <th>Pts Poule</th>
                   <th>V.</th>
                   <th>Diff</th>
-                  <th>Note /6</th>
+                  ${isPouleFinished ? '<th>Note /6</th>' : ''}
                 </tr>
               </thead>
               <tbody>
@@ -744,8 +768,7 @@
                       <td>${st.name}</td>
                       <td><span class="badge-win">${st.ptsPoule}</span></td>
                       <td>${st.victoires}</td>
-                      <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
-                      <td><strong style="color:#a855f7;">${note6} / 6</strong></td>
+                      <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>${isPouleFinished ? `<td><strong style="color:#a855f7;">${note6} / 6</strong></td>` : ''}
                     </tr>
                   `;
                 }).join('')}
@@ -767,13 +790,19 @@
 
           await set(ref(db, getGroupPath(`poules/${pouleKey}/matches`)), updatedMatches);
 
-          sortedStats.forEach(async (st, idx) => {
-            const note6 = getPouleNote6(idx + 1, st.victoires);
-            await set(ref(db, getGroupPath(`players/${st.id}/pouleNote`)), note6);
-          });
+          // ENREGISTREMENT DE LA NOTE /6 SEULEMENT SI TOUS LES MATCHS SONT VALIDEES
+          const allFilled = updatedMatches.every(m => m.scoreA !== "" && m.scoreB !== "");
+          if (allFilled) {
+            sortedStats.forEach(async (st, idx) => {
+              const note6 = getPouleNote6(idx + 1, st.victoires);
+              await set(ref(db, getGroupPath(`players/${st.id}/pouleNote`)), note6);
+            });
+            showToast("Poule terminée ! Notes /6 enregistrées.");
+          } else {
+            showToast("Scores de poule enregistrés.");
+          }
 
           playVictorySound();
-          showToast("Scores et notes de poule enregistrés !");
         };
       }
 
@@ -792,10 +821,14 @@
           const p2 = players[id2];
           const diff = Math.abs(p1.points - p2.points);
 
-          if (diff >= 6) {
-            const handicap = Math.min(Math.floor(diff / 3), 4);
+          const minDiff = options.handicapMinDiff || 6;
+          const ratio = options.handicapRatio || 3;
+          const maxBonus = options.handicapMax || 4;
+
+          if (diff >= minDiff) {
+            const handicap = Math.min(Math.floor((diff - minDiff + ratio) / ratio), maxBonus);
             const weaker = p1.points < p2.points ? p1.name : p2.name;
-            hBox.textContent = `⚖️ Handicap : ${weaker} démarre avec +${handicap} pts !`;
+            hBox.textContent = `⚖️ Handicap : ${weaker} démarre avec +${handicap} pts d'avance !`;
             hBox.style.display = 'block';
             return;
           }
@@ -821,7 +854,7 @@
 
         let questHtml = '';
         if (options.quests && p.questId) {
-          const q = QUEST_LIST.find(x => x.id === p.questId);
+          const q = currentQuests.find(x => x.id === p.questId);
           if (q) {
             questHtml = `<div class="quest-box">🎯 <strong>Quête Secrète :</strong> ${q.text} (+${q.bonus} pts bonus)</div>`;
           }
@@ -971,7 +1004,7 @@
             <a href="${baseUrl}?role=hub" target="_blank" class="tab-btn" style="text-decoration:none; color: #38bdf8;">📱 Hub QR</a>
           </div>
 
-          <!-- TAB 1: CLASSEMENT -->
+          <!-- TAB 1: CLASSEMENT (NOTES MASQUÉES CONFORMÉMENT À LA DEMANDE) -->
           <div id="tab-ranking">
             <div class="print-title" id="print-title-ranking">Classement Général EPS</div>
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;" class="no-print">
@@ -982,7 +1015,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>Note /6</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Matchs</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-1"></tbody>
                 </table>
@@ -990,7 +1023,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>Note /6</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Matchs</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-2"></tbody>
                 </table>
@@ -998,12 +1031,12 @@
             </div>
           </div>
 
-          <!-- TAB 2: SAISIE PRÉCISE DE LA NOTE DE NIVEAU DE JEU 0-12 -->
+          <!-- TAB 2: EVALUATION ET QUÊTES INDIVIDUELLES -->
           <div id="tab-eval" style="display:none;">
             <div class="card">
-              <h3>🎯 Évaluation Précise du Niveau de Jeu (0 à 12 Points)</h3>
+              <h3>🎯 Évaluation du Niveau de Jeu (/12) & Quêtes Secrètes</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Sélectionnez la note exacte (au point près de 0 à 12) pour chaque élève. Le niveau attribué s'ajuste au niveau de classe (<strong id="eval-grade-indicator">6ème</strong>).
+                Attribuez la note /12 de chaque élève et paramétrez sa quête individuelle pour la séance (<strong id="eval-grade-indicator">6ème</strong>).
               </p>
               <div id="eval-students-list" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
@@ -1012,9 +1045,9 @@
           <!-- TAB 3: BILAN POULES (Professeur) -->
           <div id="tab-poules" style="display:none;">
             <div class="card">
-              <h3>📊 Suivi en Direct des Poules de Niveau & Performance /6</h3>
+              <h3>📊 Suivi des Poules & Validation des Notes /6</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Récolte globale des scores, classements, victoires et calcul automatique de la Note de Performance sur 6 points.
+                Les notes sur 6 points apparaissent automatiquement uniquement lorsque tous les matchs d'une poule ont été complétés.
               </p>
               <div id="prof-poules-container" style="display:flex; flex-direction:column; gap:15px;"></div>
             </div>
@@ -1172,7 +1205,7 @@
             </div>
           </div>
 
-          <!-- TAB 7: OPTIONS EPS ET GÉNÉRATION DE POULES -->
+          <!-- TAB 7: OPTIONS EPS & PARAMÉTRAGES DES HANDICAPS ET QUÊTES -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
               <h3>🏆 Constitution des Poules de Niveau (3 ou 4 joueurs)</h3>
@@ -1186,20 +1219,54 @@
             </div>
 
             <div class="card" style="margin-top:15px;">
-              <h3>🎮 Variantes Pédagogiques (Défis Libres)</h3>
+              <h3>🎮 Variantes & Paramètres Pédagogiques</h3>
+              
+              <!-- ACTIVER HANDICAPS -->
               <label class="checkbox-label">
                 <input type="checkbox" id="opt-handicap">
-                <span><strong>1. Handicaps automatiques</strong> (bonus au moins bien classé si écart >= 6 pts)</span>
+                <span><strong>1. Handicaps automatiques</strong> (donne des points d'avance au joueur moins bien classé)</span>
               </label>
-              <label class="checkbox-label">
+
+              <!-- CONFIGURATION DÉTAILLÉE DES HANDICAPS -->
+              <div id="handicap-settings-box" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
+                <h4 style="margin:0 0 8px 0; color:#fcd34d; font-size:0.9rem;">⚙️ Réglage de la formule des Handicaps de départ</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                  <div>
+                    <label style="font-size:0.8rem; color:var(--muted);">Écart min. de points pour déclencher le handicap :</label>
+                    <input type="number" id="handicap-min-diff" value="6" min="1" max="20">
+                  </div>
+                  <div>
+                    <label style="font-size:0.8rem; color:var(--muted);">+1 point d'avance tous les X points d'écart :</label>
+                    <input type="number" id="handicap-ratio" value="3" min="1" max="10">
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVER ARBITRAGE -->
+              <label class="checkbox-label" style="margin-top:12px;">
                 <input type="checkbox" id="opt-referee">
-                <span><strong>2. Arbitrage tiers obligatoire</strong> (enregistre les comptages d'arbitrage)</span>
+                <span><strong>2. Arbitrage tiers obligatoire</strong></span>
               </label>
-              <label class="checkbox-label">
+
+              <!-- ACTIVER QUÊTES SECRÈTES -->
+              <label class="checkbox-label" style="margin-top:12px;">
                 <input type="checkbox" id="opt-quests">
-                <span><strong>3. Quêtes secrètes individuelles</strong> (défis bonus attribués à chaque élève)</span>
+                <span><strong>3. Quêtes secrètes individuelles</strong></span>
               </label>
-              <button class="btn btn-success" id="btn-save-options" style="margin-top:12px;">💾 Enregistrer les options de séance</button>
+
+              <!-- GESTION DES QUÊTES SECRÈTES DE CLASSE -->
+              <div id="quest-management-box" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
+                <h4 style="margin:0 0 8px 0; color:#e9d5ff; font-size:0.9rem;">🎯 Personnalisation de la Banque de Quêtes de la classe</h4>
+                <div id="quest-list-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+                
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="new-quest-text" placeholder="Nouvelle quête (ex: Réaliser 3 amortis)" style="margin:0;">
+                  <input type="number" id="new-quest-bonus" value="3" min="1" max="5" style="width:70px; margin:0;" title="Bonus en points">
+                  <button class="btn btn-sm btn-purple" id="btn-add-quest" style="width:auto;">+ Ajouter</button>
+                </div>
+              </div>
+
+              <button class="btn btn-success" id="btn-save-options" style="margin-top:15px;">💾 Enregistrer les Options & Paramètres</button>
             </div>
 
             <div class="card" style="margin-top:15px;">
@@ -1259,7 +1326,8 @@
       let activePoulesData = {};
       let currentSession = 1;
       let currentGradeLevel = '6eme';
-      let options = { handicap: false, referee: false, quests: false };
+      let options = { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
+      let questBank = DEFAULT_QUESTS;
 
       onValue(ref(db, 'groups'), (snap) => {
         const groups = snap.val() || { "Classe_1": true };
@@ -1294,7 +1362,7 @@
           await set(ref(db, `groups/${formatted}`), {
             players: playersData,
             history: historyMatches.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {}),
-            config: { sessionNumber: currentSession, gradeLevel: currentGradeLevel, flashMode: false, options }
+            config: { sessionNumber: currentSession, gradeLevel: currentGradeLevel, flashMode: false, options, quests: questBank }
           });
           await remove(ref(db, `groups/${currentGroup}`));
 
@@ -1324,15 +1392,24 @@
           const cfg = snap.val() || {};
           currentSession = cfg.sessionNumber || 1;
           currentGradeLevel = cfg.gradeLevel || '6eme';
-          options = cfg.options || { handicap: false, referee: false, quests: false };
+          options = cfg.options || { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
+          questBank = cfg.quests || DEFAULT_QUESTS;
 
           document.getElementById('grade-select').value = currentGradeLevel;
           document.getElementById('eval-grade-indicator').textContent = currentGradeLevel.toUpperCase();
           document.getElementById('session-pill').textContent = `Séance ${currentSession}`;
           document.getElementById('print-title-ranking').textContent = `Classement Général - ${currentGroup.replace('_', ' ')} (${currentGradeLevel.toUpperCase()})`;
+          
           document.getElementById('opt-handicap').checked = !!options.handicap;
+          document.getElementById('handicap-settings-box').style.display = options.handicap ? 'block' : 'none';
+          document.getElementById('handicap-min-diff').value = options.handicapMinDiff || 6;
+          document.getElementById('handicap-ratio').value = options.handicapRatio || 3;
+
           document.getElementById('opt-referee').checked = !!options.referee;
           document.getElementById('opt-quests').checked = !!options.quests;
+          document.getElementById('quest-management-box').style.display = options.quests ? 'block' : 'none';
+
+          renderQuestBankManager();
         });
 
         onValue(ref(db, getGroupPath('history')), (snap) => {
@@ -1356,7 +1433,44 @@
 
       attachListeners();
 
-      // SAISIE DE LA NOTE EXACTE DE 0 À 12/12 PERMETTANT DE CALCULER DIRECTEMENT LE NIVEAU
+      document.getElementById('opt-handicap').onchange = (e) => {
+        document.getElementById('handicap-settings-box').style.display = e.target.checked ? 'block' : 'none';
+      };
+
+      document.getElementById('opt-quests').onchange = (e) => {
+        document.getElementById('quest-management-box').style.display = e.target.checked ? 'block' : 'none';
+      };
+
+      function renderQuestBankManager() {
+        const container = document.getElementById('quest-list-container');
+        container.innerHTML = questBank.map((q, idx) => `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#131c31; padding:6px 10px; border-radius:6px; font-size:0.8rem;">
+            <span>${q.text} (<strong>+${q.bonus} pts</strong>)</span>
+            <button class="btn btn-sm btn-danger" onclick="removeQuestFromBank(${idx})">🗑️</button>
+          </div>
+        `).join('');
+      }
+
+      window.removeQuestFromBank = async (idx) => {
+        questBank.splice(idx, 1);
+        await set(ref(db, getGroupPath('config/quests')), questBank);
+        showToast("Quête supprimée de la banque");
+      };
+
+      document.getElementById('btn-add-quest').onclick = async () => {
+        const text = document.getElementById('new-quest-text').value.trim();
+        const bonus = parseInt(document.getElementById('new-quest-bonus').value) || 3;
+        if (!text) return showToast("Saisir un texte de quête", "danger");
+
+        const newQ = { id: `q_${Date.now()}`, text, bonus };
+        questBank.push(newQ);
+        await set(ref(db, getGroupPath('config/quests')), questBank);
+
+        document.getElementById('new-quest-text').value = '';
+        showToast("Quête ajoutée à la banque !");
+      };
+
+      // SAISIE DE LA NOTE 0-12 ET DE LA QUÊTE SECRÈTE DE L'ÉLÈVE
       function renderEvalStudentsList() {
         const container = document.getElementById('eval-students-list');
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a,b) => a.name.localeCompare(b.name));
@@ -1372,20 +1486,33 @@
           const desc = currentNote !== "" ? LEVEL_DESCRIPTIONS[lvlNum] : { name: "Non évalué", class: "lvl-1" };
 
           return `
-            <div class="card" style="background:#090d16; margin-bottom:0; padding:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-              <div style="flex:1; min-width:180px;">
-                <strong style="font-size:1rem; color:white;">${p.name}</strong>
-                <div style="margin-top:4px;">
-                  <span class="level-badge ${desc.class}">${desc.name}</span>
+            <div class="card" style="background:#090d16; margin-bottom:0; padding:12px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="flex:1; min-width:180px;">
+                  <strong style="font-size:1rem; color:white;">${p.name}</strong>
+                  <div style="margin-top:4px;">
+                    <span class="level-badge ${desc.class}">${desc.name}</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <label style="font-size:0.85rem; font-weight:bold; color:var(--muted);">Note /12 :</label>
+                  <select style="width:100px; margin:0; font-weight:bold; color:#38bdf8;" onchange="updateStudentExactNote('${p.id}', this.value)">
+                    <option value="">-- / 12 --</option>
+                    ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `
+                      <option value="${n}" ${currentNote !== "" && parseInt(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
+                    `).join('')}
+                  </select>
                 </div>
               </div>
 
-              <div style="display:flex; align-items:center; gap:8px;">
-                <label style="font-size:0.85rem; font-weight:bold; color:var(--muted);">Note :</label>
-                <select style="width:110px; margin:0; font-weight:bold; color:#38bdf8;" onchange="updateStudentExactNote('${p.id}', this.value)">
-                  <option value="">-- / 12 --</option>
-                  ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `
-                    <option value="${n}" ${currentNote !== "" && parseInt(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
+              <!-- PARAMÉTRAGE INDIVIDUEL DE LA QUÊTE SECRÈTE DE L'ÉLÈVE -->
+              <div style="display:flex; align-items:center; gap:8px; background:#131c31; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                <label style="font-size:0.8rem; font-weight:bold; color:#e9d5ff; whitespace:nowrap;">🎯 Quête :</label>
+                <select style="margin:0; font-size:0.82rem;" onchange="updateStudentQuest('${p.id}', this.value)">
+                  <option value="">-- Aucune quête attribuée --</option>
+                  ${questBank.map(q => `
+                    <option value="${q.id}" ${p.questId === q.id ? 'selected' : ''}>${q.text} (+${q.bonus} pts)</option>
                   `).join('')}
                 </select>
               </div>
@@ -1407,6 +1534,15 @@
         showToast(`Note ${noteVal}/12 enregistrée`);
       };
 
+      window.updateStudentQuest = async (studentId, questId) => {
+        if (questId === "") {
+          await remove(ref(db, getGroupPath(`players/${studentId}/questId`)));
+        } else {
+          await set(ref(db, getGroupPath(`players/${studentId}/questId`)), questId);
+        }
+        showToast("Quête élève enregistrée !");
+      };
+
       function renderProfPoulesOverview() {
         const container = document.getElementById('prof-poules-container');
         const pouleKeys = Object.keys(activePoulesData);
@@ -1426,8 +1562,11 @@
             stats[id] = { id, name: playersData[id] ? playersData[id].name : id, victoires: 0, ptsPoule: 0, pour: 0, contre: 0, diff: 0, joues: 0 };
           });
 
+          let totalMatchesPlayed = 0;
+
           matches.forEach(m => {
             if (m.scoreA !== undefined && m.scoreB !== undefined && m.scoreA !== "" && m.scoreB !== "") {
+              totalMatchesPlayed++;
               const scA = parseInt(m.scoreA);
               const scB = parseInt(m.scoreB);
               
@@ -1450,6 +1589,8 @@
             }
           });
 
+          const isPouleFinished = matches.length > 0 && totalMatchesPlayed === matches.length;
+
           Object.keys(stats).forEach(id => {
             stats[id].diff = stats[id].pour - stats[id].contre;
           });
@@ -1461,7 +1602,12 @@
 
           return `
             <div class="card" style="background:#090d16; margin-bottom:10px;">
-              <h4 style="color:#38bdf8; margin:0 0 8px 0; font-size:1rem;">Poule ${idx + 1} (Table ${idx + 1})</h4>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 style="color:#38bdf8; margin:0; font-size:1rem;">Poule ${idx + 1} (Table ${idx + 1})</h4>
+                <span style="font-size:0.8rem; font-weight:bold; color:${isPouleFinished ? 'var(--success)' : 'var(--warning)'};">
+                  ${isPouleFinished ? '✅ Poule Terminée' : `⏳ ${totalMatchesPlayed} /${matches.length} matchs`}
+                </span>
+              </div>
               <table>
                 <thead>
                   <tr>
@@ -1472,7 +1618,7 @@
                     <th>M. Joués</th>
                     <th>+ / -</th>
                     <th>Diff</th>
-                    <th>Note /6</th>
+                    ${isPouleFinished ? '<th>Note /6</th>' : ''}
                   </tr>
                 </thead>
                 <tbody>
@@ -1486,8 +1632,7 @@
                         <td>${st.victoires}</td>
                         <td>${st.joues}</td>
                         <td>${st.pour} /${st.contre}</td>
-                        <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
-                        <td><strong style="color:#a855f7;">${note6} / 6</strong></td>
+                        <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>${isPouleFinished ? `<td><strong style="color:#a855f7;">${note6} / 6</strong></td>` : ''}
                       </tr>
                     `;
                   }).join('')}
@@ -1575,6 +1720,7 @@
       document.getElementById('btn-generate-poules-rank').onclick = () => generatePoules('rank');
       document.getElementById('btn-generate-poules-level').onclick = () => generatePoules('level');
 
+      // CLASSEMENT PURE SANS AFFICHAGE DES NOTES CONFORMÉMENT À LA DEMANDE
       function renderRankingTable() {
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
         const half = Math.ceil(sorted.length / 2);
@@ -1585,17 +1731,12 @@
           return list.map((p, index) => {
             const badges = getPlayerBadgesHTML(p, historyMatches);
             const absentTag = p.absent ? ' <span style="color:#ef4444; font-size:0.75rem;">(Absent)</span>' : '';
-            
-            let note12Display = p.note12 !== undefined ? `<strong style="color:#38bdf8;">${p.note12} / 12</strong>` : '<span style="color:var(--muted);">- / 12</span>';
-            let note6Display = p.pouleNote !== undefined ? `<strong style="color:#a855f7;">${p.pouleNote} / 6</strong>` : '<span style="color:var(--muted);">- / 6</span>';
 
             return `
               <tr style="${p.absent ? 'opacity:0.5;' : ''}">
                 <td><strong>${index + 1 + offset}</strong></td>
                 <td>${p.name}${absentTag}</td>
                 <td><span class="badge-win">${p.points}</span></td>
-                <td>${note12Display}</td>
-                <td>${note6Display}</td>
                 <td>${p.matches || 0}</td>
                 <td>${badges}</td>
                 <td class="no-print"><button class="btn btn-sm btn-secondary" onclick="openStudentQR('${p.id}', '${p.name}')">🪪</button></td>
@@ -1780,27 +1921,40 @@
 
       document.getElementById('btn-save-options').onclick = async () => {
         const h = document.getElementById('opt-handicap').checked;
+        const hMin = parseInt(document.getElementById('handicap-min-diff').value) || 6;
+        const hRatio = parseInt(document.getElementById('handicap-ratio').value) || 3;
+
         const r = document.getElementById('opt-referee').checked;
         const q = document.getElementById('opt-quests').checked;
 
-        await set(ref(db, getGroupPath('config/options')), { handicap: h, referee: r, quests: q });
+        await set(ref(db, getGroupPath('config/options')), { 
+          handicap: h, 
+          handicapMinDiff: hMin,
+          handicapRatio: hRatio,
+          handicapMax: 4,
+          referee: r, 
+          quests: q 
+        });
 
+        // ATTRIBUTION AUTOMATIQUE D'UNE QUÊTE SI L'ÉLÈVE N'EN A PAS
         if (q) {
           for (let id in playersData) {
-            const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
-            await set(ref(db, getGroupPath(`players/${id}/questId`)), randomQuest.id);
+            if (!playersData[id].questId && questBank.length > 0) {
+              const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
+              await set(ref(db, getGroupPath(`players/${id}/questId`)), randomQuest.id);
+            }
           }
         }
 
-        showToast("Options de séance enregistrées !");
+        showToast("Options et paramètres enregistrés !");
       };
 
       document.getElementById('btn-next-session').onclick = async () => {
         if (confirm("Passer à la séance suivante ?")) {
           for (let id in playersData) {
             await set(ref(db, getGroupPath(`players/${id}/startPoints`)), playersData[id].points);
-            if (options.quests) {
-              const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+            if (options.quests && questBank.length > 0) {
+              const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
               await set(ref(db, getGroupPath(`players/${id}/questId`)), randomQuest.id);
             }
           }
@@ -1820,7 +1974,7 @@
           const newPlayers = {};
           names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
-            const randomQuest = QUEST_LIST[Math.floor(Math.random() * QUEST_LIST.length)];
+            const randomQuest = questBank.length > 0 ? questBank[Math.floor(Math.random() * questBank.length)] : null;
             newPlayers[id] = { 
               name: name.trim(), 
               points: startPoints, 
@@ -1828,7 +1982,7 @@
               matches: 0,
               refereeCount: 0,
               absent: false,
-              questId: randomQuest.id 
+              questId: randomQuest ? randomQuest.id : null
             };
             startPoints--;
           });
