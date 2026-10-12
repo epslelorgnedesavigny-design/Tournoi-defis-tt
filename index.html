@@ -90,7 +90,7 @@
     .rule-card p { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
 
     .bareme-table { width: 100%; margin-top: 8px; font-size: 0.8rem; border-collapse: collapse; }
-    .bareme-table th, .bareme-table td { padding: 4px 6px; text-align: center; border: 1px solid var(--border); }
+    .bareme-table th, .bareme-table td { padding: 6px 8px; text-align: center; border: 1px solid var(--border); }
     .bareme-table th { background: #1e293b; color: #38bdf8; }
 
     .gain-positive { color: var(--success); font-weight: bold; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
@@ -426,6 +426,27 @@
               <h3>Désigner le Vainqueur</h3>
               <button class="btn btn-success" id="btn-p1-win" style="margin-bottom:8px;"></button>
               <button class="btn btn-success" id="btn-p2-win"></button>
+            </div>
+
+            <!-- RAPPEL BARÈME SUR TABLE IPAD -->
+            <div class="card" style="margin-top:15px; background:#090d16;">
+              <h4 style="margin:0 0 6px 0; color:#38bdf8; text-align:center;">📊 Barème des Points Défi EPS</h4>
+              <table class="bareme-table">
+                <thead>
+                  <tr>
+                    <th>Écart de points (Niveau)</th>
+                    <th>Victoire</th>
+                    <th>Défaite</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Écart >= 10 pts (Favori)</td><td>+2 pts</td><td>-8 pts</td></tr>
+                  <tr><td>Écart 4 à 9 pts (Favori)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
+                  <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
+                  <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
+                  <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -907,6 +928,27 @@
               <h3>📖 Barème, Badges & Règles Officielles du Tournoi</h3>
               
               <div class="rule-card">
+                <h4>🏓 Règle du Barème Adaptatif (Gains / Pertes en Défi)</h4>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:8px;">Le nombre de points gagnés ou perdus dépend de la différence de classement initiale entre les deux adversaires :</p>
+                <table class="bareme-table">
+                  <thead>
+                    <tr>
+                      <th>Écart de points</th>
+                      <th>Victoire</th>
+                      <th>Défaite</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Écart >= 10 pts (Favori)</td><td>+2 pts</td><td>-8 pts</td></tr>
+                    <tr><td>Écart 4 à 9 pts (Favori)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
+                    <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
+                    <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
+                    <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="rule-card">
                 <h4>🏓 Formats : Défis Libres ou Tournois de Poules</h4>
                 <ul style="font-size:0.85rem; color:var(--muted); margin:4px 0; padding-left:20px;">
                   <li><strong>Défis Libres :</strong> Choisis un adversaire direct, 1 seul défi par adversaire par séance.</li>
@@ -1119,7 +1161,6 @@
 
       attachListeners();
 
-      // Rendu de l'onglet Bilan Poules sur la tablette Prof
       function renderProfPoulesOverview() {
         const container = document.getElementById('prof-poules-container');
         const pouleKeys = Object.keys(activePoulesData);
