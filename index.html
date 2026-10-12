@@ -123,7 +123,7 @@
     .print-title { display: none; }
   </style>
 
-  <!-- Bibliothèque QR Code -->
+  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -144,70 +144,66 @@
 
     let currentGroup = localStorage.getItem('eps_current_group') || 'Classe_1';
 
-    // DÉFINITION DE LA GRILLE DES NIVEAUX /12 SELON LE NIVEAU DE CLASSE
-    const LEVEL_MATRIX = {
-      '6eme': {
-        1: { label: '1. Débutant', points: 3, noteMax: '0 à 4/12', class: 'lvl-1' },
-        2: { label: '2. Apprenti', points: 7, noteMax: '5 à 8/12', class: 'lvl-2' },
-        3: { label: '3. Débrouillé', points: 10, noteMax: '9 à 12/12', class: 'lvl-3' },
-        4: { label: '4. Confirmé', points: 12, noteMax: '11 à 12/12', class: 'lvl-4' },
-        5: { label: '5. Expert', points: 12, noteMax: '12/12', class: 'lvl-5' }
-      },
-      '5eme': {
-        1: { label: '1. Débutant', points: 2, noteMax: '0 à 2/12', class: 'lvl-1' },
-        2: { label: '2. Apprenti', points: 5, noteMax: '3 à 6/12', class: 'lvl-2' },
-        3: { label: '3. Débrouillé', points: 8, noteMax: '7 à 10/12', class: 'lvl-3' },
-        4: { label: '4. Confirmé', points: 11, noteMax: '11 à 12/12', class: 'lvl-4' },
-        5: { label: '5. Expert', points: 12, noteMax: '12/12', class: 'lvl-5' }
-      },
-      '4eme': {
-        1: { label: '1. Débutant', points: 1, noteMax: '0 à 1/12', class: 'lvl-1' },
-        2: { label: '2. Apprenti', points: 4, noteMax: '2 à 5/12', class: 'lvl-2' },
-        3: { label: '3. Débrouillé', points: 7, noteMax: '6 à 8/12', class: 'lvl-3' },
-        4: { label: '4. Confirmé', points: 10, noteMax: '9 à 11/12', class: 'lvl-4' },
-        5: { label: '5. Expert', points: 12, noteMax: '12/12', class: 'lvl-5' }
-      },
-      '3eme': {
-        1: { label: '1. Débutant', points: 1, noteMax: '0 à 1/12', class: 'lvl-1' },
-        2: { label: '2. Apprenti', points: 3, noteMax: '2 à 4/12', class: 'lvl-2' },
-        3: { label: '3. Débrouillé', points: 6, noteMax: '5 à 7/12', class: 'lvl-3' },
-        4: { label: '4. Confirmé', points: 9, noteMax: '8 à 10/12', class: 'lvl-4' },
-        5: { label: '5. Expert', points: 11, noteMax: '11 à 12/12', class: 'lvl-5' }
+    // DÉTERMINATION DU NIVEAU DE JEU (1 À 5) D'APRÈS LA NOTE DÉCIMALE OBTENUE
+    function getLevelFromNote(grade, score) {
+      if (score === null || score === undefined || score === "") return 0;
+      const val = parseFloat(score);
+      if (grade === '6eme') {
+        if (val <= 4) return 1;
+        if (val <= 8) return 2;
+        if (val <= 10) return 3;
+        if (val <= 11) return 4;
+        return 5;
       }
-    };
+      if (grade === '5eme') {
+        if (val <= 2) return 1;
+        if (val <= 6) return 2;
+        if (val <= 10) return 3;
+        if (val <= 11) return 4;
+        return 5;
+      }
+      if (grade === '4eme') {
+        if (val <= 1) return 1;
+        if (val <= 5) return 2;
+        if (val <= 8) return 3;
+        if (val <= 11) return 4;
+        return 5;
+      }
+      if (grade === '3eme') {
+        if (val <= 1) return 1;
+        if (val <= 4) return 2;
+        if (val <= 7) return 3;
+        if (val <= 10) return 4;
+        return 5;
+      }
+      return 1;
+    }
 
     const LEVEL_DESCRIPTIONS = {
-      1: {
-        service: "NON RÉGLEMENTAIRE, problèmes de coordination.",
-        deplacements: "STATIQUE et COLLÉ à la table.",
-        actions: "JEU en PISTON, CONTACT aléatoire. MAUVAISE PRISE DE RAQUETTE.",
-        tactique: "Renvoi simple, pas d'intention tactique."
-      },
-      2: {
-        service: "RÉGLEMENTAIRE et ALÉATOIRE sans intention tactique.",
-        deplacements: "Très peu de Déplacements, 1 pas sur le côté sans replacement.",
-        actions: "JEU avec coup préférentiel. Défaut de prise de raquette.",
-        tactique: "Cherche la continuité et attend la faute adverse."
-      },
-      3: {
-        service: "SIMPLE et STÉRÉOTYPÉ (Ex: coup droit diagonale).",
-        deplacements: "Déplacement LATÉRAL.",
-        actions: "Différenciation du COUP DROIT et du REVERS. Jeu PLACÉ.",
-        tactique: "Rupture de l'échange sur une balle favorable par renvoi rapide/placé."
-      },
-      4: {
-        service: "PLACÉ, CANON, avec intention tactique (gain du point).",
-        deplacements: "LATÉRAL et en PROFONDEUR. Début de REPLACEMENT.",
-        actions: "FRAPPE et PLACE la balle (Smash). Trajectoires tendues.",
-        tactique: "Cherche à finir sur son coup fort par schéma tactique simple."
-      },
-      5: {
-        service: "CANON et/ou avec EFFET (coupé) ➔ GAIN du point.",
-        deplacements: "IMPORTANTS avec REPLACEMENT SYSTÉMATIQUE.",
-        actions: "FRAPPE et PLACE la balle. VARIATION DES ACTIONS, quelques EFFETS (lifts/coupés).",
-        tactique: "Construit son jeu dès le service. Joue selon les points forts/faibles."
-      }
+      1: { name: "1. DÉBUTANT", class: "lvl-1", service: "Non réglementaire", deplacements: "Statique", actions: "Piston, mauvaise prise", tactique: "Renvoi simple" },
+      2: { name: "2. APPRENTI", class: "lvl-2", service: "Réglementaire sans intention", deplacements: "1 pas sans replacement", actions: "Coup préférentiel", tactique: "Cherche la continuité" },
+      3: { name: "3. DÉBROUILLÉ", class: "lvl-3", service: "Simple / stéréotypé", deplacements: "Déplacement latéral", actions: "CD / Revers placé", tactique: "Rupture sur balle facile" },
+      4: { name: "4. CONFIRMÉ", class: "lvl-4", service: "Placé, canon, intention", deplacements: "Latéral + profondeur", actions: "Frappe, place, smash", tactique: "Finit sur coup fort" },
+      5: { name: "5. EXPERT", class: "lvl-5", service: "Canon / Effet coupé", deplacements: "Replacement systématique", actions: "Variation, effets", tactique: "Construit dès le service" }
     };
+
+    // CALCUL NOTE PERFORMANCE POULE /6 SECON D'APRÈS LE BAREME
+    function getPouleNote6(place, victoires) {
+      if (place === 1) {
+        if (victoires >= 3) return 6;
+        if (victoires === 2) return 5;
+        return 4;
+      }
+      if (place === 2) {
+        if (victoires >= 2) return 4;
+        return 3;
+      }
+      if (place === 3) {
+        if (victoires >= 1) return 3;
+        return 2;
+      }
+      return 2;
+    }
 
     const QUEST_LIST = [
       { id: 'q1', text: '🎯 Bat un joueur mieux classé que toi', bonus: 3 },
@@ -367,14 +363,14 @@
               const badges = getPlayerBadgesHTML(player, matches);
 
               let evalHtml = '<p style="color:var(--muted); font-size:0.85rem;">Non évalué par le professeur pour l\'instant.</p>';
-              if (player.level) {
-                const lvlInfo = LEVEL_MATRIX[grade][player.level];
-                const desc = LEVEL_DESCRIPTIONS[player.level];
+              if (player.note12 !== undefined && player.note12 !== "") {
+                const lvlNum = getLevelFromNote(grade, player.note12);
+                const desc = LEVEL_DESCRIPTIONS[lvlNum];
                 evalHtml = `
                   <div style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <span class="level-badge ${lvlInfo.class}">${lvlInfo.label}</span>
-                      <strong style="color:#38bdf8; font-size:1.1rem;">${lvlInfo.points} / 12</strong>
+                      <span class="level-badge ${desc.class}">${desc.name}</span>
+                      <strong style="color:#38bdf8; font-size:1.1rem;">${player.note12} / 12</strong>
                     </div>
                     <ul style="font-size:0.8rem; color:var(--muted); margin:8px 0 0 0; padding-left:16px;">
                       <li><strong>Service :</strong> ${desc.service}</li>
@@ -386,6 +382,8 @@
                 `;
               }
 
+              let pouleNoteHtml = player.pouleNote !== undefined ? `${player.pouleNote} / 6` : 'Non calculée';
+
               document.getElementById('student-profile-card').innerHTML = `
                 <h1 style="font-size:1.8rem; margin-bottom:5px;">${player.name}</h1>
                 <p class="group-pill" style="display:inline-block; margin-bottom:15px;">Classe : ${currentGroup.replace('_', ' ')} (${grade.toUpperCase()})</p>
@@ -396,8 +394,8 @@
                     <div style="font-size:1.5rem; font-weight:bold; color:var(--success);">${player.points} pts</div>
                   </div>
                   <div class="stats-box">
-                    <div style="font-size:0.8rem; color:var(--muted);">Progression</div>
-                    <div style="font-size:1.5rem; font-weight:bold; color:${progress >= 0 ? 'var(--success)' : 'var(--danger)'};">${progress >= 0 ? '+' + progress : progress} pts</div>
+                    <div style="font-size:0.8rem; color:var(--muted);">Note Poule</div>
+                    <div style="font-size:1.5rem; font-weight:bold; color:#a855f7;">${pouleNoteHtml}</div>
                   </div>
                 </div>
 
@@ -731,23 +729,26 @@
                 <tr>
                   <th>#</th>
                   <th>Élève</th>
-                  <th>Pts</th>
+                  <th>Pts Poule</th>
                   <th>V.</th>
-                  <th>+ / -</th>
                   <th>Diff</th>
+                  <th>Note /6</th>
                 </tr>
               </thead>
               <tbody>
-                ${sortedStats.map((st, idx) => `
-                  <tr>
-                    <td><strong>${idx + 1}</strong></td>
-                    <td>${st.name}</td>
-                    <td><span class="badge-win">${st.ptsPoule}</span></td>
-                    <td>${st.victoires}</td>
-                    <td>${st.pour}/${st.contre}</td>
-                    <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
-                  </tr>
-                `).join('')}
+                ${sortedStats.map((st, idx) => {
+                  const note6 = getPouleNote6(idx + 1, st.victoires);
+                  return `
+                    <tr>
+                      <td><strong>${idx + 1}</strong></td>
+                      <td>${st.name}</td>
+                      <td><span class="badge-win">${st.ptsPoule}</span></td>
+                      <td>${st.victoires}</td>
+                      <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
+                      <td><strong style="color:#a855f7;">${note6} / 6</strong></td>
+                    </tr>
+                  `;
+                }).join('')}
               </tbody>
             </table>
           </div>
@@ -765,8 +766,14 @@
           });
 
           await set(ref(db, getGroupPath(`poules/${pouleKey}/matches`)), updatedMatches);
+
+          sortedStats.forEach(async (st, idx) => {
+            const note6 = getPouleNote6(idx + 1, st.victoires);
+            await set(ref(db, getGroupPath(`players/${st.id}/pouleNote`)), note6);
+          });
+
           playVictorySound();
-          showToast("Scores de poule enregistrés !");
+          showToast("Scores et notes de poule enregistrés !");
         };
       }
 
@@ -975,7 +982,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>Note /6</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-1"></tbody>
                 </table>
@@ -983,7 +990,7 @@
               <div>
                 <table>
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Note /12</th><th>Note /6</th><th>M</th><th>Badges</th><th class="no-print">QR</th></tr>
                   </thead>
                   <tbody id="ranking-body-2"></tbody>
                 </table>
@@ -991,29 +998,29 @@
             </div>
           </div>
 
-          <!-- TAB NEW: SAISIE DIRECTE ÉVALUATION NIVEAUX DE JEU -->
+          <!-- TAB 2: SAISIE PRÉCISE DE LA NOTE DE NIVEAU DE JEU 0-12 -->
           <div id="tab-eval" style="display:none;">
             <div class="card">
-              <h3>🎯 Évaluation des Niveaux de Jeu sur 12 Points</h3>
+              <h3>🎯 Évaluation Précise du Niveau de Jeu (0 à 12 Points)</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Cochez le niveau observé pour chaque élève. La note sur 12 s'adapte automatiquement au niveau de classe sélectionné (<strong id="eval-grade-indicator">6ème</strong>).
+                Sélectionnez la note exacte (au point près de 0 à 12) pour chaque élève. Le niveau attribué s'ajuste au niveau de classe (<strong id="eval-grade-indicator">6ème</strong>).
               </p>
               <div id="eval-students-list" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
           </div>
 
-          <!-- TAB 2: BILAN POULES (Professeur) -->
+          <!-- TAB 3: BILAN POULES (Professeur) -->
           <div id="tab-poules" style="display:none;">
             <div class="card">
-              <h3>📊 Suivi en Direct des Poules de Niveau</h3>
+              <h3>📊 Suivi en Direct des Poules de Niveau & Performance /6</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Récolte globale des scores, classements et goal-averages de chaque élève par poule.
+                Récolte globale des scores, classements, victoires et calcul automatique de la Note de Performance sur 6 points.
               </p>
               <div id="prof-poules-container" style="display:flex; flex-direction:column; gap:15px;"></div>
             </div>
           </div>
 
-          <!-- TAB 3: PROGRESSIONS -->
+          <!-- TAB 4: PROGRESSIONS -->
           <div id="tab-progress" style="display:none;">
             <div class="card">
               <h3>🚀 Bilan des Progressions de la Séance</h3>
@@ -1035,22 +1042,46 @@
             </div>
           </div>
 
-          <!-- TAB 4: BARÈME ET RÈGLES DU TOURNOI -->
+          <!-- TAB 5: BARÈME ET RÈGLES DU TOURNOI -->
           <div id="tab-rules" style="display:none;">
             <div class="card">
-              <h3>📖 Barème Offiiciel, Grille /12 & Règles EPS</h3>
+              <h3>📖 Barèmes Officiels, Poules /6 & Règles EPS</h3>
               
               <div class="rule-card">
-                <h4>🎯 Grille Officielle d'Évaluation des Niveaux de Jeu (/12 pts)</h4>
+                <h4>📊 Barème Officiel de Performance en Poule (/6 pts)</h4>
+                <table class="bareme-table">
+                  <thead>
+                    <tr>
+                      <th>Place dans la poule</th>
+                      <th>Nombre de Victoires</th>
+                      <th>NOTE / 6</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>1ère place</strong></td><td>4 victoires</td><td><strong style="color:var(--success);">6 / 6</strong></td></tr>
+                    <tr><td><strong>1ère place</strong></td><td>3 victoires</td><td><strong style="color:var(--success);">6 / 6</strong></td></tr>
+                    <tr><td><strong>1ère place</strong></td><td>2 victoires</td><td><strong>5 / 6</strong></td></tr>
+                    <tr><td><strong>1ère place</strong></td><td>3 victoires (Poule de 3)</td><td><strong>4 / 6</strong></td></tr>
+                    <tr><td><strong>2ème place</strong></td><td>2 victoires</td><td><strong>4 / 6</strong></td></tr>
+                    <tr><td><strong>2ème place</strong></td><td>1 victoire</td><td><strong>3 / 6</strong></td></tr>
+                    <tr><td><strong>3ème place</strong></td><td>1 victoire</td><td><strong>3 / 6</strong></td></tr>
+                    <tr><td><strong>3ème place</strong></td><td>0 victoire</td><td><strong>2 / 6</strong></td></tr>
+                    <tr><td><strong>4ème place</strong></td><td>0 victoire</td><td><strong>2 / 6</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="rule-card">
+                <h4>🎯 Tranches Repères des Niveaux de Jeu (/12 pts)</h4>
                 <div style="overflow-x:auto;">
                   <table class="bareme-table" style="font-size:0.75rem;">
                     <thead>
                       <tr>
                         <th>Niveaux de Jeu</th>
-                        <th>Note /12 (6es)</th>
-                        <th>Note /12 (5es)</th>
-                        <th>Note /12 (4es)</th>
-                        <th>Note /12 (3es)</th>
+                        <th>6ème</th>
+                        <th>5ème</th>
+                        <th>4ème</th>
+                        <th>3ème</th>
                         <th>Service</th>
                         <th>Déplacements</th>
                         <th>Actions sur la balle</th>
@@ -1060,43 +1091,28 @@
                     <tbody>
                       <tr>
                         <td><span class="level-badge lvl-1">1. DÉBUTANT</span></td>
-                        <td>0 à 4</td><td>0 à 2</td><td>0 à 1</td><td>0 à 1</td>
-                        <td>Non réglementaire, coordination</td>
-                        <td>Statique et collé à la table</td>
-                        <td>Piston, contact aléatoire, mauvaise prise</td>
-                        <td>Renvoi simple, aucune intention</td>
+                        <td>0 à 4 pts</td><td>0 à 2 pts</td><td>0 à 1 pt</td><td>0 à 1 pt</td>
+                        <td>Non réglementaire</td><td>Statique et collé</td><td>Piston, mauvaise prise</td><td>Renvoi simple</td>
                       </tr>
                       <tr>
                         <td><span class="level-badge lvl-2">2. APPRENTI</span></td>
-                        <td>5 à 8</td><td>3 à 6</td><td>2 à 5</td><td>2 à 4</td>
-                        <td>Réglementaire sans intention</td>
-                        <td>1 pas côté sans replacement</td>
-                        <td>Coup préférentiel, défaut prise</td>
-                        <td>Cherche la continuité, attend la faute</td>
+                        <td>5 à 8 pts</td><td>3 à 6 pts</td><td>2 à 5 pts</td><td>2 à 4 pts</td>
+                        <td>Réglementaire sans intention</td><td>1 pas sans replacement</td><td>Coup préférentiel</td><td>Cherche la continuité</td>
                       </tr>
                       <tr>
                         <td><span class="level-badge lvl-3">3. DÉBROUILLÉ</span></td>
-                        <td>9 à 12</td><td>7 à 10</td><td>6 à 8</td><td>5 à 7</td>
-                        <td>Simple / stéréotypé</td>
-                        <td>Déplacement latéral</td>
-                        <td>Coup droit / Revers, jeu placé</td>
-                        <td>Rupture rapide ou placée sur balle facile</td>
+                        <td>9 à 10 pts</td><td>7 à 10 pts</td><td>6 à 8 pts</td><td>5 à 7 pts</td>
+                        <td>Simple / stéréotypé</td><td>Déplacement latéral</td><td>CD / Revers, jeu placé</td><td>Rupture sur balle facile</td>
                       </tr>
                       <tr>
                         <td><span class="level-badge lvl-4">4. CONFIRMÉ</span></td>
-                        <td>-</td><td>11 à 12</td><td>9 à 11</td><td>8 à 10</td>
-                        <td>Placé, canon, intention de point</td>
-                        <td>Latéral + profondeur, début replacement</td>
-                        <td>Frappe, place, smash, tendu</td>
-                        <td>Finit sur coup fort, schéma simple</td>
+                        <td>11 pts</td><td>11 pts</td><td>9 à 11 pts</td><td>8 à 10 pts</td>
+                        <td>Placé, canon, intention</td><td>Latéral + profondeur</td><td>Frappe, place, smash</td><td>Finit sur coup fort</td>
                       </tr>
                       <tr>
                         <td><span class="level-badge lvl-5">5. EXPERT</span></td>
-                        <td>-</td><td>-</td><td>12</td><td>11 à 12</td>
-                        <td>Canon / Effet coupé ➔ Gain direct</td>
-                        <td>Replacement systématique</td>
-                        <td>Frappe, variation, lifts et coupés</td>
-                        <td>Construit dès le service selon l'adversaire</td>
+                        <td>12 pts</td><td>12 pts</td><td>12 pts</td><td>11 à 12 pts</td>
+                        <td>Canon / Effet coupé</td><td>Replacement systématique</td><td>Frappe, variation, effets</td><td>Construit dès le service</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1136,7 +1152,7 @@
             </div>
           </div>
 
-          <!-- TAB 5: HISTORIQUE -->
+          <!-- TAB 6: HISTORIQUE -->
           <div id="tab-history" style="display:none;">
             <div class="card">
               <h3>Flux des Matchs & Corrections</h3>
@@ -1156,31 +1172,34 @@
             </div>
           </div>
 
-          <!-- TAB 6: OPTIONS EPS ET GÉNÉRATION DE POULES -->
+          <!-- TAB 7: OPTIONS EPS ET GÉNÉRATION DE POULES -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
-              <h3>🏆 Génération Automatique des Poules de Niveau</h3>
-              <p style="font-size:0.85rem; color:var(--muted);">
-                Répartit automatiquement tous les élèves présents en poules physiques de 3 ou 4 joueurs selon leur classement actuel.
+              <h3>🏆 Constitution des Poules de Niveau (3 ou 4 joueurs)</h3>
+              <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px;">
+                Choisissez la méthode de répartition pour créer les poules physiques d'élèves :
               </p>
-              <button class="btn btn-purple" id="btn-generate-poules">⚡ Générer les Poules de Niveau (3 ou 4 joueurs)</button>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn btn-purple" id="btn-generate-poules-rank">📊 Générer par Classement Défis</button>
+                <button class="btn btn-purple" id="btn-generate-poules-level" style="background:#0284c7;">🎯 Générer par Niveau de Jeu (1-5)</button>
+              </div>
             </div>
 
             <div class="card" style="margin-top:15px;">
               <h3>🎮 Variantes Pédagogiques (Défis Libres)</h3>
               <label class="checkbox-label">
                 <input type="checkbox" id="opt-handicap">
-                <span><strong>1. Handicaps automatiques</strong> (bonus aux joueurs moins bien classés)</span>
+                <span><strong>1. Handicaps automatiques</strong> (bonus au moins bien classé si écart >= 6 pts)</span>
               </label>
               <label class="checkbox-label">
                 <input type="checkbox" id="opt-referee">
-                <span><strong>2. Arbitrage tiers obligatoire</strong></span>
+                <span><strong>2. Arbitrage tiers obligatoire</strong> (enregistre les comptages d'arbitrage)</span>
               </label>
               <label class="checkbox-label">
                 <input type="checkbox" id="opt-quests">
-                <span><strong>3. Quêtes secrètes individuelles</strong></span>
+                <span><strong>3. Quêtes secrètes individuelles</strong> (défis bonus attribués à chaque élève)</span>
               </label>
-              <button class="btn btn-success" id="btn-save-options" style="margin-top:12px;">Enregistrer les options</button>
+              <button class="btn btn-success" id="btn-save-options" style="margin-top:12px;">💾 Enregistrer les options de séance</button>
             </div>
 
             <div class="card" style="margin-top:15px;">
@@ -1189,7 +1208,7 @@
             </div>
           </div>
 
-          <!-- TAB 7: GESTION DES ÉLÈVES -->
+          <!-- TAB 8: GESTION DES ÉLÈVES -->
           <div id="tab-groups" style="display:none;">
             <div class="card">
               <h3>👥 Élèves de la classe (<span id="active-class-label"></span>)</h3>
@@ -1337,7 +1356,7 @@
 
       attachListeners();
 
-      // RENDU DE L'ONGLET D'ÉVALUATION PAR ÉLÈVE
+      // SAISIE DE LA NOTE EXACTE DE 0 À 12/12 PERMETTANT DE CALCULER DIRECTEMENT LE NIVEAU
       function renderEvalStudentsList() {
         const container = document.getElementById('eval-students-list');
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a,b) => a.name.localeCompare(b.name));
@@ -1348,37 +1367,44 @@
         }
 
         container.innerHTML = sorted.map(p => {
-          const currentLvl = p.level || 0;
-          const matrix = LEVEL_MATRIX[currentGradeLevel];
-          const scoreDisplay = currentLvl ? `${matrix[currentLvl].points}/12` : '-/12';
+          const currentNote = p.note12 !== undefined ? p.note12 : "";
+          const lvlNum = getLevelFromNote(currentGradeLevel, currentNote);
+          const desc = currentNote !== "" ? LEVEL_DESCRIPTIONS[lvlNum] : { name: "Non évalué", class: "lvl-1" };
 
           return `
-            <div class="card" style="background:#090d16; margin-bottom:0; padding:12px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div class="card" style="background:#090d16; margin-bottom:0; padding:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div style="flex:1; min-width:180px;">
                 <strong style="font-size:1rem; color:white;">${p.name}</strong>
-                <span style="font-weight:bold; font-size:1.1rem; color:#38bdf8;" id="eval-score-${p.id}">${scoreDisplay}</span>
+                <div style="margin-top:4px;">
+                  <span class="level-badge ${desc.class}">${desc.name}</span>
+                </div>
               </div>
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:6px;">
-                ${[1, 2, 3, 4, 5].map(lvlNum => {
-                  const info = matrix[lvlNum];
-                  const isChecked = currentLvl === lvlNum ? 'checked' : '';
-                  return `
-                    <label style="display:flex; align-items:center; gap:6px; background:#131c31; padding:6px 8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.78rem;">
-                      <input type="radio" name="eval-${p.id}" value="${lvlNum}" ${isChecked} onchange="updateStudentLevel('${p.id}',${lvlNum})">
-                      <span class="level-badge ${info.class}">${info.label}</span>
-                    </label>
-                  `;
-                }).join('')}
+
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:0.85rem; font-weight:bold; color:var(--muted);">Note :</label>
+                <select style="width:110px; margin:0; font-weight:bold; color:#38bdf8;" onchange="updateStudentExactNote('${p.id}', this.value)">
+                  <option value="">-- / 12 --</option>
+                  ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `
+                    <option value="${n}" ${currentNote !== "" && parseInt(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
+                  `).join('')}
+                </select>
               </div>
             </div>
           `;
         }).join('');
       }
 
-      window.updateStudentLevel = async (studentId, level) => {
-        await set(ref(db, getGroupPath(`players/${studentId}/level`)), level);
-        const pts = LEVEL_MATRIX[currentGradeLevel][level].points;
-        showToast(`Niveau ${level} enregistré (${pts}/12)`);
+      window.updateStudentExactNote = async (studentId, noteVal) => {
+        if (noteVal === "") {
+          await remove(ref(db, getGroupPath(`players/${studentId}/note12`)));
+          await remove(ref(db, getGroupPath(`players/${studentId}/level`)));
+        } else {
+          const noteNum = parseInt(noteVal);
+          const calculatedLvl = getLevelFromNote(currentGradeLevel, noteNum);
+          await set(ref(db, getGroupPath(`players/${studentId}/note12`)), noteNum);
+          await set(ref(db, getGroupPath(`players/${studentId}/level`)), calculatedLvl);
+        }
+        showToast(`Note ${noteVal}/12 enregistrée`);
       };
 
       function renderProfPoulesOverview() {
@@ -1441,25 +1467,30 @@
                   <tr>
                     <th>#</th>
                     <th>Élève</th>
-                    <th>Pts</th>
+                    <th>Pts Poule</th>
                     <th>V.</th>
                     <th>M. Joués</th>
                     <th>+ / -</th>
-                    <th>Goal-Average (Diff)</th>
+                    <th>Diff</th>
+                    <th>Note /6</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${sortedStats.map((st, sIdx) => `
-                    <tr>
-                      <td><strong>${sIdx + 1}</strong></td>
-                      <td>${st.name}</td>
-                      <td><span class="badge-win">${st.ptsPoule}</span></td>
-                      <td>${st.victoires}</td>
-                      <td>${st.joues}</td>
-                      <td>${st.pour} /${st.contre}</td>
-                      <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
-                    </tr>
-                  `).join('')}
+                  ${sortedStats.map((st, sIdx) => {
+                    const note6 = getPouleNote6(sIdx + 1, st.victoires);
+                    return `
+                      <tr>
+                        <td><strong>${sIdx + 1}</strong></td>
+                        <td>${st.name}</td>
+                        <td><span class="badge-win">${st.ptsPoule}</span></td>
+                        <td>${st.victoires}</td>
+                        <td>${st.joues}</td>
+                        <td>${st.pour} /${st.contre}</td>
+                        <td><strong style="color:${st.diff >= 0 ? 'var(--success)' : 'var(--danger)'};">${st.diff > 0 ? '+' + st.diff : st.diff}</strong></td>
+                        <td><strong style="color:#a855f7;">${note6} / 6</strong></td>
+                      </tr>
+                    `;
+                  }).join('')}
                 </tbody>
               </table>
             </div>
@@ -1467,14 +1498,24 @@
         }).join('');
       }
 
-      document.getElementById('btn-generate-poules').onclick = async () => {
+      async function generatePoules(mode = 'rank') {
         const activeStudents = Object.entries(playersData)
           .map(([id, p]) => ({ id, ...p }))
-          .filter(p => !p.absent)
-          .sort((a,b) => b.points - a.points);
+          .filter(p => !p.absent);
 
         if (activeStudents.length < 3) {
           return showToast("⚠️ Pas assez d'élèves présents (min 3) !", "danger");
+        }
+
+        if (mode === 'rank') {
+          activeStudents.sort((a,b) => b.points - a.points);
+        } else {
+          activeStudents.sort((a,b) => {
+            const noteA = a.note12 !== undefined ? parseFloat(a.note12) : -1;
+            const noteB = b.note12 !== undefined ? parseFloat(b.note12) : -1;
+            if (noteB !== noteA) return noteB - noteA;
+            return b.points - a.points;
+          });
         }
 
         const total = activeStudents.length;
@@ -1526,9 +1567,13 @@
         }
 
         await set(ref(db, getGroupPath('poules')), poules);
-        showToast(`⚡ ${pouleNum - 1} Poules de Niveau générées avec succès !`);
+        const modeTxt = mode === 'rank' ? 'Classement Défis' : 'Niveaux de Jeu';
+        showToast(`⚡ ${pouleNum - 1} Poules générées selon le ${modeTxt} !`);
         switchTab('poules');
-      };
+      }
+
+      document.getElementById('btn-generate-poules-rank').onclick = () => generatePoules('rank');
+      document.getElementById('btn-generate-poules-level').onclick = () => generatePoules('level');
 
       function renderRankingTable() {
         const sorted = Object.entries(playersData).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.points - a.points);
@@ -1541,18 +1586,16 @@
             const badges = getPlayerBadgesHTML(p, historyMatches);
             const absentTag = p.absent ? ' <span style="color:#ef4444; font-size:0.75rem;">(Absent)</span>' : '';
             
-            let noteDisplay = '<span style="color:var(--muted);">- / 12</span>';
-            if (p.level) {
-              const pts = LEVEL_MATRIX[currentGradeLevel][p.level].points;
-              noteDisplay = `<strong style="color:#38bdf8;">${pts} / 12</strong>`;
-            }
+            let note12Display = p.note12 !== undefined ? `<strong style="color:#38bdf8;">${p.note12} / 12</strong>` : '<span style="color:var(--muted);">- / 12</span>';
+            let note6Display = p.pouleNote !== undefined ? `<strong style="color:#a855f7;">${p.pouleNote} / 6</strong>` : '<span style="color:var(--muted);">- / 6</span>';
 
             return `
               <tr style="${p.absent ? 'opacity:0.5;' : ''}">
                 <td><strong>${index + 1 + offset}</strong></td>
                 <td>${p.name}${absentTag}</td>
                 <td><span class="badge-win">${p.points}</span></td>
-                <td>${noteDisplay}</td>
+                <td>${note12Display}</td>
+                <td>${note6Display}</td>
                 <td>${p.matches || 0}</td>
                 <td>${badges}</td>
                 <td class="no-print"><button class="btn btn-sm btn-secondary" onclick="openStudentQR('${p.id}', '${p.name}')">🪪</button></td>
@@ -1695,12 +1738,15 @@
       window.exportToCSV = () => {
         const sorted = Object.entries(playersData).map(([id, p]) => {
           const start = p.startPoints !== undefined ? p.startPoints : 100;
-          const note12 = p.level ? LEVEL_MATRIX[currentGradeLevel][p.level].points : "";
+          const note12 = p.note12 !== undefined ? p.note12 : "";
+          const lvlNum = getLevelFromNote(currentGradeLevel, note12);
+          const note6 = p.pouleNote !== undefined ? p.pouleNote : "";
           return {
             Nom: p.name,
             Statut: p.absent ? "Absent" : "Present",
             NoteSur12: note12,
-            NiveauJeu: p.level || "",
+            NiveauJeu: lvlNum || "",
+            NotePouleSur6: note6,
             PointsActuels: p.points,
             CapitalDepart: start,
             Progression: p.points - start,
@@ -1709,9 +1755,9 @@
           };
         }).sort((a,b) => b.PointsActuels - a.PointsActuels);
 
-        let csvContent = "data:text/csv;charset=utf-8,Nom;Statut;Note Sur 12;Niveau Jeu;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\n";
+        let csvContent = "data:text/csv;charset=utf-8,Nom;Statut;Note Sur 12;Niveau Jeu;Note Poule Sur 6;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\n";
         sorted.forEach(r => {
-          csvContent += `"${r.Nom}";${r.Statut};${r.NoteSur12};${r.NiveauJeu};${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\n`;
+          csvContent += `"${r.Nom}";${r.Statut};${r.NoteSur12};${r.NiveauJeu};${r.NotePouleSur6};${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
@@ -1746,7 +1792,7 @@
           }
         }
 
-        showToast("Options enregistrées !");
+        showToast("Options de séance enregistrées !");
       };
 
       document.getElementById('btn-next-session').onclick = async () => {
@@ -1781,7 +1827,6 @@
               startPoints: startPoints, 
               matches: 0,
               refereeCount: 0,
-              level: 0,
               absent: false,
               questId: randomQuest.id 
             };
