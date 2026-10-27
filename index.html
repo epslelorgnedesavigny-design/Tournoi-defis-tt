@@ -7,6 +7,9 @@
   
   <!-- Bibliothèque QR Code -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Client Officiel Supabase JS v2 (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     :root {
@@ -19,6 +22,9 @@
       --warning: #f59e0b;
       --purple: #a855f7;
       --purple-hover: #9333ea;
+      --gold: #eab308;
+      --silver: #94a3b8;
+      --bronze: #b45309;
       --text: #f8fafc;
       --muted: #94a3b8;
       --border: #1e293b;
@@ -78,6 +84,7 @@
     .btn-warning:hover:not(:disabled) { background: #d97706; }
     .btn-purple { background: var(--purple); color: #ffffff; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
     .btn-purple:hover:not(:disabled) { background: var(--purple-hover); }
+    .btn-gold { background: linear-gradient(135deg, #eab308, #ca8a04); color: #000; font-weight: bold; }
     .btn-secondary { background: #334155; }
     .btn-secondary:hover:not(:disabled) { background: #475569; }
     .btn-sm { padding: 6px 12px; font-size: 0.82rem; width: auto; min-height: 36px; }
@@ -131,6 +138,19 @@
       font-size: 0.85rem;
       font-weight: bold;
     }
+    .connection-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+    }
+    .conn-online { color: var(--success); }
+    .conn-offline { color: var(--warning); }
 
     .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
     .tab-btn {
@@ -158,6 +178,15 @@
       border-color: var(--accent);
     }
 
+    .search-bar-box {
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .search-input {
+      padding-left: 36px;
+      background: #090d16 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 10px center;
+    }
+
     .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 15px; }
     .qr-card {
       background: var(--card);
@@ -178,6 +207,11 @@
     th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
     th { background: #1e293b; color: var(--text); font-weight: 600; }
     tr:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
+
+    .rank-cell { font-weight: bold; width: 36px; text-align: center; }
+    .rank-1 { color: #facc15; font-size: 1.05rem; }
+    .rank-2 { color: #e2e8f0; font-size: 1rem; }
+    .rank-3 { color: #f97316; font-size: 0.95rem; }
 
     .badge-icon {
       display: inline-flex;
@@ -200,6 +234,15 @@
       border-radius: 4px;
       display: inline-block;
     }
+    .badge-barrage {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
     
     .flash-banner {
       background: linear-gradient(90deg, #9333ea, #db2777);
@@ -214,6 +257,20 @@
       box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
     }
     @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+
+    .quest-success-banner {
+      background: linear-gradient(90deg, #10b981, #059669);
+      color: #022c14;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+      animation: popIn 0.3s ease-out;
+      border: 1px solid #34d399;
+      display: none;
+    }
+    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     .stats-box { background: #090d16; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
     .quest-box { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; padding: 8px; margin-top: 6px; font-size: 0.85rem; color: #e9d5ff; }
@@ -321,7 +378,7 @@
 
     @media print {
       body { background: white !important; color: black !important; padding: 0; }
-      .nav-tabs, button, .btn, #toast-container, .flash-banner, .no-print, .prof-bar { display: none !important; }
+      .nav-tabs, button, .btn, #toast-container, .flash-banner, .no-print, .prof-bar, .search-bar-box { display: none !important; }
       .card { border: none !important; background: transparent !important; padding: 0 !important; }
       table { border: 1px solid #000 !important; color: black !important; background: white !important; font-size: 10pt !important; }
       th { background: #ddd !important; color: black !important; border: 1px solid #000 !important; }
@@ -332,26 +389,81 @@
     .print-title { display: none; }
   </style>
 
-  <!-- Firebase SDKs -->
+  <!-- Supabase Engine & SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
-      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
-      projectId: "tournoi-defis-tt"
+    // Safe storage wrapper (compatible avec tous les navigateurs et contextes)
+    const safeStorage = {
+      getItem: (k) => { try { return typeof localStorage !== 'undefined' ? localStorage.getItem(k) : null; } catch(e){ return null; } },
+      setItem: (k, v) => { try { if (typeof localStorage !== 'undefined') localStorage.setItem(k, v); } catch(e){} },
+      removeItem: (k) => { try { if (typeof localStorage !== 'undefined') localStorage.removeItem(k); } catch(e){} }
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    // --- CONFIGURATION SUPABASE ---
+    // Vous pouvez renseigner vos identifiants ici ou directement depuis l'interface web (Sauvegardé dans votre navigateur)
+    const DEFAULT_SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+    const DEFAULT_SUPABASE_KEY = "VOTRE-CLE-ANON";
+
+    let SUPABASE_URL = safeStorage.getItem('eps_supabase_url') || DEFAULT_SUPABASE_URL;
+    let SUPABASE_KEY = safeStorage.getItem('eps_supabase_key') || DEFAULT_SUPABASE_KEY;
+
+    // Détection auto-configuration tablette via le hash de l'URL : #sb_url=...&sb_key=...
+    if (typeof window !== 'undefined' && window.location && window.location.hash) {
+      try {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const hUrl = hashParams.get('sb_url');
+        const hKey = hashParams.get('sb_key');
+        if (hUrl && hKey) {
+          SUPABASE_URL = hUrl;
+          SUPABASE_KEY = hKey;
+          safeStorage.setItem('eps_supabase_url', hUrl);
+          safeStorage.setItem('eps_supabase_key', hKey);
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+        }
+      } catch (e) {}
+    }
+
+    const SUPABASE_SQL_SCRIPT = `-- Table principale des données EPS Tournoi Tennis de Table
+CREATE TABLE IF NOT EXISTS public.tournoi_data (
+  group_id text NOT NULL,
+  path text NOT NULL,
+  data jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz DEFAULT now(),
+  PRIMARY KEY (group_id, path)
+);
+
+-- Activation du Temps Réel (Realtime)
+ALTER PUBLICATION supabase_realtime ADD TABLE public.tournoi_data;
+
+-- Autorisation d'accès (RLS) public anonyme pour les tablettes
+ALTER TABLE public.tournoi_data ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Accès Public EPS Tournoi" ON public.tournoi_data;
+CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data 
+  FOR ALL 
+  USING (true) 
+  WITH CHECK (true);`;
+
+    function isSupabaseConfigured() {
+      return SUPABASE_URL && 
+             SUPABASE_URL.startsWith('https://') && 
+             !SUPABASE_URL.includes('VOTRE-PROJET') && 
+             SUPABASE_KEY && 
+             !SUPABASE_KEY.includes('VOTRE-CLE');
+    }
+
+    let supabaseClient = null;
+    let isConnected = false;
+    let groupChannel = null;
+    let metaChannel = null;
 
     const urlParams = new URLSearchParams(window.location.search);
     const role = urlParams.get('role') || 'prof';
     const tableId = urlParams.get('id') || '1';
     const studentQRId = urlParams.get('student') || null;
 
-    let currentGroup = localStorage.getItem('eps_current_group') || 'Classe_1';
+    let currentGroup = safeStorage.getItem('eps_current_group') || 'Classe_1';
 
     // Sécurisation XSS
     function escapeHtml(str) {
@@ -362,6 +474,488 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    // Gestion du cache local et de la réactivité
+    let localCache = {
+      activeGroup: safeStorage.getItem('eps_current_group') || 'Classe_1',
+      groups: { [safeStorage.getItem('eps_current_group') || 'Classe_1']: true },
+      data: {}
+    };
+
+    function saveToStorage(groupId, path, val) {
+      safeStorage.setItem(`eps_db_${groupId}_${path}`, JSON.stringify(val));
+    }
+
+    function loadFromStorage(groupId, path) {
+      const raw = safeStorage.getItem(`eps_db_${groupId}_${path}`);
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function getLocalGroupData(groupId) {
+      if (!localCache.data[groupId]) {
+        localCache.data[groupId] = {
+          config: loadFromStorage(groupId, 'config') || {
+            gradeLevel: '6eme',
+            flashMode: false,
+            sessionNumber: 1,
+            options: { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false },
+            quests: DEFAULT_QUESTS
+          },
+          players: loadFromStorage(groupId, 'players') || {},
+          history: loadFromStorage(groupId, 'history') || {},
+          poules: loadFromStorage(groupId, 'poules') || {},
+          barrages: loadFromStorage(groupId, 'barrages') || {}
+        };
+      }
+      return localCache.data[groupId];
+    }
+
+    function getValAtPath(fullPath) {
+      if (!fullPath) return null;
+      if (fullPath === '.info/connected') return isConnected;
+      if (fullPath === 'activeGroup') return localCache.activeGroup;
+      if (fullPath === 'groups') return localCache.groups;
+
+      if (fullPath.startsWith('groups/')) {
+        const parts = fullPath.substring(7).split('/');
+        const groupId = parts[0];
+        const grp = getLocalGroupData(groupId);
+        if (parts.length === 1) return grp;
+        const cat = parts[1];
+        let val = grp[cat];
+        for (let i = 2; i < parts.length; i++) {
+          if (val === null || val === undefined) return null;
+          val = val[parts[i]];
+        }
+        return val;
+      }
+      return null;
+    }
+
+    let listeners = [];
+    let nextListenerId = 1;
+
+    function onValue(refObj, callback, options) {
+      const path = refObj.path;
+      const id = nextListenerId++;
+      const entry = { id, path, callback, onlyOnce: !!(options && options.onlyOnce) };
+      listeners.push(entry);
+
+      const currentVal = getValAtPath(path);
+      try {
+        callback({ val: () => currentVal });
+      } catch (err) {
+        console.error("Erreur onValue callback initial:", err);
+      }
+
+      if (entry.onlyOnce) {
+        listeners = listeners.filter(l => l.id !== id);
+        return () => {};
+      }
+      return () => {
+        listeners = listeners.filter(l => l.id !== id);
+      };
+    }
+
+    function notifyListeners(changedPath) {
+      listeners.forEach(l => {
+        if (l.path === changedPath || l.path.startsWith(changedPath + '/') || changedPath.startsWith(l.path + '/')) {
+          const val = getValAtPath(l.path);
+          try {
+            l.callback({ val: () => val });
+          } catch (e) {
+            console.error("Erreur notification listener:", e);
+          }
+        }
+      });
+    }
+
+    function setConnectionStatus(status) {
+      isConnected = !!status;
+      notifyListeners('.info/connected');
+      updateConnectionPills();
+    }
+
+    function updateConnectionPills() {
+      document.querySelectorAll('.conn-status-pill').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.title = 'Cliquer pour ouvrir les paramètres Supabase';
+        el.onclick = () => { if (window.openSupabaseModal) window.openSupabaseModal(); };
+        if (!isSupabaseConfigured()) {
+          el.innerHTML = '<span class="badge-barrage" style="font-size:0.75rem; background:#1e293b; border-color:#64748b; color:#94a3b8;">⚙️ Configurer Supabase</span>';
+        } else if (isConnected) {
+          el.innerHTML = '<span class="conn-online" style="display:inline-flex; align-items:center; gap:4px;">● Supabase Connecté</span>';
+        } else {
+          el.innerHTML = '<span class="conn-offline" style="display:inline-flex; align-items:center; gap:4px;">● Mode Local (Hors-ligne)</span>';
+        }
+      });
+
+      const modalBadge = document.getElementById('supabase-modal-badge');
+      const modalMsg = document.getElementById('supabase-modal-msg');
+      const statusBadgeProf = document.getElementById('supabase-status-badge');
+      
+      const badgeText = !isSupabaseConfigured() ? 'Non configuré' : (isConnected ? '🟢 Supabase Connecté' : '🔴 Hors-ligne');
+      const badgeColor = !isSupabaseConfigured() ? '#94a3b8' : (isConnected ? '#34d399' : '#f87171');
+      
+      if (statusBadgeProf) {
+        statusBadgeProf.textContent = badgeText;
+        statusBadgeProf.style.color = badgeColor;
+      }
+
+      if (modalBadge) {
+        if (!isSupabaseConfigured()) {
+          modalBadge.style.background = '#854d0e';
+          modalBadge.style.borderColor = '#eab308';
+          modalBadge.style.color = '#fef08a';
+          modalBadge.textContent = 'Non configuré';
+          if (modalMsg) modalMsg.textContent = 'Veuillez renseigner votre URL de projet Supabase et votre clé API anon.';
+        } else if (isConnected) {
+          modalBadge.style.background = '#065f46';
+          modalBadge.style.borderColor = '#10b981';
+          modalBadge.style.color = '#a7f3d0';
+          modalBadge.textContent = '🟢 Connecté (Temps Réel Actif)';
+          if (modalMsg) modalMsg.textContent = 'Synchronisation PostgreSQL opérationnelle en direct avec les tablettes.';
+        } else {
+          modalBadge.style.background = '#991b1b';
+          modalBadge.style.borderColor = '#ef4444';
+          modalBadge.style.color = '#fecaca';
+          modalBadge.textContent = '🔴 Déconnecté';
+          if (modalMsg) modalMsg.textContent = 'Tentative de reconnexion à Supabase... Vérifiez votre connexion Internet ou la table tournoi_data.';
+        }
+      }
+    }
+
+    function initConnectionIndicator() {
+      updateConnectionPills();
+    }
+
+    // --- ADAPTATEUR DE PERSISTANCE ET SYNCHRONISATION SUPABASE ---
+    async function update(dummyRef, updates) {
+      if (!updates || typeof updates !== 'object') return;
+
+      const modifiedCategories = new Set();
+      let metaModified = false;
+
+      for (const fullPath in updates) {
+        const val = updates[fullPath];
+        if (fullPath === 'activeGroup') {
+          localCache.activeGroup = val;
+          metaModified = true;
+          notifyListeners('activeGroup');
+          continue;
+        }
+        if (fullPath === 'groups') {
+          if (val && typeof val === 'object') localCache.groups = { ...val };
+          metaModified = true;
+          notifyListeners('groups');
+          continue;
+        }
+        if (fullPath.startsWith('groups/')) {
+          const parts = fullPath.substring(7).split('/');
+          const groupId = parts[0];
+          if (parts.length === 1) {
+            if (val === null) {
+              delete localCache.groups[groupId];
+              delete localCache.data[groupId];
+              metaModified = true;
+              if (supabaseClient && isSupabaseConfigured()) {
+                supabaseClient.from('tournoi_data').delete().eq('group_id', groupId).then();
+              }
+            } else if (typeof val === 'object') {
+              localCache.groups[groupId] = true;
+              const grp = getLocalGroupData(groupId);
+              if (val.players) grp.players = val.players;
+              if (val.history) grp.history = val.history;
+              if (val.config) grp.config = val.config;
+              if (val.poules) grp.poules = val.poules;
+              if (val.barrages) grp.barrages = val.barrages;
+              modifiedCategories.add(`${groupId}::config`);
+              modifiedCategories.add(`${groupId}::players`);
+              modifiedCategories.add(`${groupId}::history`);
+              modifiedCategories.add(`${groupId}::poules`);
+              modifiedCategories.add(`${groupId}::barrages`);
+              metaModified = true;
+            } else {
+              localCache.groups[groupId] = true;
+              getLocalGroupData(groupId);
+              metaModified = true;
+            }
+            notifyListeners('groups');
+            continue;
+          }
+          const category = parts[1];
+          const grp = getLocalGroupData(groupId);
+          modifiedCategories.add(`${groupId}::${category}`);
+
+          if (parts.length === 2) {
+            grp[category] = val === null ? {} : val;
+          } else {
+            if (!grp[category] || typeof grp[category] !== 'object') grp[category] = {};
+            let target = grp[category];
+            for (let i = 2; i < parts.length - 1; i++) {
+              const subKey = parts[i];
+              if (!target[subKey] || typeof target[subKey] !== 'object') target[subKey] = {};
+              target = target[subKey];
+            }
+            const lastKey = parts[parts.length - 1];
+            if (val === null) {
+              delete target[lastKey];
+            } else {
+              target[lastKey] = val;
+            }
+          }
+        }
+      }
+
+      // Sauvegarde immédiate dans le stockage local pour fluidité 100% sans latence
+      for (const item of modifiedCategories) {
+        const [groupId, category] = item.split('::');
+        const grp = getLocalGroupData(groupId);
+        saveToStorage(groupId, category, grp[category]);
+        notifyListeners(`groups/${groupId}/${category}`);
+      }
+
+      // Synchronisation avec Supabase (PostgreSQL)
+      if (supabaseClient && isSupabaseConfigured()) {
+        try {
+          const rowsToUpsert = [];
+          for (const item of modifiedCategories) {
+            const [groupId, category] = item.split('::');
+            const grp = getLocalGroupData(groupId);
+            rowsToUpsert.push({
+              group_id: groupId,
+              path: category,
+              data: grp[category] || {},
+              updated_at: new Date().toISOString()
+            });
+          }
+          if (metaModified) {
+            rowsToUpsert.push({
+              group_id: '_meta_',
+              path: 'groups',
+              data: { activeGroup: localCache.activeGroup, list: localCache.groups },
+              updated_at: new Date().toISOString()
+            });
+          }
+          if (rowsToUpsert.length > 0) {
+            const { error } = await supabaseClient.from('tournoi_data').upsert(rowsToUpsert);
+            if (error) {
+              console.error("Supabase upsert error:", error);
+              showToast("⚠️ Erreur de synchronisation Supabase", "danger");
+            }
+          }
+        } catch (e) {
+          console.error("Supabase sync exception:", e);
+        }
+      }
+    }
+
+    async function set(refObj, val) {
+      const updates = {};
+      updates[refObj.path] = val;
+      return await update(null, updates);
+    }
+
+    async function remove(refObj) {
+      const updates = {};
+      updates[refObj.path] = null;
+      return await update(null, updates);
+    }
+
+    function push(refObj) {
+      const key = 'm_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+      return { key, path: `${refObj.path}/${key}` };
+    }
+
+    function ref(dummyDb, path) {
+      return { path: path || '' };
+    }
+
+    const db = { isSupabase: true };
+
+    // Chargement et abonnement Temps Réel Supabase
+    async function loadGroupFromSupabase(groupId) {
+      if (!supabaseClient || !isSupabaseConfigured()) return;
+      const grpData = getLocalGroupData(groupId);
+      try {
+        const { data: rows, error } = await supabaseClient
+          .from('tournoi_data')
+          .select('path, data')
+          .eq('group_id', groupId);
+
+        if (error) {
+          console.warn("Erreur chargement classe Supabase:", error);
+          return;
+        }
+
+        if (rows && rows.length > 0) {
+          rows.forEach(r => {
+            if (r.path && r.data) {
+              grpData[r.path] = r.data;
+              saveToStorage(groupId, r.path, r.data);
+              notifyListeners(`groups/${groupId}/${r.path}`);
+            }
+          });
+        } else {
+          // Si la classe est neuve dans Supabase, sauvegarder l'état local
+          const initialRows = [
+            { group_id: groupId, path: 'config', data: grpData.config },
+            { group_id: groupId, path: 'players', data: grpData.players },
+            { group_id: groupId, path: 'history', data: grpData.history },
+            { group_id: groupId, path: 'poules', data: grpData.poules },
+            { group_id: groupId, path: 'barrages', data: grpData.barrages }
+          ];
+          await supabaseClient.from('tournoi_data').upsert(initialRows);
+        }
+      } catch (err) {
+        console.warn("Exception chargement groupe Supabase:", err);
+      }
+    }
+
+    async function loadMetaFromSupabase() {
+      if (!supabaseClient || !isSupabaseConfigured()) return;
+      try {
+        const { data: row, error } = await supabaseClient
+          .from('tournoi_data')
+          .select('data')
+          .eq('group_id', '_meta_')
+          .eq('path', 'groups')
+          .maybeSingle();
+
+        if (error) {
+          console.warn("Erreur chargement meta Supabase:", error);
+          return;
+        }
+
+        if (row && row.data) {
+          if (row.data.list) {
+            localCache.groups = row.data.list;
+            notifyListeners('groups');
+          }
+          if (row.data.activeGroup) {
+            localCache.activeGroup = row.data.activeGroup;
+            notifyListeners('activeGroup');
+          }
+        } else {
+          await supabaseClient.from('tournoi_data').upsert({
+            group_id: '_meta_',
+            path: 'groups',
+            data: { activeGroup: localCache.activeGroup, list: localCache.groups }
+          });
+        }
+      } catch (e) {
+        console.warn("Exception meta Supabase:", e);
+      }
+    }
+
+    function subscribeToGroup(groupId) {
+      if (!supabaseClient || !isSupabaseConfigured()) return;
+      if (groupChannel) {
+        try { supabaseClient.removeChannel(groupChannel); } catch (e) {}
+        groupChannel = null;
+      }
+
+      groupChannel = supabaseClient.channel(`realtime_group_${groupId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'tournoi_data',
+          filter: `group_id=eq.${groupId}`
+        }, (payload) => {
+          if (payload.new && payload.new.path) {
+            const cat = payload.new.path;
+            const val = payload.new.data || {};
+            const grp = getLocalGroupData(groupId);
+            grp[cat] = val;
+            saveToStorage(groupId, cat, val);
+            notifyListeners(`groups/${groupId}/${cat}`);
+          }
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            setConnectionStatus(true);
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            setConnectionStatus(false);
+          }
+        });
+    }
+
+    function subscribeToMeta() {
+      if (!supabaseClient || !isSupabaseConfigured()) return;
+      if (metaChannel) {
+        try { supabaseClient.removeChannel(metaChannel); } catch (e) {}
+        metaChannel = null;
+      }
+
+      metaChannel = supabaseClient.channel('realtime_meta')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'tournoi_data',
+          filter: `group_id=eq._meta_`
+        }, (payload) => {
+          if (payload.new && payload.new.path === 'groups') {
+            const meta = payload.new.data || {};
+            if (meta.list) {
+              localCache.groups = meta.list;
+              notifyListeners('groups');
+            }
+            if (meta.activeGroup && meta.activeGroup !== localCache.activeGroup) {
+              localCache.activeGroup = meta.activeGroup;
+              notifyListeners('activeGroup');
+            }
+          }
+        })
+        .subscribe();
+    }
+
+    async function initSupabase() {
+      if (!isSupabaseConfigured()) {
+        setConnectionStatus(false);
+        return;
+      }
+
+      try {
+        let factory = window.supabase?.createClient;
+        if (!factory) {
+          const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+          factory = mod.createClient;
+        }
+
+        if (!factory) {
+          console.warn("SDK Supabase non disponible");
+          setConnectionStatus(false);
+          return;
+        }
+
+        supabaseClient = factory(SUPABASE_URL, SUPABASE_KEY, {
+          auth: { persistSession: false },
+          realtime: { params: { eventsPerSecond: 20 } }
+        });
+
+        const { error: testErr } = await supabaseClient
+          .from('tournoi_data')
+          .select('group_id')
+          .limit(1);
+
+        if (testErr) {
+          console.warn("Table tournoi_data inaccessible ou non créée:", testErr);
+          setConnectionStatus(false);
+          return;
+        }
+
+        await loadMetaFromSupabase();
+        subscribeToMeta();
+
+        await loadGroupFromSupabase(currentGroup);
+        subscribeToGroup(currentGroup);
+
+        setConnectionStatus(true);
+      } catch (err) {
+        console.error("Erreur initialisation Supabase:", err);
+        setConnectionStatus(false);
+      }
     }
 
     // DÉTERMINATION DU NIVEAU DE JEU (1 À 5) D'APRÈS LA NOTE DÉCIMALE OBTENUE
@@ -472,12 +1066,15 @@
       return audioCtx;
     }
 
-    function playVictorySound() {
+    function playVictorySound(isExploit = false) {
       try {
+        if (navigator.vibrate) {
+          navigator.vibrate(isExploit ? [100, 50, 150] : [80]);
+        }
         const ctx = getAudioContext();
         if (!ctx) return;
 
-        const notes = [523.25, 659.25, 783.99, 1046.50];
+        const notes = isExploit ? [523.25, 659.25, 783.99, 1046.50, 1318.51] : [523.25, 659.25, 783.99, 1046.50];
         const now = ctx.currentTime;
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -485,10 +1082,10 @@
           osc.type = 'triangle';
           osc.frequency.value = freq;
 
-          const start = now + idx * 0.1;
-          const end = start + 0.25;
+          const start = now + idx * 0.09;
+          const end = start + (isExploit ? 0.35 : 0.22);
 
-          gain.gain.setValueAtTime(0.15, start);
+          gain.gain.setValueAtTime(0.18, start);
           gain.gain.exponentialRampToValueAtTime(0.001, end);
 
           osc.connect(gain);
@@ -531,12 +1128,12 @@
       const multiplier = isFlash ? 2 : 1;
       return { 
         gainWinner: vGain * multiplier, 
-        lossLoser: vLoss, // En mode Flash, on double la récompense, pas la punition
+        lossLoser: vLoss, 
         rawGain: vGain * multiplier 
       };
     }
 
-    // Indexation O(1) des matchs par joueur pour optimisation fluide
+    // Indexation O(1) des matchs par joueur
     function getPlayerBadgesHTML(player, pMatches) {
       let badgesHtml = '';
       if (!pMatches) pMatches = [];
@@ -564,10 +1161,157 @@
         badgesHtml += '<span class="badge-icon" title="🚀 Remontada (+15 pts)">🚀</span>';
       }
 
+      if (player.barrageBonus) {
+        badgesHtml += '<span class="badge-icon" style="background:#854d0e; border-color:#eab308;" title="⚔️ Vainqueur de Barrage (+1 pt bonus)">⚔️</span>';
+      }
+
       return badgesHtml || '<span style="color:var(--muted); font-size:0.75rem;">-</span>';
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // Calcul de la note d'engagement/arbitrage sur 2 points
+    function getBonus2Points(player) {
+      let bonus = 0;
+      if ((player.refereeCount || 0) >= 2) bonus += 1;
+      if (player.questCompleted || (player.matches || 0) >= 5) bonus += 1;
+      return bonus;
+    }
+
+    // Calcul de la note totale officielle sur 20 points pour Pronote
+    function calculateTotalNote20(player) {
+      if (player.note12 === undefined || player.note12 === "") return "";
+      const n12 = parseFloat(player.note12) || 0;
+      const n6 = player.pouleNote !== undefined && player.pouleNote !== "" ? parseFloat(player.pouleNote) : 0;
+      const n2 = getBonus2Points(player);
+      const bBonus = player.barrageBonus ? 1 : 0;
+      return Math.min(20, Math.round((n12 + n6 + n2 + bBonus) * 10) / 10);
+    }
+
+    function initSupabaseModal() {
+      const modal = document.getElementById('supabase-config-modal');
+      if (!modal) return;
+
+      const urlInput = document.getElementById('supabase-url-input');
+      const keyInput = document.getElementById('supabase-key-input');
+      const sqlPre = document.getElementById('supabase-sql-code');
+
+      if (sqlPre) sqlPre.textContent = SUPABASE_SQL_SCRIPT;
+
+      window.openSupabaseModal = () => {
+        if (urlInput) urlInput.value = isSupabaseConfigured() ? SUPABASE_URL : (SUPABASE_URL.includes('VOTRE-PROJET') ? '' : SUPABASE_URL);
+        if (keyInput) keyInput.value = isSupabaseConfigured() ? SUPABASE_KEY : (SUPABASE_KEY.includes('VOTRE-CLE') ? '' : SUPABASE_KEY);
+        updateConnectionPills();
+        modal.style.display = 'flex';
+      };
+
+      window.closeSupabaseModal = () => {
+        modal.style.display = 'none';
+      };
+
+      const closeBtn = document.getElementById('btn-close-supabase-modal-top');
+      if (closeBtn) closeBtn.onclick = window.closeSupabaseModal;
+
+      modal.addEventListener('click', (e) => {
+        if (e.target.id === 'supabase-config-modal') window.closeSupabaseModal();
+      });
+
+      const toggleBtn = document.getElementById('btn-toggle-key-visibility');
+      if (toggleBtn && keyInput) {
+        toggleBtn.onclick = () => {
+          keyInput.type = keyInput.type === 'password' ? 'text' : 'password';
+          toggleBtn.textContent = keyInput.type === 'password' ? '👁️' : '🙈';
+        };
+      }
+
+      const copySqlModalBtn = document.getElementById('btn-copy-sql-modal');
+      if (copySqlModalBtn) {
+        copySqlModalBtn.onclick = () => {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(SUPABASE_SQL_SCRIPT).then(() => {
+              showToast("📋 Script SQL copié dans le presse-papier !");
+            }).catch(() => {
+              prompt("Copiez ce script SQL :", SUPABASE_SQL_SCRIPT);
+            });
+          } else {
+            prompt("Copiez ce script SQL :", SUPABASE_SQL_SCRIPT);
+          }
+        };
+      }
+
+      const testBtn = document.getElementById('btn-test-supabase-modal');
+      if (testBtn) {
+        testBtn.onclick = async () => {
+          const u = (urlInput.value || '').trim();
+          const k = (keyInput.value || '').trim();
+          if (!u || !k || !u.startsWith('https://')) {
+            return showToast("⚠️ Saisissez une URL Supabase (https://...) et la clé anon", "danger");
+          }
+          showToast("Test de connexion en cours...");
+          try {
+            let factory = window.supabase?.createClient;
+            if (!factory) {
+              const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+              factory = mod.createClient;
+            }
+            const testClient = factory(u, k, { auth: { persistSession: false } });
+            const { error } = await testClient.from('tournoi_data').select('group_id').limit(1);
+            if (error) {
+              if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('not found')) {
+                showToast("⚠️ Table 'tournoi_data' inexistante. Exécutez le script SQL !", "warning");
+              } else {
+                showToast(`⚠️ Erreur Supabase: ${error.message || 'Clé ou URL invalide'}`, "danger");
+              }
+            } else {
+              showToast("🟢 Connexion réussie à Supabase et à la table tournoi_data !");
+            }
+          } catch (err) {
+            showToast(`⚠️ Échec: ${err.message}`, "danger");
+          }
+        };
+      }
+
+      const saveBtn = document.getElementById('btn-save-supabase-modal');
+      if (saveBtn) {
+        saveBtn.onclick = async () => {
+          const u = (urlInput.value || '').trim();
+          const k = (keyInput.value || '').trim();
+          if (!u || !k) {
+            return showToast("Veuillez renseigner l'URL et la clé Supabase", "danger");
+          }
+          SUPABASE_URL = u;
+          SUPABASE_KEY = k;
+          safeStorage.setItem('eps_supabase_url', u);
+          safeStorage.setItem('eps_supabase_key', k);
+          window.closeSupabaseModal();
+          showToast("💾 Paramètres enregistrés. Connexion en cours...");
+          await initSupabase();
+        };
+      }
+
+      const shareIpadBtn = document.getElementById('btn-share-ipad-link-modal');
+      if (shareIpadBtn) {
+        shareIpadBtn.onclick = () => {
+          if (!isSupabaseConfigured()) {
+            return showToast("Configurez d'abord Supabase avant de partager le lien", "warning");
+          }
+          const baseUrl = window.location.origin + window.location.pathname;
+          const ipadUrl = `${baseUrl}?role=table&id=1#sb_url=${encodeURIComponent(SUPABASE_URL)}&sb_key=${encodeURIComponent(SUPABASE_KEY)}`;
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(ipadUrl).then(() => {
+              showToast("📲 Lien iPad copié ! Ouvrez-le sur chaque iPad pour le connecter en 1 clic.");
+            }).catch(() => {
+              prompt("Copiez ce lien pour configurer vos iPads :", ipadUrl);
+            });
+          } else {
+            prompt("Copiez ce lien pour configurer vos iPads :", ipadUrl);
+          }
+        };
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      initSupabaseModal();
+      initConnectionIndicator();
+      await initSupabase();
       if (studentQRId) initStudentQRView();
       else if (role === 'table') initTableUI();
       else if (role === 'hub') initHubUI();
@@ -582,8 +1326,12 @@
       appDiv.innerHTML = `
         <div class="container" style="max-width:520px; margin-top:20px;">
           <div class="card" style="text-align:center;">
-            <h2 style="color:#38bdf8;">🪪 Bilan Élève — Tournoi EPS</h2>
-            <div id="student-profile-card" style="margin-top:20px;">Chargement des données...</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="conn-status-pill connection-badge"></span>
+              <span class="group-pill" id="student-group-pill"></span>
+            </div>
+            <h2 style="color:#38bdf8; margin:0 0 10px 0;">🪪 Bilan Élève — Tournoi EPS</h2>
+            <div id="student-profile-card">Chargement des données...</div>
           </div>
         </div>
       `;
@@ -591,11 +1339,16 @@
       onValue(ref(db, 'activeGroup'), (snap) => {
         if (snap.val()) {
           currentGroup = snap.val();
+          document.getElementById('student-group-pill').textContent = currentGroup.replace(/_/g, ' ');
           loadStudentData();
         }
       });
 
       function loadStudentData() {
+        if (supabaseClient && isSupabaseConfigured()) {
+          loadGroupFromSupabase(currentGroup);
+          subscribeToGroup(currentGroup);
+        }
         onValue(ref(db, getGroupPath(`players/${studentQRId}`)), (snap) => {
           const player = snap.val();
           if (!player) {
@@ -639,16 +1392,31 @@
               let questTxt = 'Aucune quête en cours';
               if (player.questId) {
                 const q = questList.find(x => x.id === player.questId);
-                if (q) questTxt = `${escapeHtml(q.text)} (+${q.bonus} pts bonus)`;
+                if (q) {
+                  const statusIcon = player.questCompleted ? '✅ Réussie ! ' : '⏳ ';
+                  questTxt = `${statusIcon}${escapeHtml(q.text)} (+${q.bonus} pts bonus)`;
+                }
               }
 
               let pouleNoteHtml = player.pouleNote !== undefined ? `${player.pouleNote} / 6` : 'En cours de poule';
+              const total20 = calculateTotalNote20(player);
+
+              let barrageStatusHtml = '';
+              if (player.barrageBonus) {
+                barrageStatusHtml = `
+                  <div style="background:rgba(234, 179, 8, 0.15); border:1px solid #eab308; border-radius:8px; padding:8px 12px; margin-bottom:12px; text-align:center; color:#fde047; font-weight:bold; font-size:0.9rem;">
+                    ⚔️ Vainqueur du Match de Barrage / Affinage (+1 point bonus inclus sur la note) !
+                  </div>
+                `;
+              }
 
               document.getElementById('student-profile-card').innerHTML = `
-                <h1 style="font-size:1.8rem; margin-bottom:5px;">${escapeHtml(player.name)}</h1>
+                <h1 style="font-size:1.8rem; margin:10px 0 5px 0;">${escapeHtml(player.name)}</h1>
                 <p class="group-pill" style="display:inline-block; margin-bottom:15px;">Classe : ${escapeHtml(currentGroup.replace(/_/g, ' '))} (${grade.toUpperCase()})</p>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                ${barrageStatusHtml}
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
                   <div class="stats-box">
                     <div style="font-size:0.8rem; color:var(--muted);">Points Tournoi</div>
                     <div style="font-size:1.5rem; font-weight:bold; color:var(--success);">${player.points} pts</div>
@@ -659,17 +1427,25 @@
                   </div>
                 </div>
 
+                ${total20 !== "" ? `
+                  <div class="stats-box" style="background:rgba(37, 99, 235, 0.15); border:1px solid #3b82f6; text-align:center; margin-bottom:12px;">
+                    <div style="font-size:0.8rem; color:#93c5fd;">Estimation Note Globale EPS</div>
+                    <div style="font-size:1.7rem; font-weight:bold; color:#60a5fa;">${total20} / 20</div>
+                    <div style="font-size:0.75rem; color:var(--muted);">Jeu (/12) + Poule (/6) + Rôle/Quête (/2) ${player.barrageBonus ? '+ Barrage (+1)' : ''}</div>
+                  </div>
+                ` : ''}
+
                 <div class="stats-box" style="text-align:left; margin-bottom:10px;">
                   <strong>🎯 Évaluation Niveau de Jeu :</strong>
                   ${evalHtml}
                 </div>
 
-                <div class="quest-box" style="text-align:left; margin-bottom:10px;">
+                <div class="quest-box" style="text-align:left; margin-bottom:10px; ${player.questCompleted ? 'background:rgba(34, 197, 94, 0.15); border-color:#22c55e; color:#bbf7d0;' : ''}">
                   <strong>🎯 Quête Secrète Individuelle :</strong><br>${questTxt}
                 </div>
 
                 <div class="stats-box" style="text-align:left; margin-bottom:10px;">
-                  <strong>📊 Bilan Matchs :</strong> ${wins} Victoires / ${losses} Défaites (${pMatches.length} joués)
+                  <strong>📊 Bilan Matchs :</strong> ${wins} Victoires / ${losses} Défaites (${pMatches.length} joués) | Arbitrages : ${player.refereeCount || 0}
                 </div>
                 <div class="stats-box" style="text-align:left;">
                   <strong>🎖️ Badges Débloqués :</strong> ${badges}
@@ -690,7 +1466,10 @@
       document.getElementById('app').innerHTML = `
         <div class="container">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
-            <h1 style="margin:0;">📱 Hub de Connexion iPad Tables</h1>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <h1 style="margin:0;">📱 Hub de Connexion iPad Tables</h1>
+              <span class="conn-status-pill connection-badge"></span>
+            </div>
             <button class="btn btn-sm btn-secondary no-print" onclick="window.print()" style="width:auto;">🖨️ Imprimer les QR</button>
           </div>
           <p style="text-align:center; color:var(--muted);" class="no-print">Scannez le QR Code depuis l'iPad d'une table pour la configurer immédiatement.</p>
@@ -733,24 +1512,30 @@
     }
 
     /* =========================================================
-       2. VUE IPAD TABLE
+       2. VUE IPAD TABLE (Défis, Poules & Barrages)
        ========================================================= */
     function initTableUI() {
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
         <div class="container">
           <div id="flash-banner" class="flash-banner">⚡ DÉFI FLASH EN COURS : POINTS DE VICTOIRE DOUBLÉS ! ⚡</div>
+          <div id="quest-success-banner" class="quest-success-banner"></div>
           
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h2 style="margin:0;">🏓 Table ${escapeHtml(tableId)}</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h2 style="margin:0;">🏓 Table ${escapeHtml(tableId)}</h2>
+              <span class="conn-status-pill connection-badge"></span>
+            </div>
             <span id="group-indicator" class="group-pill"></span>
           </div>
 
-          <div style="display:flex; gap:8px; margin-bottom:12px;">
-            <button class="btn btn-sm" id="mode-free-btn" style="flex:1;">MODE DÉFIS LIBRES</button>
-            <button class="btn btn-sm btn-secondary" id="mode-poule-btn" style="flex:1;">MODE TOURNOI DE POULE</button>
+          <div style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
+            <button class="btn btn-sm" id="mode-free-btn" style="flex:1; min-width:110px;">MODE DÉFIS</button>
+            <button class="btn btn-sm btn-secondary" id="mode-poule-btn" style="flex:1; min-width:110px;">MODE POULE</button>
+            <button class="btn btn-sm btn-secondary" id="mode-barrage-btn" style="flex:1; min-width:110px;">⚔️ BARRAGES</button>
           </div>
 
+          <!-- 1. MODE DÉFIS LIBRES -->
           <div id="free-mode-container">
             <div class="card">
               <p style="text-align:center; font-size:0.82rem; color:#38bdf8; margin:0 0 10px 0;">
@@ -809,6 +1594,7 @@
             </div>
           </div>
 
+          <!-- 2. MODE TOURNOI DE POULE -->
           <div id="poule-mode-container" style="display:none;">
             <div class="card">
               <label style="font-weight:bold;">Sélectionner la Poule / Table :</label>
@@ -818,6 +1604,16 @@
             <div id="poule-details-container"></div>
           </div>
 
+          <!-- 3. MODE BARRAGES & AFFINAGE DE PERFORMANCE -->
+          <div id="barrage-mode-container" style="display:none;">
+            <div class="card">
+              <label style="font-weight:bold;">Sélectionner la Rencontre de Barrage :</label>
+              <select id="barrage-select-dropdown"><option value="">-- Choisir la rencontre --</option></select>
+            </div>
+
+            <div id="barrage-details-container"></div>
+          </div>
+
         </div>
       `;
 
@@ -825,6 +1621,7 @@
       let playedMatches = [];
       let playerMatchesMap = {};
       let activePoules = {};
+      let activeBarrages = {};
       let isFlashActive = false;
       let sessionNumber = 1;
       let options = { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
@@ -837,19 +1634,19 @@
         tableListeners = [];
       }
 
-      document.getElementById('mode-free-btn').onclick = () => {
-        document.getElementById('free-mode-container').style.display = 'block';
-        document.getElementById('poule-mode-container').style.display = 'none';
-        document.getElementById('mode-free-btn').className = 'btn btn-sm';
-        document.getElementById('mode-poule-btn').className = 'btn btn-sm btn-secondary';
-      };
+      function switchMode(mode) {
+        document.getElementById('free-mode-container').style.display = mode === 'free' ? 'block' : 'none';
+        document.getElementById('poule-mode-container').style.display = mode === 'poule' ? 'block' : 'none';
+        document.getElementById('barrage-mode-container').style.display = mode === 'barrage' ? 'block' : 'none';
 
-      document.getElementById('mode-poule-btn').onclick = () => {
-        document.getElementById('free-mode-container').style.display = 'none';
-        document.getElementById('poule-mode-container').style.display = 'block';
-        document.getElementById('mode-free-btn').className = 'btn btn-sm btn-secondary';
-        document.getElementById('mode-poule-btn').className = 'btn btn-sm btn-purple';
-      };
+        document.getElementById('mode-free-btn').className = mode === 'free' ? 'btn btn-sm' : 'btn btn-sm btn-secondary';
+        document.getElementById('mode-poule-btn').className = mode === 'poule' ? 'btn btn-sm btn-purple' : 'btn btn-sm btn-secondary';
+        document.getElementById('mode-barrage-btn').className = mode === 'barrage' ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-secondary';
+      }
+
+      document.getElementById('mode-free-btn').onclick = () => switchMode('free');
+      document.getElementById('mode-poule-btn').onclick = () => switchMode('poule');
+      document.getElementById('mode-barrage-btn').onclick = () => switchMode('barrage');
 
       onValue(ref(db, 'activeGroup'), (snap) => {
         if (snap.val()) {
@@ -861,6 +1658,10 @@
 
       function attachGroupListeners() {
         cleanupTableListeners();
+        if (supabaseClient && isSupabaseConfigured()) {
+          loadGroupFromSupabase(currentGroup);
+          subscribeToGroup(currentGroup);
+        }
 
         tableListeners.push(onValue(ref(db, getGroupPath('config')), (snap) => {
           const cfg = snap.val() || {};
@@ -878,6 +1679,7 @@
           players = snap.val() || {};
           updatePlayerDropdowns();
           updateSelectedPlayerStats();
+          renderBarrageDetails();
         }));
 
         tableListeners.push(onValue(ref(db, getGroupPath('history')), (snap) => {
@@ -895,6 +1697,11 @@
         tableListeners.push(onValue(ref(db, getGroupPath('poules')), (snap) => {
           activePoules = snap.val() || {};
           renderPouleDropdown();
+        }));
+
+        tableListeners.push(onValue(ref(db, getGroupPath('barrages')), (snap) => {
+          activeBarrages = snap.val() || {};
+          renderBarrageDropdown();
         }));
       }
 
@@ -1007,15 +1814,24 @@
           <div class="card" style="margin-top:10px;">
             <h3>📊 Rencontres de la Poule (11 Points)</h3>
             <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-              ${matches.map((m, idx) => `
-                <div style="display:flex; align-items:center; justify-content:space-between; background:#090d16; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
-                  <span style="font-size:0.88rem; flex:1;"><strong>${escapeHtml(players[m.p1] ? players[m.p1].name : m.p1)}</strong></span>
-                  <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-a" value="${m.scoreA !== undefined ? m.scoreA : ''}" min="0" max="30">
-                  <span style="margin:0 8px; font-weight:bold;">-</span>
-                  <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-b" value="${m.scoreB !== undefined ? m.scoreB : ''}" min="0" max="30">
-                  <span style="font-size:0.88rem; flex:1; text-align:right;"><strong>${escapeHtml(players[m.p2] ? players[m.p2].name : m.p2)}</strong></span>
-                </div>
-              `).join('')}
+              ${matches.map((m, idx) => {
+                const restingPlayers = pList.filter(id => id !== m.p1 && id !== m.p2);
+                const restingNames = restingPlayers.map(id => players[id] ? players[id].name : id).join(' ou ');
+                const refereeAdvice = restingNames ? `<div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">⚖️ Arbitre(s) conseillé(s) : <strong>${escapeHtml(restingNames)}</strong></div>` : '';
+
+                return `
+                  <div style="background:#090d16; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                      <span style="font-size:0.88rem; flex:1;"><strong>${escapeHtml(players[m.p1] ? players[m.p1].name : m.p1)}</strong></span>
+                      <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-a" value="${m.scoreA !== undefined ? m.scoreA : ''}" min="0" max="30">
+                      <span style="margin:0 8px; font-weight:bold;">-</span>
+                      <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-b" value="${m.scoreB !== undefined ? m.scoreB : ''}" min="0" max="30">
+                      <span style="font-size:0.88rem; flex:1; text-align:right;"><strong>${escapeHtml(players[m.p2] ? players[m.p2].name : m.p2)}</strong></span>
+                    </div>
+                    ${refereeAdvice}
+                  </div>
+                `;
+              }).join('')}
             </div>
             <button class="btn btn-success" id="btn-save-poule-scores" style="margin-top:14px;">💾 Enregistrer les Scores</button>
           </div>
@@ -1075,7 +1891,13 @@
               };
             });
 
-            // RE-CALCUL FRAIS DES STATS AVEC LES NOUVEAUX SCORES SAISIS
+            const hasTie = updatedMatches.some(m => m.scoreA !== "" && m.scoreB !== "" && m.scoreA === m.scoreB);
+            if (hasTie) {
+              showToast("⚠️ Match nul impossible au tennis de table (écart de 2 pts requis) !", "warning");
+              saveBtn.disabled = false;
+              return;
+            }
+
             const freshStats = {};
             pList.forEach(id => {
               freshStats[id] = { id, victoires: 0, ptsPoule: 0, pour: 0, contre: 0, diff: 0 };
@@ -1107,7 +1929,6 @@
               return b.pour - a.pour;
             });
 
-            // Écriture atomique dans Firebase
             const updates = {};
             updates[getGroupPath(`poules/${pouleKey}/matches`)] = updatedMatches;
 
@@ -1131,6 +1952,163 @@
           } finally {
             saveBtn.disabled = false;
           }
+        };
+      }
+
+      // 3. LOGIQUE BARRAGES ET AFFINAGE DE PERFORMANCE SUR TABLE
+      function renderBarrageDropdown() {
+        const dropdown = document.getElementById('barrage-select-dropdown');
+        const bKeys = Object.keys(activeBarrages);
+
+        if (bKeys.length === 0) {
+          dropdown.innerHTML = '<option value="">-- Aucun match de barrage généré par le prof --</option>';
+          document.getElementById('barrage-details-container').innerHTML = `
+            <div style="text-align:center; color:var(--muted); margin-top:20px;">
+              ⏳ Le professeur n'a pas encore lancé la phase des barrages d'affinage.<br>
+              Terminez d'abord les poules de niveau !
+            </div>
+          `;
+          return;
+        }
+
+        dropdown.innerHTML = '<option value="">-- Choisir la rencontre --</option>' +
+          bKeys.map(k => {
+            const b = activeBarrages[k];
+            const checkIcon = b.completed ? '✅ ' : '';
+            return `<option value="${escapeHtml(k)}">${checkIcon}Table ${b.table} : ${escapeHtml(b.title)}</option>`;
+          }).join('');
+
+        const defaultKey = `barrage_${tableId}`;
+        if (activeBarrages[defaultKey]) dropdown.value = defaultKey;
+        else if (bKeys.length > 0) dropdown.value = bKeys[0];
+
+        renderBarrageDetails();
+      }
+
+      document.getElementById('barrage-select-dropdown').onchange = renderBarrageDetails;
+
+      function renderBarrageDetails() {
+        const bKey = document.getElementById('barrage-select-dropdown').value;
+        const container = document.getElementById('barrage-details-container');
+        if (!bKey || !activeBarrages[bKey]) {
+          container.innerHTML = '';
+          return;
+        }
+
+        const b = activeBarrages[bKey];
+        const p1 = players[b.p1] || { name: b.p1, points: 100 };
+        const p2 = players[b.p2] || { name: b.p2, points: 100 };
+
+        let resultBanner = '';
+        if (b.completed && b.winnerId) {
+          const wName = players[b.winnerId] ? players[b.winnerId].name : b.winnerId;
+          resultBanner = `
+            <div style="background:rgba(234, 179, 8, 0.2); border:1px solid #eab308; border-radius:8px; padding:10px; margin-bottom:12px; text-align:center; color:#fef08a; font-weight:bold;">
+              🏆 Vainqueur : ${escapeHtml(wName)} (+1 point bonus accordé sur sa note !)
+            </div>
+          `;
+        }
+
+        let refInfo = '';
+        if (b.refereeName) {
+          refInfo = `<div style="font-size:0.8rem; color:#38bdf8; text-align:center; margin-top:8px;">⚖️ <strong>Arbitre Officiel désigné :</strong> ${escapeHtml(b.refereeName)}</div>`;
+        }
+
+        container.innerHTML = `
+          <div class="card" style="margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="badge-barrage" style="font-size:0.85rem;">Table ${b.table}</span>
+              <strong style="color:#fde047; font-size:0.95rem;">${escapeHtml(b.title)}</strong>
+            </div>
+
+            ${resultBanner}
+
+            <p style="text-align:center; font-size:0.82rem; color:var(--muted); margin:0 0 10px 0;">
+              ⚡ Match décisif en 11 pts (2 pts d'écart) • <strong>Enjeu : +1 point bonus sur la note pour le vainqueur !</strong>
+            </p>
+
+            <div class="vs-container" style="background:#090d16; padding:12px; border-radius:8px; border:1px solid var(--border);">
+              <div style="text-align:center;">
+                <strong style="font-size:1.05rem; color:white;">${escapeHtml(p1.name)}</strong>
+                <div style="font-size:0.75rem; color:var(--muted); margin-top:2px;">${escapeHtml(b.p1Origin || '')}</div>
+                <div style="font-size:0.8rem; color:var(--success); font-weight:bold; margin-top:4px;">${p1.points} pts</div>
+              </div>
+
+              <div class="vs-circle">VS</div>
+
+              <div style="text-align:center;">
+                <strong style="font-size:1.05rem; color:white;">${escapeHtml(p2.name)}</strong>
+                <div style="font-size:0.75rem; color:var(--muted); margin-top:2px;">${escapeHtml(b.p2Origin || '')}</div>
+                <div style="font-size:0.8rem; color:var(--success); font-weight:bold; margin-top:4px;">${p2.points} pts</div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px;">
+              <input type="number" class="score-input" id="barrage-sc-a" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0">
+              <span style="font-size:1.2rem; font-weight:bold;">-</span>
+              <input type="number" class="score-input" id="barrage-sc-b" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0">
+            </div>
+
+            ${refInfo}
+
+            <button class="btn btn-gold" id="btn-save-barrage" style="margin-top:14px;">
+              💾 Valider le Match de Barrage (+1 pt bonus)
+            </button>
+          </div>
+        `;
+
+        document.getElementById('btn-save-barrage').onclick = async () => {
+          const scA = document.getElementById('barrage-sc-a').value.trim();
+          const scB = document.getElementById('barrage-sc-b').value.trim();
+
+          if (scA === "" || scB === "") {
+            return showToast("⚠️ Veuillez saisir les scores des deux joueurs !", "danger");
+          }
+
+          const valA = parseInt(scA);
+          const valB = parseInt(scB);
+
+          if (valA === valB) {
+            return showToast("⚠️ Match nul impossible au tennis de table (écart de 2 pts requis) !", "warning");
+          }
+
+          const winnerId = valA > valB ? b.p1 : b.p2;
+          const loserId = valA > valB ? b.p2 : b.p1;
+          const w = players[winnerId];
+
+          const updates = {};
+          updates[getGroupPath(`barrages/${bKey}/scoreA`)] = valA;
+          updates[getGroupPath(`barrages/${bKey}/scoreB`)] = valB;
+          updates[getGroupPath(`barrages/${bKey}/winnerId`)] = winnerId;
+          updates[getGroupPath(`barrages/${bKey}/completed`)] = true;
+
+          // +1 point bonus sur la note de barrage
+          updates[getGroupPath(`players/${winnerId}/barrageBonus`)] = 1;
+          if (loserId && players[loserId]) {
+            updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
+          }
+
+          // Historique
+          const newHistRef = push(ref(db, getGroupPath('history')));
+          updates[getGroupPath(`history/${newHistRef.key}`)] = {
+            table: b.table || tableId,
+            session: sessionNumber,
+            isBarrage: true,
+            barrageTitle: b.title,
+            winnerId: winnerId,
+            loserId: loserId,
+            winnerName: players[winnerId] ? players[winnerId].name : winnerId,
+            loserName: players[loserId] ? players[loserId].name : loserId,
+            scoreA: valA,
+            scoreB: valB,
+            gainWinner: 1,
+            lossLoser: 0,
+            timestamp: Date.now()
+          };
+
+          await update(ref(db), updates);
+          playVictorySound(true);
+          showToast(`🏆 Match validé ! ${w ? w.name : ''} remporte le bonus de +1 pt !`);
         };
       }
 
@@ -1184,7 +2162,8 @@
         if (options.quests && p.questId) {
           const q = currentQuests.find(x => x.id === p.questId);
           if (q) {
-            questHtml = `<div class="quest-box">🎯 <strong>Quête Secrète :</strong> ${escapeHtml(q.text)} (+${q.bonus} pts bonus)</div>`;
+            const statusTxt = p.questCompleted ? '✅ <em>Quête déjà validée !</em>' : `🎯 <strong>Quête Secrète :</strong> ${escapeHtml(q.text)} (+${q.bonus} pts bonus)`;
+            questHtml = `<div class="quest-box">${statusTxt}</div>`;
           }
         }
 
@@ -1217,7 +2196,7 @@
             }
 
             const alreadyPlayedSession = playedMatches.some(m => 
-              (m.session === sessionNumber || !m.session) &&
+              (m.session !== undefined ? m.session === sessionNumber : sessionNumber === 1) &&
               ((m.winnerId === id1 && m.loserId === id2) || (m.winnerId === id2 && m.loserId === id1))
             );
 
@@ -1227,8 +2206,13 @@
               return;
             }
 
-            document.getElementById('btn-p1-win').textContent = `Victoire de ${players[id1].name}`;
-            document.getElementById('btn-p2-win').textContent = `Victoire de ${players[id2].name}`;
+            const p1 = players[id1];
+            const p2 = players[id2];
+            const outcome1 = calculatePointsDelta(p1.points, p2.points, isFlashActive);
+            const outcome2 = calculatePointsDelta(p2.points, p1.points, isFlashActive);
+
+            document.getElementById('btn-p1-win').innerHTML = `Victoire de ${escapeHtml(p1.name)} (+${outcome1.gainWinner} pts) <span style="font-size:0.8rem; font-weight:normal; opacity:0.85;">[${escapeHtml(p2.name)}: ${outcome1.lossLoser} pt]</span>`;
+            document.getElementById('btn-p2-win').innerHTML = `Victoire de ${escapeHtml(p2.name)} (+${outcome2.gainWinner} pts) <span style="font-size:0.8rem; font-weight:normal; opacity:0.85;">[${escapeHtml(p1.name)}: ${outcome2.lossLoser} pt]</span>`;
             actions.style.display = "block";
           } else {
             actions.style.display = "none";
@@ -1253,16 +2237,47 @@
         const refId = document.getElementById('referee-select').value;
         const { gainWinner, lossLoser, rawGain } = calculatePointsDelta(w.points, l.points, isFlashActive);
 
+        let questBonusEarned = 0;
+        let questCompletedNow = false;
+        let questTextValidee = "";
+
+        if (options.quests && w.questId && !w.questCompleted) {
+          const q = currentQuests.find(x => x.id === w.questId);
+          if (q) {
+            let passed = false;
+            if (q.id === 'q1' && w.points < l.points) passed = true;
+            else if (q.id === 'q2') {
+              const pMatches = (playerMatchesMap[winnerId] || []).slice().sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+              if (pMatches.length > 0 && pMatches[0].winnerId === winnerId) passed = true;
+            } else if (q.id === 'q4') {
+              const neverFaced = !(playerMatchesMap[winnerId] || []).some(m => m.winnerId === loserId || m.loserId === loserId);
+              if (neverFaced) passed = true;
+            }
+
+            if (passed) {
+              questBonusEarned = q.bonus || 3;
+              questCompletedNow = true;
+              questTextValidee = q.text;
+            }
+          }
+        }
+
         isSubmittingMatch = true;
         document.getElementById('btn-p1-win').disabled = true;
         document.getElementById('btn-p2-win').disabled = true;
 
         try {
           const updates = {};
-          updates[getGroupPath(`players/${winnerId}/points`)] = w.points + gainWinner;
+          const totalWinnerGain = gainWinner + questBonusEarned;
+
+          updates[getGroupPath(`players/${winnerId}/points`)] = w.points + totalWinnerGain;
           updates[getGroupPath(`players/${loserId}/points`)] = l.points + lossLoser;
           updates[getGroupPath(`players/${winnerId}/matches`)] = (w.matches || 0) + 1;
           updates[getGroupPath(`players/${loserId}/matches`)] = (l.matches || 0) + 1;
+
+          if (questCompletedNow) {
+            updates[getGroupPath(`players/${winnerId}/questCompleted`)] = true;
+          }
 
           if (options.referee && refId && players[refId]) {
             updates[getGroupPath(`players/${refId}/refereeCount`)] = (players[refId].refereeCount || 0) + 1;
@@ -1278,18 +2293,27 @@
             refereeName: options.referee && players[refId] ? players[refId].name : null,
             winnerName: w.name,
             loserName: l.name,
-            gainWinner,
+            gainWinner: totalWinnerGain,
             lossLoser,
             rawGain,
+            questBonusEarned,
             isFlash: isFlashActive,
             timestamp: Date.now()
           };
 
-          // Écriture atomique unique
           await update(ref(db), updates);
 
-          playVictorySound();
-          showToast(`Match enregistré ! ${w.name} (+${gainWinner} pts)`);
+          const isExploit = rawGain >= 9;
+          playVictorySound(isExploit);
+
+          if (questCompletedNow) {
+            const qBanner = document.getElementById('quest-success-banner');
+            qBanner.innerHTML = `🎉 <strong>QUÊTE ACCOMPLIE !</strong> ${escapeHtml(w.name)} valide sa quête : <em>"${escapeHtml(questTextValidee)}"</em> (+${questBonusEarned} pts bonus) !`;
+            qBanner.style.display = 'block';
+            setTimeout(() => { qBanner.style.display = 'none'; }, 6000);
+          }
+
+          showToast(`Match enregistré ! ${w.name} (+${totalWinnerGain} pts)`);
 
           document.getElementById('p1-select').value = "";
           document.getElementById('p2-select').value = "";
@@ -1313,8 +2337,8 @@
       document.getElementById('app').addEventListener('click', (e) => {
         const id1 = document.getElementById('p1-select').value;
         const id2 = document.getElementById('p2-select').value;
-        if (e.target.id === 'btn-p1-win') recordMatch(id1, id2);
-        if (e.target.id === 'btn-p2-win') recordMatch(id2, id1);
+        if (e.target.closest('#btn-p1-win')) recordMatch(id1, id2);
+        if (e.target.closest('#btn-p2-win')) recordMatch(id2, id1);
       });
     }
 
@@ -1345,6 +2369,7 @@
             </div>
 
             <div style="display:flex; align-items:center; gap:8px;">
+              <span class="conn-status-pill connection-badge"></span>
               <span id="session-pill" class="badge-win" style="padding:6px 12px; font-size:0.85rem;">Séance 1</span>
               <button class="btn btn-sm btn-purple" id="btn-toggle-flash">⚡ Défi Flash (Pts x2)</button>
             </div>
@@ -1353,7 +2378,7 @@
           <div class="nav-tabs no-print">
             <div class="tab-btn active" data-tab="ranking">🏆 Classement</div>
             <div class="tab-btn" data-tab="eval">🎯 Evaluation Niveaux</div>
-            <div class="tab-btn" data-tab="poules">📊 Bilan Poules</div>
+            <div class="tab-btn" data-tab="poules">📊 Poules & Barrages</div>
             <div class="tab-btn" data-tab="progress">🚀 Progressions</div>
             <div class="tab-btn" data-tab="rules">📖 Barème & Règles</div>
             <div class="tab-btn" data-tab="history">📜 Historique</div>
@@ -1365,10 +2390,17 @@
           <!-- TAB 1: CLASSEMENT -->
           <div id="tab-ranking">
             <div class="print-title" id="print-title-ranking">Classement Général EPS</div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;" class="no-print">
-              <button class="btn btn-sm btn-success" id="btn-export-csv">📥 Export CSV (Pronote)</button>
-              <button class="btn btn-sm btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;" class="no-print">
+              <div class="search-bar-box" style="flex:1; max-width:300px; margin-bottom:0;">
+                <input type="text" id="ranking-search" class="search-input" placeholder="🔍 Filtrer un élève..." style="margin-top:0;">
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm btn-success" id="btn-export-csv" style="width:auto;">📥 Export CSV Pronote (/20)</button>
+                <button class="btn btn-sm btn-secondary" onclick="window.print()" style="width:auto;">🖨️ Imprimer</button>
+              </div>
             </div>
+
             <div class="ranking-grid">
               <div>
                 <table>
@@ -1394,13 +2426,16 @@
             <div class="card">
               <h3>🎯 Évaluation du Niveau de Jeu (/12)</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Saisissez la note sur 12 points de chaque élève au point près (<strong id="eval-grade-indicator">6EME</strong>).
+                Saisissez la note sur 12 points de chaque élève (<strong id="eval-grade-indicator">6EME</strong>). Intervalles de 0.5 pt acceptés.
               </p>
+              <div class="search-bar-box no-print" style="max-width:320px; margin:0 auto 12px auto;">
+                <input type="text" id="eval-search" class="search-input" placeholder="🔍 Rechercher un élève..." style="margin-top:0;">
+              </div>
               <div id="eval-students-list" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
           </div>
 
-          <!-- TAB 3: BILAN POULES (Professeur) -->
+          <!-- TAB 3: BILAN POULES & BARRAGES (Professeur) -->
           <div id="tab-poules" style="display:none;">
             <div class="card">
               <h3>📊 Suivi des Poules & Validation des Notes /6</h3>
@@ -1408,6 +2443,25 @@
                 Les notes sur 6 points apparaissent automatiquement lorsque tous les matchs d'une poule ont été complétés.
               </p>
               <div id="prof-poules-container" style="display:flex; flex-direction:column; gap:15px;"></div>
+            </div>
+
+            <!-- SECTION BARRAGES ET AFFINAGE DE PERFORMANCE -->
+            <div class="card" style="margin-top:20px; border-color:#eab308; background:rgba(234, 179, 8, 0.03);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                <div>
+                  <h3 style="margin:0; color:#facc15; text-align:left;">⚔️ Phase 2 : Matchs de Barrage & d'Affinage de Performance</h3>
+                  <p style="font-size:0.82rem; color:var(--muted); margin:4px 0 0 0;">
+                    Confrontations croisées : 1er P2 vs 3e P1, Grande Finale (1er P1 vs 2e P1), etc. <strong>+1 point bonus sur la note pour chaque vainqueur !</strong>
+                  </p>
+                </div>
+                <button class="btn btn-gold btn-sm" id="btn-generate-barrages" style="width:auto;">⚔️ Générer les Barrages d'Affinage</button>
+              </div>
+
+              <div id="prof-barrages-container">
+                <p style="text-align:center; color:var(--muted); font-size:0.85rem; margin:15px 0;">
+                  Aucun barrage généré. Cliquez sur le bouton ci-dessus une fois les poules de niveau terminées.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -1433,7 +2487,7 @@
             </div>
           </div>
 
-          <!-- TAB 5: BARÈME ET RÈGLES DU TOURNOI (RÉORGANISÉ SELON LA DEMANDE) -->
+          <!-- TAB 5: BARÈME ET RÈGLES DU TOURNOI -->
           <div id="tab-rules" style="display:none;">
             <div class="card">
               <h3>📖 Barèmes Officiels & Règles EPS</h3>
@@ -1469,6 +2523,7 @@
                   <li><strong>🛡️ Muraille :</strong> Série de 5 victoires consécutives.</li>
                   <li><strong>⚡ Chasseur :</strong> Victoire marquante face à un adversaire nettement supérieur.</li>
                   <li><strong>🚀 Remontada :</strong> Progression d'au moins +15 points.</li>
+                  <li><strong>⚔️ Vainqueur de Barrage :</strong> Victoire décisive en match d'affinage (+1 pt bonus).</li>
                 </ul>
               </div>
 
@@ -1545,6 +2600,28 @@
                     <tr><td><strong>4ème place</strong></td><td>0 victoire</td><td><strong>2 / 6</strong></td></tr>
                   </tbody>
                 </table>
+              </div>
+
+              <div class="rule-card">
+                <h4>5 - Phase 2 : Règle des Barrages & Affinage Inter-Poules (+1 pt bonus)</h4>
+                <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+                  À la fin des poules, chaque élève joue un match d'affinage :<br>
+                  • 👑 <strong>Grande Finale :</strong> 1er Poule 1 vs 2e Poule 1 (titre de champion).<br>
+                  • ⚔️ <strong>Barrages Montée/Maintien :</strong> 1er Poule 2 vs 3e Poule 1 ; 2e Poule 2 vs 4e Poule 1, etc.<br>
+                  • 🛡️ <strong>Consolidation :</strong> Les derniers élèves de la poule basse s'affrontent pour une victoire d'honneur.<br>
+                  • 🎯 <strong>Gain :</strong> Le vainqueur de chaque barrage remporte <strong>+1 point bonus</strong> sur sa note EPS !<br>
+                  • ⚖️ <strong>Élève impair :</strong> S'il y a un nombre impair d'élèves, l'élève non apparié est désigné <em>Arbitre Officiel</em> et valide son point d'arbitrage.
+                </p>
+              </div>
+
+              <div class="rule-card">
+                <h4>6 - Barème Global EPS Pronote (/20 pts)</h4>
+                <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+                  • <strong>Note Niveau de jeu :</strong> /12 points<br>
+                  • <strong>Note Performance Poule :</strong> /6 points<br>
+                  • <strong>Bonus Engagement & Rôles :</strong> /2 points (1 pt si $\ge 2$ arbitrages tiers, 1 pt si quête validée ou $\ge 5$ matchs joués)<br>
+                  • <strong>Bonus Barrage Vainqueur :</strong> +1 point bonus (plafonné à 20).
+                </p>
               </div>
 
             </div>
@@ -1641,6 +2718,25 @@
               <button class="btn btn-success" id="btn-save-options" style="margin-top:15px;">💾 Enregistrer les Options & Paramètres</button>
             </div>
 
+            <!-- CARTE CONFIGURATION BASE DE DONNÉES SUPABASE -->
+            <div class="card" style="margin-top:15px; border:1px solid #10b981; background:linear-gradient(180deg, #090d16 0%, #064e3b22 100%);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <h3 style="margin:0; color:#34d399;">⚡ Base de données Supabase (Temps Réel)</h3>
+                  <p style="font-size:0.82rem; color:var(--muted); margin:4px 0 0 0;">
+                    Remplace Firebase pour synchroniser les tablettes et l'ordinateur professeur en direct via PostgreSQL.
+                  </p>
+                </div>
+                <span id="supabase-status-badge" class="badge-barrage" style="font-size:0.75rem;">Vérification...</span>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+                <button class="btn btn-sm btn-gold" id="btn-open-supabase-modal" style="width:auto;">⚙️ Configurer les Clés Supabase</button>
+                <button class="btn btn-sm btn-purple" id="btn-copy-sql" style="width:auto;">📋 Copier le Script SQL</button>
+                <button class="btn btn-sm btn-secondary" id="btn-test-supabase" style="width:auto;">🧪 Tester la Connexion</button>
+                <button class="btn btn-sm btn-purple" id="btn-share-ipad-link" style="width:auto; background:#0284c7;">📲 Lien d'Auto-Config iPad</button>
+              </div>
+            </div>
+
             <div class="card" style="margin-top:15px;">
               <h3>🔄 Gestion de la Séance</h3>
               <button class="btn btn-warning" id="btn-next-session">Passer à la Séance Suivante</button>
@@ -1721,10 +2817,13 @@
       let historyMatches = [];
       let playerMatchesMap = {};
       let activePoulesData = {};
+      let activeBarragesData = {};
       let currentSession = 1;
       let currentGradeLevel = '6eme';
       let options = { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
       let questBank = DEFAULT_QUESTS;
+      let rankingSearchQuery = "";
+      let evalSearchQuery = "";
 
       let profListeners = [];
       function cleanupProfListeners() {
@@ -1749,11 +2848,20 @@
 
       document.getElementById('grade-select').onchange = async (e) => {
         currentGradeLevel = e.target.value;
-        await set(ref(db, getGroupPath('config/gradeLevel')), currentGradeLevel);
+        const updates = {};
+        updates[getGroupPath('config/gradeLevel')] = currentGradeLevel;
+        
+        for (let id in playersData) {
+          if (playersData[id].note12 !== undefined && playersData[id].note12 !== "") {
+            updates[getGroupPath(`players/${id}/level`)] = getLevelFromNote(currentGradeLevel, playersData[id].note12);
+          }
+        }
+        await update(ref(db), updates);
+
         document.getElementById('eval-grade-indicator').textContent = currentGradeLevel.toUpperCase();
         renderEvalStudentsList();
         renderRankingTable();
-        showToast(`Niveau de classe mis à jour : ${currentGradeLevel.toUpperCase()}`);
+        showToast(`Niveau mis à jour : ${currentGradeLevel.toUpperCase()} (niveaux recalculés)`);
       };
 
       document.getElementById('btn-rename-group').onclick = async () => {
@@ -1799,6 +2907,10 @@
 
       function attachListeners() {
         cleanupProfListeners();
+        if (supabaseClient && isSupabaseConfigured()) {
+          loadGroupFromSupabase(currentGroup);
+          subscribeToGroup(currentGroup);
+        }
 
         profListeners.push(onValue(ref(db, getGroupPath('config')), (snap) => {
           const cfg = snap.val() || {};
@@ -1843,11 +2955,17 @@
           renderEvalStudentsList();
           renderProgressTable();
           renderStudentManageList();
+          renderProfBarragesOverview();
         }));
 
         profListeners.push(onValue(ref(db, getGroupPath('poules')), (snap) => {
           activePoulesData = snap.val() || {};
           renderProfPoulesOverview();
+        }));
+
+        profListeners.push(onValue(ref(db, getGroupPath('barrages')), (snap) => {
+          activeBarragesData = snap.val() || {};
+          renderProfBarragesOverview();
         }));
       }
 
@@ -1857,7 +2975,6 @@
         document.getElementById('handicap-settings-box').style.display = e.target.checked ? 'block' : 'none';
       };
 
-      // GESTION ACTIVATION QUÊTES SECRÈTES
       document.getElementById('opt-quests').onchange = (e) => {
         const isChecked = e.target.checked;
         document.getElementById('quest-management-box').style.display = isChecked ? 'block' : 'none';
@@ -1912,6 +3029,7 @@
           const questId = select.value;
           const updates = {};
           updates[getGroupPath(`players/${studentId}/questId`)] = questId !== "" ? questId : null;
+          updates[getGroupPath(`players/${studentId}/questCompleted`)] = false;
           await update(ref(db), updates);
           showToast("Quête mise à jour");
         }
@@ -1923,6 +3041,7 @@
         for (let id in playersData) {
           const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
           updates[getGroupPath(`players/${id}/questId`)] = randomQuest.id;
+          updates[getGroupPath(`players/${id}/questCompleted`)] = false;
         }
         await update(ref(db), updates);
         showToast("🎲 Quêtes distribuées aléatoirement à tous !");
@@ -1962,16 +3081,34 @@
         showToast("Quête ajoutée à la banque !");
       };
 
-      // SAISIE EXCLUSIVE DE LA NOTE /12 DANS L'ONGLET EVALUATION
+      document.getElementById('ranking-search').oninput = (e) => {
+        rankingSearchQuery = e.target.value.toLowerCase().trim();
+        renderRankingTable();
+      };
+
+      document.getElementById('eval-search').oninput = (e) => {
+        evalSearchQuery = e.target.value.toLowerCase().trim();
+        renderEvalStudentsList();
+      };
+
       function renderEvalStudentsList() {
         const container = document.getElementById('eval-students-list');
-        const sorted = Object.entries(playersData)
+        let sorted = Object.entries(playersData)
           .map(([id, p]) => ({ id, ...p }))
           .sort((a,b) => (a.name || '').localeCompare(b.name || ''));
 
+        if (evalSearchQuery) {
+          sorted = sorted.filter(p => p.name.toLowerCase().includes(evalSearchQuery));
+        }
+
         if (sorted.length === 0) {
-          container.innerHTML = '<p style="text-align:center; color:var(--muted);">Aucun élève dans cette classe.</p>';
+          container.innerHTML = '<p style="text-align:center; color:var(--muted);">Aucun élève trouvé.</p>';
           return;
+        }
+
+        const noteOptions = [];
+        for (let i = 0; i <= 24; i++) {
+          noteOptions.push(i / 2);
         }
 
         container.innerHTML = sorted.map(p => {
@@ -1990,10 +3127,10 @@
 
               <div style="display:flex; align-items:center; gap:8px;">
                 <label style="font-size:0.85rem; font-weight:bold; color:var(--muted);">Note /12 :</label>
-                <select class="eval-note-select" data-id="${escapeHtml(p.id)}" style="width:110px; margin:0; font-weight:bold; color:#38bdf8;">
+                <select class="eval-note-select" data-id="${escapeHtml(p.id)}" style="width:115px; margin:0; font-weight:bold; color:#38bdf8;">
                   <option value="">-- / 12 --</option>
-                  ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `
-                    <option value="${n}" ${currentNote !== "" && parseInt(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
+                  ${noteOptions.map(n => `
+                    <option value="${n}" ${currentNote !== "" && parseFloat(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
                   `).join('')}
                 </select>
               </div>
@@ -2012,7 +3149,7 @@
             updates[getGroupPath(`players/${studentId}/note12`)] = null;
             updates[getGroupPath(`players/${studentId}/level`)] = null;
           } else {
-            const noteNum = parseInt(noteVal);
+            const noteNum = parseFloat(noteVal);
             const calculatedLvl = getLevelFromNote(currentGradeLevel, noteNum);
             updates[getGroupPath(`players/${studentId}/note12`)] = noteNum;
             updates[getGroupPath(`players/${studentId}/level`)] = calculatedLvl;
@@ -2118,123 +3255,353 @@
         }).join('');
       }
 
-      // Algorithme de partitionnement mathématiquement exact pour N élèves
-      async function generatePoules(mode = 'rank') {
-        const activeStudents = Object.entries(playersData)
-          .map(([id, p]) => ({ id, ...p }))
-          .filter(p => !p.absent);
+      // AFFICHAGE DES BARRAGES DANS L'ESPACE PROFESSEUR
+      function renderProfBarragesOverview() {
+        const container = document.getElementById('prof-barrages-container');
+        const bKeys = Object.keys(activeBarragesData);
 
-        const total = activeStudents.length;
-        if (total < 3) {
-          return showToast("⚠️ Pas assez d'élèves présents (min 3) !", "danger");
+        if (bKeys.length === 0) {
+          container.innerHTML = `
+            <p style="text-align:center; color:var(--muted); font-size:0.85rem; margin:15px 0;">
+              Aucun match de barrage généré. Cliquez sur le bouton "⚔️ Générer les Barrages d'Affinage" ci-dessus dès que les poules sont terminées.
+            </p>
+          `;
+          return;
         }
 
-        if (mode === 'rank') {
-          activeStudents.sort((a,b) => b.points - a.points);
-        } else {
-          activeStudents.sort((a,b) => {
-            const noteA = a.note12 !== undefined ? parseFloat(a.note12) : -1;
-            const noteB = b.note12 !== undefined ? parseFloat(b.note12) : -1;
-            if (noteB !== noteA) return noteB - noteA;
-            return b.points - a.points;
-          });
-        }
+        container.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${bKeys.map(k => {
+              const b = activeBarragesData[k];
+              const p1 = playersData[b.p1] || { name: b.p1 };
+              const p2 = playersData[b.p2] || { name: b.p2 };
+              const isDone = b.completed;
+              const winnerName = isDone && b.winnerId ? (playersData[b.winnerId] ? playersData[b.winnerId].name : b.winnerId) : null;
 
-        // Décomposition mathématique en poules de 4 et 3
-        let pouleSizes = [];
-        if (total === 5) {
-          pouleSizes = [5];
-        } else {
-          let num4 = Math.floor(total / 4);
-          let rem = total % 4;
-          let num3 = 0;
-          if (rem === 1) {
-            if (num4 >= 2) {
-              num4 -= 2;
-              num3 = 3;
-            }
-          } else if (rem === 2) {
-            if (num4 >= 1) {
-              num4 -= 1;
-              num3 = 2;
-            }
-          } else if (rem === 3) {
-            num3 = 1;
-          }
-          pouleSizes = [...Array(num4).fill(4), ...Array(num3).fill(3)];
-        }
+              return `
+                <div style="background:#090d16; border:1px solid ${isDone ? 'var(--gold)' : 'var(--border)'}; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <span class="badge-barrage" style="font-size:0.78rem;">Table ${b.table}</span>
+                    <strong style="color:#fde047; font-size:0.9rem; margin-left:6px;">${escapeHtml(b.title)}</strong>
+                    <div style="font-size:0.85rem; color:white; margin-top:4px;">
+                      <strong>${escapeHtml(p1.name)}</strong> (${escapeHtml(b.p1Origin || '')}) 
+                      <span style="color:var(--muted); margin:0 6px;">VS</span> 
+                      <strong>${escapeHtml(p2.name)}</strong> (${escapeHtml(b.p2Origin || '')})
+                    </div>
+                    ${b.refereeName ? `<div style="font-size:0.75rem; color:#38bdf8; margin-top:3px;">⚖️ Arbitre Officiel : <strong>${escapeHtml(b.refereeName)}</strong></div>` : ''}
+                  </div>
 
-        const poules = {};
-        let studentIdx = 0;
-
-        pouleSizes.forEach((size, pIdx) => {
-          const pGroup = activeStudents.slice(studentIdx, studentIdx + size).map(s => s.id);
-          const pKey = `poule_${pIdx + 1}`;
-          const matches = [];
-
-          if (pGroup.length === 5) {
-            matches.push({ p1: pGroup[0], p2: pGroup[1] });
-            matches.push({ p1: pGroup[2], p2: pGroup[3] });
-            matches.push({ p1: pGroup[0], p2: pGroup[4] });
-            matches.push({ p1: pGroup[1], p2: pGroup[2] });
-            matches.push({ p1: pGroup[3], p2: pGroup[4] });
-            matches.push({ p1: pGroup[0], p2: pGroup[2] });
-            matches.push({ p1: pGroup[1], p2: pGroup[3] });
-            matches.push({ p1: pGroup[2], p2: pGroup[4] });
-            matches.push({ p1: pGroup[0], p2: pGroup[3] });
-            matches.push({ p1: pGroup[1], p2: pGroup[4] });
-          } else if (pGroup.length === 4) {
-            matches.push({ p1: pGroup[0], p2: pGroup[1] });
-            matches.push({ p1: pGroup[2], p2: pGroup[3] });
-            matches.push({ p1: pGroup[0], p2: pGroup[2] });
-            matches.push({ p1: pGroup[1], p2: pGroup[3] });
-            matches.push({ p1: pGroup[0], p2: pGroup[3] });
-            matches.push({ p1: pGroup[1], p2: pGroup[2] });
-          } else if (pGroup.length === 3) {
-            // Aller-retour en poule de 3 pour garantir au moins 4 matchs par élève
-            matches.push({ p1: pGroup[0], p2: pGroup[1] });
-            matches.push({ p1: pGroup[1], p2: pGroup[2] });
-            matches.push({ p1: pGroup[2], p2: pGroup[0] });
-            matches.push({ p1: pGroup[1], p2: pGroup[0] });
-            matches.push({ p1: pGroup[2], p2: pGroup[1] });
-            matches.push({ p1: pGroup[0], p2: pGroup[2] });
-          }
-
-          poules[pKey] = {
-            players: pGroup,
-            matches: matches
-          };
-
-          studentIdx += size;
-        });
-
-        await set(ref(db, getGroupPath('poules')), poules);
-        const modeTxt = mode === 'rank' ? 'Classement Défis' : 'Niveaux de Jeu';
-        showToast(`⚡ ${pouleSizes.length} Poules générées selon le ${modeTxt} !`);
-        switchTab('poules');
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="number" class="score-input prof-barrage-sc-a" data-key="${escapeHtml(k)}" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0" style="width:48px;">
+                    <span style="font-weight:bold;">-</span>
+                    <input type="number" class="score-input prof-barrage-sc-b" data-key="${escapeHtml(k)}" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0" style="width:48px;">
+                    <button class="btn btn-sm btn-gold btn-save-prof-barrage" data-key="${escapeHtml(k)}" style="width:auto; padding:5px 10px;">💾</button>
+                    ${isDone ? `<span class="badge-win" title="Vainqueur : ${escapeHtml(winnerName || '')}">🏆 +1 pt</span>` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
       }
 
-      document.getElementById('btn-generate-poules-rank').onclick = () => generatePoules('rank');
-      document.getElementById('btn-generate-poules-level').onclick = () => generatePoules('level');
+      document.getElementById('prof-barrages-container').addEventListener('click', async (e) => {
+        const btn = e.target.closest('.btn-save-prof-barrage');
+        if (btn) {
+          const k = btn.dataset.key;
+          const b = activeBarragesData[k];
+          if (!b) return;
 
-      // CLASSEMENT
+          const row = btn.closest('div');
+          const scA = row.querySelector('.prof-barrage-sc-a').value.trim();
+          const scB = row.querySelector('.prof-barrage-sc-b').value.trim();
+
+          if (scA === "" || scB === "") return showToast("Saisir les deux scores", "warning");
+
+          const valA = parseInt(scA);
+          const valB = parseInt(scB);
+          if (valA === valB) return showToast("Match nul impossible au tennis de table", "warning");
+
+          const winnerId = valA > valB ? b.p1 : b.p2;
+          const loserId = valA > valB ? b.p2 : b.p1;
+
+          const updates = {};
+          updates[getGroupPath(`barrages/${k}/scoreA`)] = valA;
+          updates[getGroupPath(`barrages/${k}/scoreB`)] = valB;
+          updates[getGroupPath(`barrages/${k}/winnerId`)] = winnerId;
+          updates[getGroupPath(`barrages/${k}/completed`)] = true;
+
+          updates[getGroupPath(`players/${winnerId}/barrageBonus`)] = 1;
+          if (loserId && playersData[loserId]) {
+            updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
+          }
+
+          const newHistRef = push(ref(db, getGroupPath('history')));
+          updates[getGroupPath(`history/${newHistRef.key}`)] = {
+            table: b.table || 1,
+            session: currentSession,
+            isBarrage: true,
+            barrageTitle: b.title,
+            winnerId,
+            loserId,
+            winnerName: playersData[winnerId] ? playersData[winnerId].name : winnerId,
+            loserName: playersData[loserId] ? playersData[loserId].name : loserId,
+            scoreA: valA,
+            scoreB: valB,
+            gainWinner: 1,
+            lossLoser: 0,
+            timestamp: Date.now()
+          };
+
+          await update(ref(db), updates);
+          playVictorySound(true);
+          showToast(`Barrage Table ${b.table} validé ! +1 pt bonus accordé.`);
+        }
+      });
+
+      // ALGORITHME DE GÉNÉRATION DES BARRAGES D'AFFINAGE INTER-POULES
+      async function generateBarrages() {
+        const pouleKeys = Object.keys(activePoulesData);
+        if (pouleKeys.length < 1) {
+          return showToast("⚠️ Aucune poule existante. Générez d'abord les poules !", "danger");
+        }
+
+        const pouleRankings = [];
+        pouleKeys.forEach((pKey, idx) => {
+          const poule = activePoulesData[pKey];
+          const pList = poule.players || [];
+          const matches = poule.matches || [];
+
+          const stats = {};
+          pList.forEach(id => {
+            stats[id] = { id, name: playersData[id] ? playersData[id].name : id, ptsPoule: 0, victoires: 0, pour: 0, contre: 0, diff: 0 };
+          });
+
+          matches.forEach(m => {
+            if (m.scoreA !== "" && m.scoreB !== "" && m.scoreA !== undefined && m.scoreB !== undefined) {
+              const a = parseInt(m.scoreA);
+              const b = parseInt(m.scoreB);
+              if (stats[m.p1]) { stats[m.p1].pour += a; stats[m.p1].contre += b; }
+              if (stats[m.p2]) { stats[m.p2].pour += b; stats[m.p2].contre += a; }
+              if (a > b) {
+                if (stats[m.p1]) { stats[m.p1].victoires++; stats[m.p1].ptsPoule += 3; }
+                if (stats[m.p2]) { stats[m.p2].ptsPoule += 1; }
+              } else if (b > a) {
+                if (stats[m.p2]) { stats[m.p2].victoires++; stats[m.p2].ptsPoule += 3; }
+                if (stats[m.p1]) { stats[m.p1].ptsPoule += 1; }
+              }
+            }
+          });
+
+          Object.keys(stats).forEach(id => {
+            stats[id].diff = stats[id].pour - stats[id].contre;
+          });
+
+          const sorted = Object.values(stats).sort((a,b) => {
+            if (b.ptsPoule !== a.ptsPoule) return b.ptsPoule - a.ptsPoule;
+            if (b.diff !== a.diff) return b.diff - a.diff;
+            return b.pour - a.pour;
+          });
+
+          pouleRankings.push({
+            pouleIndex: idx + 1,
+            pKey,
+            players: sorted
+          });
+        });
+
+        const K = pouleRankings.length;
+        const assigned = new Set();
+        const barrages = {};
+        let tableCounter = 1;
+
+        // 1. Grande Finale (1er Poule 1 vs 2e Poule 1)
+        if (pouleRankings[0].players.length >= 2) {
+          const p1 = pouleRankings[0].players[0].id;
+          const p2 = pouleRankings[0].players[1].id;
+          const bKey = `barrage_${tableCounter}`;
+          barrages[bKey] = {
+            id: bKey,
+            table: tableCounter,
+            title: `👑 Grande Finale (1er P1 vs 2e P1)`,
+            isFinale: true,
+            p1: p1,
+            p2: p2,
+            p1Origin: `1er Poule 1`,
+            p2Origin: `2e Poule 1`,
+            scoreA: "",
+            scoreB: "",
+            winnerId: null,
+            completed: false
+          };
+          assigned.add(p1);
+          assigned.add(p2);
+          tableCounter++;
+        }
+
+        // 2. Inter-poules : du haut vers le bas
+        for (let i = 0; i < K - 1; i++) {
+          const pUp = pouleRankings[i].players;
+          const pDown = pouleRankings[i+1].players;
+
+          // Match 1 : 3e Poule au-dessus vs 1er Poule en-dessous
+          if (pUp.length >= 3 && pDown.length >= 1) {
+            const p1 = pUp[2].id;
+            const p2 = pDown[0].id;
+            if (!assigned.has(p1) && !assigned.has(p2)) {
+              const bKey = `barrage_${tableCounter}`;
+              barrages[bKey] = {
+                id: bKey,
+                table: tableCounter,
+                title: `⚔️ Barrage Montée/Maintien (3e P${i+1} vs 1er P${i+2})`,
+                p1: p1,
+                p2: p2,
+                p1Origin: `3e Poule ${i+1}`,
+                p2Origin: `1er Poule ${i+2}`,
+                scoreA: "",
+                scoreB: "",
+                winnerId: null,
+                completed: false
+              };
+              assigned.add(p1);
+              assigned.add(p2);
+              tableCounter++;
+            }
+          }
+
+          // Match 2 : 4e Poule au-dessus vs 2e Poule en-dessous
+          if (pUp.length >= 4 && pDown.length >= 2) {
+            const p1 = pUp[3].id;
+            const p2 = pDown[1].id;
+            if (!assigned.has(p1) && !assigned.has(p2)) {
+              const bKey = `barrage_${tableCounter}`;
+              barrages[bKey] = {
+                id: bKey,
+                table: tableCounter,
+                title: `⚔️ Barrage Montée/Maintien (4e P${i+1} vs 2e P${i+2})`,
+                p1: p1,
+                p2: p2,
+                p1Origin: `4e Poule ${i+1}`,
+                p2Origin: `2e Poule ${i+2}`,
+                scoreA: "",
+                scoreB: "",
+                winnerId: null,
+                completed: false
+              };
+              assigned.add(p1);
+              assigned.add(p2);
+              tableCounter++;
+            }
+          }
+        }
+
+        // 3. Collecter les élèves non encore appariés (notamment dans la dernière poule)
+        const unassigned = [];
+        pouleRankings.forEach((pr, pIdx) => {
+          pr.players.forEach((pl, rIdx) => {
+            if (!assigned.has(pl.id)) {
+              unassigned.push({
+                ...pl,
+                origin: `${rIdx + 1}e Poule ${pIdx + 1}`,
+                pouleIdx: pIdx + 1,
+                rankInPoule: rIdx + 1
+              });
+            }
+          });
+        });
+
+        // Apparier les restants 2 par 2 par niveau immédiat
+        let uIdx = 0;
+        while (uIdx + 1 < unassigned.length) {
+          const p1 = unassigned[uIdx];
+          const p2 = unassigned[uIdx + 1];
+          const bKey = `barrage_${tableCounter}`;
+          const isConsolidation = p1.pouleIdx === K && p2.pouleIdx === K;
+          const title = isConsolidation 
+            ? `🛡️ Finale de Consolidation (${p1.origin} vs ${p2.origin})`
+            : `🛡️ Match de Classement (${p1.origin} vs ${p2.origin})`;
+
+          barrages[bKey] = {
+            id: bKey,
+            table: tableCounter,
+            title: title,
+            p1: p1.id,
+            p2: p2.id,
+            p1Origin: p1.origin,
+            p2Origin: p2.origin,
+            scoreA: "",
+            scoreB: "",
+            winnerId: null,
+            completed: false
+          };
+          assigned.add(p1.id);
+          assigned.add(p2.id);
+          tableCounter++;
+          uIdx += 2;
+        }
+
+        // S'il reste exactement 1 élève (effectif impair) : nommé Arbitre Officiel !
+        let officialReferee = null;
+        if (uIdx < unassigned.length) {
+          const refereePlayer = unassigned[uIdx];
+          officialReferee = {
+            id: refereePlayer.id,
+            name: refereePlayer.name,
+            origin: refereePlayer.origin
+          };
+          const targetKey = `barrage_${Math.max(1, tableCounter - 1)}`;
+          if (barrages[targetKey]) {
+            barrages[targetKey].refereeId = refereePlayer.id;
+            barrages[targetKey].refereeName = refereePlayer.name;
+          }
+        }
+
+        const updates = {};
+        updates[getGroupPath('barrages')] = barrages;
+        if (officialReferee) {
+          updates[getGroupPath('config/barrageOfficialReferee')] = officialReferee;
+          const currentRef = (playersData[officialReferee.id] && playersData[officialReferee.id].refereeCount) || 0;
+          updates[getGroupPath(`players/${officialReferee.id}/refereeCount`)] = currentRef + 1;
+        } else {
+          updates[getGroupPath('config/barrageOfficialReferee')] = null;
+        }
+
+        await update(ref(db), updates);
+        showToast(`⚔️ ${tableCounter - 1} Matchs de barrage générés !`);
+      }
+
+      document.getElementById('btn-generate-barrages').onclick = generateBarrages;
+
+      // CLASSEMENT AVEC PODIUM & FILTRAGE RECHERCHE
       function renderRankingTable() {
-        const sorted = Object.entries(playersData)
+        let sorted = Object.entries(playersData)
           .map(([id, p]) => ({ id, ...p }))
           .sort((a, b) => b.points - a.points);
+
+        if (rankingSearchQuery) {
+          sorted = sorted.filter(p => p.name.toLowerCase().includes(rankingSearchQuery));
+        }
+
         const half = Math.ceil(sorted.length / 2);
         const col1 = sorted.slice(0, half);
         const col2 = sorted.slice(half);
 
         function createRowsHtml(list, offset) {
           return list.map((p, index) => {
+            const actualRank = index + 1 + offset;
             const pMatches = playerMatchesMap[p.id] || [];
             const badges = getPlayerBadgesHTML(p, pMatches);
             const absentTag = p.absent ? ' <span style="color:#ef4444; font-size:0.75rem;">(Absent)</span>' : '';
 
+            let rankDisplay = `${actualRank}`;
+            let rankClass = "rank-cell";
+            if (actualRank === 1) { rankDisplay = `🥇 1`; rankClass += " rank-1"; }
+            else if (actualRank === 2) { rankDisplay = `🥈 2`; rankClass += " rank-2"; }
+            else if (actualRank === 3) { rankDisplay = `🥉 3`; rankClass += " rank-3"; }
+
             return `
               <tr style="${p.absent ? 'opacity:0.5;' : ''}">
-                <td><strong>${index + 1 + offset}</strong></td>
+                <td class="${rankClass}"><strong>${rankDisplay}</strong></td>
                 <td>${escapeHtml(p.name)}${absentTag}</td>
                 <td><span class="badge-win">${p.points}</span></td>
                 <td>${p.matches || 0}</td>
@@ -2369,8 +3736,8 @@
         tbody.innerHTML = entries.map((m) => `
           <tr>
             <td>S${m.session || 1}</td>
-            <td>T${escapeHtml(m.table)} ${m.isFlash ? '⚡' : ''}</td>
-            <td><strong>${escapeHtml(m.winnerName)}</strong> (+${m.gainWinner})</td>
+            <td>T${escapeHtml(m.table)} ${m.isFlash ? '⚡' : ''}${m.isBarrage ? ' ⚔️' : ''}</td>
+            <td><strong>${escapeHtml(m.winnerName)}</strong> (+${m.gainWinner}${m.questBonusEarned ? ' 🎯' : ''})</td>
             <td>${escapeHtml(m.loserName)} (${m.lossLoser})</td>
             <td>${escapeHtml(m.refereeName || '-')}</td>
             <td class="no-print">
@@ -2416,19 +3783,26 @@
         }
       });
 
-      // Export CSV Pronote avec BOM UTF-8
+      // Export CSV Pronote avec Note /20, Bonus Barrage et BOM UTF-8
       document.getElementById('btn-export-csv').onclick = () => {
         const sorted = Object.entries(playersData).map(([id, p]) => {
           const start = p.startPoints !== undefined ? p.startPoints : 100;
           const note12 = p.note12 !== undefined ? p.note12 : "";
           const lvlNum = getLevelFromNote(currentGradeLevel, note12);
           const note6 = p.pouleNote !== undefined ? p.pouleNote : "";
+          const total20 = calculateTotalNote20(p);
+          const bonus2 = getBonus2Points(p);
+          const bBonus = p.barrageBonus ? 1 : 0;
+
           return {
             Nom: p.name,
             Statut: p.absent ? "Absent" : "Present",
+            NoteFinale20: total20,
             NoteSur12: note12,
             NiveauJeu: lvlNum || "",
             NotePouleSur6: note6,
+            BonusBarrageSur1: bBonus,
+            BonusEngagementSur2: bonus2,
             PointsActuels: p.points,
             CapitalDepart: start,
             Progression: p.points - start,
@@ -2437,17 +3811,17 @@
           };
         }).sort((a,b) => b.PointsActuels - a.PointsActuels);
 
-        let csvContent = "\uFEFFNom;Statut;Note Sur 12;Niveau Jeu;Note Poule Sur 6;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\r\n";
+        let csvContent = "\uFEFFNom;Statut;Note Finale Sur 20;Note Jeu Sur 12;Niveau Jeu;Note Poule Sur 6;Bonus Barrage Sur 1;Bonus Engagement Sur 2;Points Actuels;Capital Depart;Progression;Matchs Joues;Arbitrages\r\n";
         sorted.forEach(r => {
           const cleanName = (r.Nom || '').replace(/"/g, '""');
-          csvContent += `"${cleanName}";${r.Statut};${r.NoteSur12};${r.NiveauJeu};${r.NotePouleSur6};${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\r\n`;
+          csvContent += `"${cleanName}";${r.Statut};${r.NoteFinale20};${r.NoteSur12};${r.NiveauJeu};${r.NotePouleSur6};${r.BonusBarrageSur1};${r.BonusEngagementSur2};${r.PointsActuels};${r.CapitalDepart};${r.Progression};${r.MatchsJoues};${r.Arbitrages}\r\n`;
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `export_${currentGroup}_${currentGradeLevel}.csv`);
+        link.setAttribute("download", `export_pronote_${currentGroup}_${currentGradeLevel}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -2473,25 +3847,69 @@
         const updates = {};
         updates[getGroupPath('config/options')] = { 
           handicap: h, 
-          handicapMinDiff: hMin,
+          handicapMinDiff: hMin, 
           handicapRatio: hRatio,
           handicapMax: 4,
           referee: r, 
           quests: q 
         };
 
-        // Attribution automatique d'une quête si activée
         if (q) {
           for (let id in playersData) {
             if (!playersData[id].questId && questBank.length > 0) {
               const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
               updates[getGroupPath(`players/${id}/questId`)] = randomQuest.id;
+              updates[getGroupPath(`players/${id}/questCompleted`)] = false;
             }
           }
         }
 
         await update(ref(db), updates);
         showToast("Options et paramètres enregistrés !");
+      };
+
+      // Actions Supabase dans l'onglet Options EPS
+      const btnOpenSb = document.getElementById('btn-open-supabase-modal');
+      if (btnOpenSb) btnOpenSb.onclick = () => window.openSupabaseModal();
+
+      const btnCopySql = document.getElementById('btn-copy-sql');
+      if (btnCopySql) btnCopySql.onclick = () => {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(SUPABASE_SQL_SCRIPT).then(() => {
+            showToast("📋 Script SQL Supabase copié !");
+          }).catch(() => {
+            prompt("Copiez ce script SQL :", SUPABASE_SQL_SCRIPT);
+          });
+        } else {
+          prompt("Copiez ce script SQL :", SUPABASE_SQL_SCRIPT);
+        }
+      };
+
+      const btnTestSb = document.getElementById('btn-test-supabase');
+      if (btnTestSb) btnTestSb.onclick = () => {
+        window.openSupabaseModal();
+        const testBtn = document.getElementById('btn-test-supabase-modal');
+        if (testBtn) testBtn.click();
+      };
+
+      const btnShareIpad = document.getElementById('btn-share-ipad-link');
+      if (btnShareIpad) btnShareIpad.onclick = () => {
+        if (!isSupabaseConfigured()) {
+          showToast("Configurez d'abord Supabase", "warning");
+          window.openSupabaseModal();
+          return;
+        }
+        const baseUrl = window.location.origin + window.location.pathname;
+        const ipadUrl = `${baseUrl}?role=table&id=1#sb_url=${encodeURIComponent(SUPABASE_URL)}&sb_key=${encodeURIComponent(SUPABASE_KEY)}`;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(ipadUrl).then(() => {
+            showToast("📲 Lien iPad copié ! Ouvrez-le sur chaque iPad pour le connecter.");
+          }).catch(() => {
+            prompt("Copiez ce lien pour vos tablettes :", ipadUrl);
+          });
+        } else {
+          prompt("Copiez ce lien pour vos tablettes :", ipadUrl);
+        }
       };
 
       document.getElementById('btn-next-session').onclick = async () => {
@@ -2502,10 +3920,12 @@
             if (options.quests && questBank.length > 0) {
               const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
               updates[getGroupPath(`players/${id}/questId`)] = randomQuest.id;
+              updates[getGroupPath(`players/${id}/questCompleted`)] = false;
             }
           }
           updates[getGroupPath('config/sessionNumber')] = currentSession + 1;
           updates[getGroupPath('config/flashMode')] = false;
+          updates[getGroupPath('barrages')] = null;
 
           await update(ref(db), updates);
           showToast(`Séance ${currentSession + 1} démarrée !`);
@@ -2533,6 +3953,8 @@
               matches: 0,
               refereeCount: 0,
               absent: false,
+              questCompleted: false,
+              barrageBonus: 0,
               questId: randomQuest ? randomQuest.id : null
             };
             startPoints--;
@@ -2542,6 +3964,7 @@
           updates[getGroupPath('players')] = newPlayers;
           updates[getGroupPath('history')] = null;
           updates[getGroupPath('poules')] = null;
+          updates[getGroupPath('barrages')] = null;
           updates[getGroupPath('config/sessionNumber')] = 1;
           updates[getGroupPath('config/flashMode')] = false;
 
@@ -2556,11 +3979,14 @@
           const updates = {};
           updates[getGroupPath('history')] = null;
           updates[getGroupPath('poules')] = null;
+          updates[getGroupPath('barrages')] = null;
           for (let id in playersData) {
             const startPts = playersData[id].startPoints !== undefined ? playersData[id].startPoints : 100;
             updates[getGroupPath(`players/${id}/points`)] = startPts;
             updates[getGroupPath(`players/${id}/matches`)] = 0;
             updates[getGroupPath(`players/${id}/refereeCount`)] = 0;
+            updates[getGroupPath(`players/${id}/questCompleted`)] = false;
+            updates[getGroupPath(`players/${id}/barrageBonus`)] = null;
             updates[getGroupPath(`players/${id}/pouleNote`)] = null;
           }
           updates[getGroupPath('config/sessionNumber')] = 1;
@@ -2594,6 +4020,67 @@
   </script>
 </head>
 <body>
+  <!-- MODAL UNIVERSELLE CONFIGURATION SUPABASE (Accessible depuis tous les profils / tablettes) -->
+  <div class="modal-overlay" id="supabase-config-modal" style="display:none; z-index:9999;">
+    <div class="modal-content" style="max-width:560px; max-height:90vh; overflow-y:auto; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="color:#34d399; margin:0; display:flex; align-items:center; gap:8px;">
+          ⚡ Configuration Supabase (PostgreSQL)
+        </h3>
+        <button class="btn btn-sm btn-secondary" id="btn-close-supabase-modal-top" style="width:auto; padding:4px 10px; min-width:32px;">✕</button>
+      </div>
+      
+      <p style="font-size:0.83rem; color:var(--muted); margin-bottom:14px; line-height:1.4;">
+        Supabase remplace Firebase pour synchroniser en temps réel toutes vos tablettes iPad et votre ordinateur professeur.
+      </p>
+
+      <!-- Statut de la connexion -->
+      <div id="supabase-status-banner" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.85rem; font-weight:bold;">État de la connexion :</span>
+          <span id="supabase-modal-badge" class="badge-barrage" style="font-size:0.75rem;">Vérification...</span>
+        </div>
+        <div id="supabase-modal-msg" style="font-size:0.8rem; color:var(--muted); margin-top:6px;"></div>
+      </div>
+
+      <!-- Saisie URL & Clé -->
+      <label style="font-size:0.82rem; font-weight:bold; color:var(--muted); margin-bottom:4px; display:block;">
+        URL du Projet Supabase (Project URL) :
+      </label>
+      <input type="text" id="supabase-url-input" placeholder="https://xxxxxxxx.supabase.co" style="margin-bottom:12px; font-family:monospace; font-size:0.85rem;">
+
+      <label style="font-size:0.82rem; font-weight:bold; color:var(--muted); margin-bottom:4px; display:block;">
+        Clé API Publique (anon key) :
+      </label>
+      <div style="display:flex; gap:6px; margin-bottom:14px;">
+        <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="margin:0; font-family:monospace; font-size:0.85rem; flex:1;">
+        <button class="btn btn-sm btn-secondary" id="btn-toggle-key-visibility" style="width:auto; min-width:44px;" title="Afficher/Masquer la clé">👁️</button>
+      </div>
+
+      <!-- Script SQL pour Supabase -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:0.82rem; font-weight:bold; color:#e2e8f0;">Script SQL à exécuter dans Supabase :</span>
+          <button class="btn btn-sm btn-purple" id="btn-copy-sql-modal" style="width:auto; padding:3px 10px; font-size:0.75rem;">📋 Copier le Script SQL</button>
+        </div>
+        <pre id="supabase-sql-code" style="background:#090d16; border:1px solid var(--border); border-radius:6px; padding:10px; font-size:0.72rem; color:#94a3b8; max-height:120px; overflow-y:auto; margin:0; font-family:monospace; white-space:pre-wrap;"></pre>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:4px;">
+          💡 Dans Supabase : Ouvrez votre projet ➔ allez dans le menu <strong>SQL Editor</strong> ➔ collez le script ci-dessus et cliquez sur <strong>Run</strong>.
+        </p>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-secondary" id="btn-test-supabase-modal" style="flex:1;">🧪 Tester la Connexion</button>
+        <button class="btn btn-success" id="btn-save-supabase-modal" style="flex:1.2;">💾 Enregistrer & Reconnecter</button>
+      </div>
+
+      <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px; text-align:center;">
+        <button class="btn btn-sm btn-purple" id="btn-share-ipad-link-modal" style="background:#0284c7; width:100%;">📲 Copier le Lien d'Auto-Configuration iPad (avec clés)</button>
+      </div>
+    </div>
+  </div>
+
   <div id="app"></div>
 </body>
 </html>
