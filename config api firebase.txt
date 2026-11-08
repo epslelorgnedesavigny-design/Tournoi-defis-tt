@@ -1,3 +1,0 @@
-apiKey: "AIzaSyDOOuIvyEriDGNmKPb4Jy25yB_lE1gBAZk",
-      databaseURL: "https://tournoi-defis-tt-default-rtdb.firebaseio.com",
-      projectId: "tournoi-defis-tt"

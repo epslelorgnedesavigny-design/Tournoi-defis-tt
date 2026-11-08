@@ -398,31 +398,72 @@
       removeItem: (k) => { try { if (typeof localStorage !== 'undefined') localStorage.removeItem(k); } catch(e){} }
     };
 
-    // --- CONFIGURATION SUPABASE ---
-    // Vous pouvez renseigner vos identifiants ici ou directement depuis l'interface web (Sauvegardé dans votre navigateur)
-    const DEFAULT_SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
-    const DEFAULT_SUPABASE_KEY = "VOTRE-CLE-ANON";
+    // --- CONFIGURATION SUPABASE OFFICIELLE ---
+    const DEFAULT_SUPABASE_URL = "https://nqiadvmnkmbvpivhiwlp.supabase.co";
+    const DEFAULT_SUPABASE_KEY = "sb_publishable_8GAA6wL77lo0rphR96S-6Q_DwM4ZaOO";
 
-    let SUPABASE_URL = safeStorage.getItem('eps_supabase_url') || DEFAULT_SUPABASE_URL;
-    let SUPABASE_KEY = safeStorage.getItem('eps_supabase_key') || DEFAULT_SUPABASE_KEY;
+    // Les identifiants inscrits dans le code s'appliquent immédiatement à tous les appareils
+    let SUPABASE_URL = DEFAULT_SUPABASE_URL;
+    let SUPABASE_KEY = DEFAULT_SUPABASE_KEY;
 
-    // Détection auto-configuration tablette via le hash de l'URL : #sb_url=...&sb_key=...
-    if (typeof window !== 'undefined' && window.location && window.location.hash) {
-      try {
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const hUrl = hashParams.get('sb_url');
-        const hKey = hashParams.get('sb_key');
-        if (hUrl && hKey) {
-          SUPABASE_URL = hUrl;
-          SUPABASE_KEY = hKey;
-          safeStorage.setItem('eps_supabase_url', hUrl);
-          safeStorage.setItem('eps_supabase_key', hKey);
-          if (window.history && window.history.replaceState) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-          }
-        }
-      } catch (e) {}
+    if (!DEFAULT_SUPABASE_URL.includes('VOTRE-PROJET')) {
+      safeStorage.setItem('eps_supabase_url', DEFAULT_SUPABASE_URL);
+      safeStorage.setItem('eps_supabase_key', DEFAULT_SUPABASE_KEY);
+    } else {
+      let storedUrl = safeStorage.getItem('eps_supabase_url');
+      let storedKey = safeStorage.getItem('eps_supabase_key');
+      if (storedUrl && !storedUrl.includes('VOTRE-PROJET')) SUPABASE_URL = storedUrl;
+      if (storedKey && !storedKey.includes('VOTRE-CLE')) SUPABASE_KEY = storedKey;
     }
+
+    // Détection auto-configuration tablette via le hash (#sb_url=...) ou query string (?sb_url=...)
+    (function checkIncomingSupabaseCredentials() {
+      let incomingUrl = null;
+      let incomingKey = null;
+
+      function getParamFromStr(str, key) {
+        if (!str) return null;
+        try {
+          if (typeof URLSearchParams !== 'undefined') {
+            const sp = new URLSearchParams(str.replace(/^[#?]/, ''));
+            return sp.get(key);
+          }
+        } catch (e) {}
+        const match = str.match(new RegExp('[#?&]' + key + '=([^&]*)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+
+      if (typeof window !== 'undefined' && window.location) {
+        // 1. Recherche dans le hash (#sb_url=...&sb_key=...)
+        if (window.location.hash) {
+          incomingUrl = getParamFromStr(window.location.hash, 'sb_url');
+          incomingKey = getParamFromStr(window.location.hash, 'sb_key');
+        }
+        // 2. Recherche dans les query params (?sb_url=...&sb_key=...)
+        if (!incomingUrl || !incomingKey) {
+          incomingUrl = getParamFromStr(window.location.search, 'sb_url');
+          incomingKey = getParamFromStr(window.location.search, 'sb_key');
+        }
+
+        if (incomingUrl && incomingKey) {
+          SUPABASE_URL = incomingUrl;
+          SUPABASE_KEY = incomingKey;
+          safeStorage.setItem('eps_supabase_url', incomingUrl);
+          safeStorage.setItem('eps_supabase_key', incomingKey);
+
+          // Nettoyer l'URL proprement dans l'historique sans perdre les paramètres de rôle / table
+          try {
+            if (window.history && window.history.replaceState) {
+              const cleanSearch = new URLSearchParams(window.location.search);
+              cleanSearch.delete('sb_url');
+              cleanSearch.delete('sb_key');
+              const newSearchStr = cleanSearch.toString() ? '?' + cleanSearch.toString() : '';
+              window.history.replaceState(null, '', window.location.pathname + newSearchStr);
+            }
+          } catch (e) {}
+        }
+      }
+    })();
 
     const SUPABASE_SQL_SCRIPT = `-- Table principale des données EPS Tournoi Tennis de Table
 CREATE TABLE IF NOT EXISTS public.tournoi_data (
@@ -451,6 +492,22 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
              !SUPABASE_URL.includes('VOTRE-PROJET') && 
              SUPABASE_KEY && 
              !SUPABASE_KEY.includes('VOTRE-CLE');
+    }
+
+    // Générateur d'URL incluant la configuration Supabase pour tablettes et smartphones
+    function getSupabaseConfigUrl(params = {}) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const q = new URLSearchParams();
+      for (const k in params) {
+        if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+          q.set(k, params[k]);
+        }
+      }
+      const qStr = q.toString() ? '?' + q.toString() : '';
+      if (isSupabaseConfigured()) {
+        return `${baseUrl}${qStr}#sb_url=${encodeURIComponent(SUPABASE_URL)}&sb_key=${encodeURIComponent(SUPABASE_KEY)}`;
+      }
+      return `${baseUrl}${qStr}`;
     }
 
     let supabaseClient = null;
@@ -1293,8 +1350,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           if (!isSupabaseConfigured()) {
             return showToast("Configurez d'abord Supabase avant de partager le lien", "warning");
           }
-          const baseUrl = window.location.origin + window.location.pathname;
-          const ipadUrl = `${baseUrl}?role=table&id=1#sb_url=${encodeURIComponent(SUPABASE_URL)}&sb_key=${encodeURIComponent(SUPABASE_KEY)}`;
+          const ipadUrl = getSupabaseConfigUrl({ role: 'table_select' });
           if (navigator.clipboard) {
             navigator.clipboard.writeText(ipadUrl).then(() => {
               showToast("📲 Lien iPad copié ! Ouvrez-le sur chaque iPad pour le connecter en 1 clic.");
@@ -1306,14 +1362,216 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           }
         };
       }
+
+      const openQrFromCfg = document.getElementById('btn-open-qr-from-config-modal');
+      if (openQrFromCfg) {
+        openQrFromCfg.onclick = () => {
+          window.closeSupabaseModal();
+          if (window.openTabletConnectModal) window.openTabletConnectModal();
+        };
+      }
+    }
+
+    // Modal de connexion des tablettes iPad par QR Code
+    function initTabletConnectModal() {
+      const modal = document.getElementById('tablet-connect-modal');
+      if (!modal) return;
+
+      const selTable = document.getElementById('select-connect-table');
+      if (selTable && selTable.options.length === 0) {
+        for (let i = 1; i <= 24; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = `Table ${i}`;
+          selTable.appendChild(opt);
+        }
+      }
+
+      window.openTabletConnectModal = () => {
+        const isConfigured = isSupabaseConfigured();
+        const alertBox = document.getElementById('connect-modal-unconfigured-alert');
+        const contentBox = document.getElementById('connect-modal-configured-content');
+        if (alertBox) alertBox.style.display = isConfigured ? 'none' : 'block';
+        if (contentBox) contentBox.style.display = isConfigured ? 'block' : 'none';
+
+        if (isConfigured) {
+          switchConnectTab('universal');
+        }
+        modal.style.display = 'flex';
+      };
+
+      window.closeTabletConnectModal = () => {
+        modal.style.display = 'none';
+      };
+
+      const closeTopBtn = document.getElementById('btn-close-connect-modal-top');
+      if (closeTopBtn) closeTopBtn.onclick = window.closeTabletConnectModal;
+
+      const closeBottomBtn = document.getElementById('btn-close-connect-modal');
+      if (closeBottomBtn) closeBottomBtn.onclick = window.closeTabletConnectModal;
+
+      modal.addEventListener('click', (e) => {
+        if (e.target.id === 'tablet-connect-modal') window.closeTabletConnectModal();
+      });
+
+      const openCfgBtn = document.getElementById('btn-connect-modal-open-config');
+      if (openCfgBtn) {
+        openCfgBtn.onclick = () => {
+          window.closeTabletConnectModal();
+          if (window.openSupabaseModal) window.openSupabaseModal();
+        };
+      }
+
+      function switchConnectTab(tab) {
+        const uView = document.getElementById('view-connect-universal');
+        const tView = document.getElementById('view-connect-per-table');
+        const hView = document.getElementById('view-connect-hub');
+        const uBtn = document.getElementById('btn-tab-connect-universal');
+        const tBtn = document.getElementById('btn-tab-connect-per-table');
+        const hBtn = document.getElementById('btn-tab-connect-hub');
+
+        if (uView) uView.style.display = tab === 'universal' ? 'block' : 'none';
+        if (tView) tView.style.display = tab === 'per_table' ? 'block' : 'none';
+        if (hView) hView.style.display = tab === 'hub' ? 'block' : 'none';
+
+        if (uBtn) uBtn.className = tab === 'universal' ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-secondary';
+        if (tBtn) tBtn.className = tab === 'per_table' ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-secondary';
+        if (hBtn) hBtn.className = tab === 'hub' ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-secondary';
+
+        if (tab === 'universal') renderUniversalQR();
+        else if (tab === 'per_table') renderTableQR();
+      }
+
+      const uTabBtn = document.getElementById('btn-tab-connect-universal');
+      if (uTabBtn) uTabBtn.onclick = () => switchConnectTab('universal');
+
+      const tTabBtn = document.getElementById('btn-tab-connect-per-table');
+      if (tTabBtn) tTabBtn.onclick = () => switchConnectTab('per_table');
+
+      const hTabBtn = document.getElementById('btn-tab-connect-hub');
+      if (hTabBtn) hTabBtn.onclick = () => switchConnectTab('hub');
+
+      if (selTable) selTable.onchange = renderTableQR;
+
+      function renderUniversalQR() {
+        const container = document.getElementById('qrcode-connect-universal');
+        if (!container) return;
+        container.innerHTML = '';
+        const url = getSupabaseConfigUrl({ role: 'table_select' });
+        try {
+          new QRCode(container, {
+            text: url,
+            width: 190,
+            height: 190,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch (e) {
+          console.warn("Erreur QRCode universel:", e);
+        }
+      }
+
+      function renderTableQR() {
+        const container = document.getElementById('qrcode-connect-per-table');
+        if (!container) return;
+        container.innerHTML = '';
+        const tId = selTable ? selTable.value : '1';
+        const badge = document.getElementById('label-table-qr-badge');
+        if (badge) badge.textContent = `🏓 Table ${tId}`;
+        const url = getSupabaseConfigUrl({ role: 'table', id: tId });
+        try {
+          new QRCode(container, {
+            text: url,
+            width: 190,
+            height: 190,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch (e) {
+          console.warn("Erreur QRCode table:", e);
+        }
+      }
+
+      const copyUniversalBtn = document.getElementById('btn-copy-universal-link');
+      if (copyUniversalBtn) {
+        copyUniversalBtn.onclick = () => {
+          const url = getSupabaseConfigUrl({ role: 'table_select' });
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => showToast("📋 Lien copié !"));
+          } else {
+            prompt("Copier le lien :", url);
+          }
+        };
+      }
+
+      const copyTableBtn = document.getElementById('btn-copy-table-link');
+      if (copyTableBtn) {
+        copyTableBtn.onclick = () => {
+          const tId = selTable ? selTable.value : '1';
+          const url = getSupabaseConfigUrl({ role: 'table', id: tId });
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => showToast(`📋 Lien Table ${tId} copié !`));
+          } else {
+            prompt("Copier le lien :", url);
+          }
+        };
+      }
+
+      const openHubBtn = document.getElementById('btn-open-full-hub');
+      if (openHubBtn) {
+        openHubBtn.onclick = () => {
+          window.open(getSupabaseConfigUrl({ role: 'hub' }), '_blank');
+        };
+      }
+    }
+
+    /* =========================================================
+       0b. VUE ATTRIBUTION TABLE IPAD (Après scan QR Universel)
+       ========================================================= */
+    function initTableSelectUI() {
+      const appDiv = document.getElementById('app');
+      let tablesHtml = '';
+      for (let i = 1; i <= 16; i++) {
+        tablesHtml += `
+          <button class="btn btn-purple btn-table-pick" data-id="${i}" style="padding:16px 6px; font-size:1.15rem; font-weight:bold; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+            🏓 Table ${i}
+          </button>
+        `;
+      }
+
+      appDiv.innerHTML = `
+        <div class="container" style="max-width:540px; margin-top:25px; text-align:center;">
+          <div class="card" style="border:2px solid #10b981; background:linear-gradient(180deg, #131c31 0%, #064e3b22 100%);">
+            <div style="font-size:3rem; margin-bottom:8px;">🟢</div>
+            <h2 style="color:#34d399; margin:0 0 6px 0;">Tablette Connectée à Supabase !</h2>
+            <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;">
+              Cette tablette est désormais synchronisée en direct avec la classe.<br>
+              <strong style="color:white; font-size:1rem;">Sur quelle table de ping-pong placez-vous cet iPad ?</strong>
+            </p>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:20px;">
+              ${tablesHtml}
+            </div>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0;">
+              💡 Vous pourrez changer de numéro de table à tout moment en cliquant sur "Changer n°".
+            </p>
+          </div>
+        </div>
+      `;
+
+      appDiv.querySelectorAll('.btn-table-pick').forEach(btn => {
+        btn.onclick = () => {
+          const tId = btn.getAttribute('data-id');
+          window.location.href = `${window.location.origin}${window.location.pathname}?role=table&id=${tId}`;
+        };
+      });
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       initSupabaseModal();
+      initTabletConnectModal();
       initConnectionIndicator();
       await initSupabase();
       if (studentQRId) initStudentQRView();
       else if (role === 'table') initTableUI();
+      else if (role === 'table_select') initTableSelectUI();
       else if (role === 'hub') initHubUI();
       else initProfUI();
     });
@@ -1462,6 +1720,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
        ========================================================= */
     function initHubUI() {
       const baseUrl = window.location.origin + window.location.pathname;
+      const isConfigured = isSupabaseConfigured();
 
       document.getElementById('app').innerHTML = `
         <div class="container">
@@ -1470,9 +1729,22 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               <h1 style="margin:0;">📱 Hub de Connexion iPad Tables</h1>
               <span class="conn-status-pill connection-badge"></span>
             </div>
-            <button class="btn btn-sm btn-secondary no-print" onclick="window.print()" style="width:auto;">🖨️ Imprimer les QR</button>
+            <div style="display:flex; gap:8px;" class="no-print">
+              <a href="${baseUrl}?role=prof" class="btn btn-sm btn-secondary" style="text-decoration:none; width:auto;">⬅️ Retour Prof</a>
+              <button class="btn btn-sm btn-secondary" onclick="window.print()" style="width:auto;">🖨️ Imprimer les QR</button>
+            </div>
           </div>
-          <p style="text-align:center; color:var(--muted);" class="no-print">Scannez le QR Code depuis l'iPad d'une table pour la configurer immédiatement.</p>
+
+          <div style="background:${isConfigured ? '#064e3b' : '#451a03'}; border:1px solid ${isConfigured ? '#10b981' : '#f59e0b'}; border-radius:8px; padding:10px 14px; margin-bottom:14px; text-align:center;">
+            ${isConfigured 
+              ? '🟢 <strong>Configuration Supabase Intégrée :</strong> Chaque QR Code ci-dessous configure et connecte automatiquement l\'iPad à votre base de données sans rien avoir à saisir !'
+              : '⚠️ <strong>Supabase non configuré sur cet appareil :</strong> Les QR Codes générés ne contiendront pas vos clés Supabase. <button class="btn btn-sm btn-gold" onclick="window.openSupabaseModal()" style="display:inline-block; width:auto; margin-left:8px; padding:2px 8px;">⚙️ Configurer Supabase</button>'
+            }
+          </div>
+
+          <p style="text-align:center; color:var(--muted);" class="no-print">
+            Scannez le QR Code depuis l'appareil photo d'un iPad pour ouvrir et connecter automatiquement la table.
+          </p>
           <div class="card no-print">
             <label style="font-weight:bold;">Nombre de tables dans le gymnase :</label>
             <div style="display:flex; gap:10px; margin-top:6px;">
@@ -1490,7 +1762,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         container.innerHTML = '';
 
         for (let i = 1; i <= count; i++) {
-          const tableUrl = `${baseUrl}?role=table&id=${i}`;
+          const tableUrl = getSupabaseConfigUrl({ role: 'table', id: i });
           const card = document.createElement('div');
           card.className = 'qr-card';
           card.innerHTML = `
@@ -1500,10 +1772,16 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           `;
           container.appendChild(card);
 
-          new QRCode(document.getElementById(`qrcode-t${i}`), {
-            text: tableUrl,
-            width: 130, height: 130
-          });
+          try {
+            new QRCode(document.getElementById(`qrcode-t${i}`), {
+              text: tableUrl,
+              width: 140,
+              height: 140,
+              correctLevel: QRCode.CorrectLevel.M
+            });
+          } catch(e) {
+            console.warn("Erreur QRCode table", i, e);
+          }
         }
       }
 
@@ -1521,9 +1799,23 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <div id="flash-banner" class="flash-banner">⚡ DÉFI FLASH EN COURS : POINTS DE VICTOIRE DOUBLÉS ! ⚡</div>
           <div id="quest-success-banner" class="quest-success-banner"></div>
           
+          <!-- BANDEAU SI TABLETTE NON SYNCHRONISÉE SUPABASE -->
+          <div id="table-unconfigured-alert" style="background:#451a03; border:2px solid #f59e0b; border-radius:10px; padding:12px; margin-bottom:14px; text-align:center; display:${isSupabaseConfigured() ? 'none' : 'block'};">
+            <div style="font-size:1.6rem; margin-bottom:4px;">⚠️</div>
+            <strong style="color:#fde047; font-size:1rem;">Tablette non synchronisée avec le professeur</strong>
+            <p style="color:#fef08a; font-size:0.83rem; margin:6px 0 10px 0;">
+              Cette tablette n'a pas encore reçu la clé de connexion Supabase. Les noms des élèves ne peuvent pas s'afficher.
+            </p>
+            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-gold" id="btn-table-scan-help" style="width:auto;">📷 Comment connecter par QR Code ?</button>
+              <button class="btn btn-sm btn-secondary" id="btn-table-manual-config" style="width:auto;">⚙️ Entrer les clés</button>
+            </div>
+          </div>
+
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
               <h2 style="margin:0;">🏓 Table ${escapeHtml(tableId)}</h2>
+              <button class="btn btn-sm btn-secondary" id="btn-switch-table-id" style="width:auto; padding:3px 8px; font-size:0.75rem;" title="Changer le numéro de cette table">Changer n°</button>
               <span class="conn-status-pill connection-badge"></span>
             </div>
             <span id="group-indicator" class="group-pill"></span>
@@ -1647,6 +1939,28 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       document.getElementById('mode-free-btn').onclick = () => switchMode('free');
       document.getElementById('mode-poule-btn').onclick = () => switchMode('poule');
       document.getElementById('mode-barrage-btn').onclick = () => switchMode('barrage');
+
+      const btnScanHelp = document.getElementById('btn-table-scan-help');
+      if (btnScanHelp) {
+        btnScanHelp.onclick = () => {
+          alert("📱 CONNEXION FACILE DE CETTE TABLETTE :\n\n1. Sur la tablette ou l'ordinateur du professeur, cliquez sur le bouton '📲 Connecter Tablettes' (en haut).\n\n2. Ouvrez l'application Appareil Photo de cet iPad.\n\n3. Visez le QR Code affiché sur l'écran du prof et touchez le lien qui apparaît.\n\nL'iPad sera configuré et connecté immédiatement en temps réel !");
+        };
+      }
+      const btnManual = document.getElementById('btn-table-manual-config');
+      if (btnManual) {
+        btnManual.onclick = () => {
+          if (window.openSupabaseModal) window.openSupabaseModal();
+        };
+      }
+      const btnSwitchTable = document.getElementById('btn-switch-table-id');
+      if (btnSwitchTable) {
+        btnSwitchTable.onclick = () => {
+          const newId = prompt("Numéro de table pour cet iPad (ex: 1, 2, 3...) :", tableId);
+          if (newId && newId.trim() && newId.trim() !== tableId) {
+            window.location.href = `${window.location.origin}${window.location.pathname}?role=table&id=${encodeURIComponent(newId.trim())}`;
+          }
+        };
+      }
 
       onValue(ref(db, 'activeGroup'), (snap) => {
         if (snap.val()) {
@@ -2368,8 +2682,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               <button class="btn btn-sm btn-secondary" id="btn-add-group">+ Créer</button>
             </div>
 
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
               <span class="conn-status-pill connection-badge"></span>
+              <button class="btn btn-sm btn-gold" id="btn-open-connect-modal" style="width:auto; padding:6px 12px; font-weight:bold; display:flex; align-items:center; gap:5px;">📲 Connecter Tablettes</button>
               <span id="session-pill" class="badge-win" style="padding:6px 12px; font-size:0.85rem;">Séance 1</span>
               <button class="btn btn-sm btn-purple" id="btn-toggle-flash">⚡ Défi Flash (Pts x2)</button>
             </div>
@@ -2384,7 +2699,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             <div class="tab-btn" data-tab="history">📜 Historique</div>
             <div class="tab-btn" data-tab="setup">⚙️ Options EPS</div>
             <div class="tab-btn" data-tab="groups">👥 Élèves</div>
-            <a href="${baseUrl}?role=hub" target="_blank" class="tab-btn" style="text-decoration:none; color:#38bdf8;">📱 Hub QR</a>
+            <a href="${getSupabaseConfigUrl({ role: 'hub' })}" target="_blank" class="tab-btn" style="text-decoration:none; color:#38bdf8;">📱 Hub QR</a>
           </div>
 
           <!-- TAB 1: CLASSEMENT -->
@@ -3630,11 +3945,17 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         const container = document.getElementById('qrcode-student');
         container.innerHTML = '';
 
-        const studentUrl = `${baseUrl}?student=${encodeURIComponent(studentId)}`;
-        new QRCode(container, {
-          text: studentUrl,
-          width: 150, height: 150
-        });
+        const studentUrl = getSupabaseConfigUrl({ student: studentId });
+        try {
+          new QRCode(container, {
+            text: studentUrl,
+            width: 160,
+            height: 160,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch(e) {
+          console.warn("Erreur QRCode élève:", e);
+        }
 
         document.getElementById('qr-modal').style.display = 'flex';
       }
@@ -3892,25 +4213,19 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (testBtn) testBtn.click();
       };
 
+      const btnOpenConnectModal = document.getElementById('btn-open-connect-modal');
+      if (btnOpenConnectModal) {
+        btnOpenConnectModal.onclick = () => {
+          if (window.openTabletConnectModal) window.openTabletConnectModal();
+        };
+      }
+
       const btnShareIpad = document.getElementById('btn-share-ipad-link');
-      if (btnShareIpad) btnShareIpad.onclick = () => {
-        if (!isSupabaseConfigured()) {
-          showToast("Configurez d'abord Supabase", "warning");
-          window.openSupabaseModal();
-          return;
-        }
-        const baseUrl = window.location.origin + window.location.pathname;
-        const ipadUrl = `${baseUrl}?role=table&id=1#sb_url=${encodeURIComponent(SUPABASE_URL)}&sb_key=${encodeURIComponent(SUPABASE_KEY)}`;
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(ipadUrl).then(() => {
-            showToast("📲 Lien iPad copié ! Ouvrez-le sur chaque iPad pour le connecter.");
-          }).catch(() => {
-            prompt("Copiez ce lien pour vos tablettes :", ipadUrl);
-          });
-        } else {
-          prompt("Copiez ce lien pour vos tablettes :", ipadUrl);
-        }
-      };
+      if (btnShareIpad) {
+        btnShareIpad.onclick = () => {
+          if (window.openTabletConnectModal) window.openTabletConnectModal();
+        };
+      }
 
       document.getElementById('btn-next-session').onclick = async () => {
         if (confirm("Passer à la séance suivante ? Les scores actuels deviendront le nouveau capital de départ.")) {
@@ -4075,8 +4390,86 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         <button class="btn btn-success" id="btn-save-supabase-modal" style="flex:1.2;">💾 Enregistrer & Reconnecter</button>
       </div>
 
-      <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px; text-align:center;">
-        <button class="btn btn-sm btn-purple" id="btn-share-ipad-link-modal" style="background:#0284c7; width:100%;">📲 Copier le Lien d'Auto-Configuration iPad (avec clés)</button>
+      <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px; display:flex; flex-direction:column; gap:8px; text-align:center;">
+        <button class="btn btn-sm btn-gold" id="btn-open-qr-from-config-modal" style="width:100%;">📲 Afficher le QR Code pour Flasher les Tablettes</button>
+        <button class="btn btn-sm btn-purple" id="btn-share-ipad-link-modal" style="background:#0284c7; width:100%;">📋 Copier le Lien d'Auto-Configuration iPad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONNEXION RAPIDE DES TABLETTES PAR QR CODE -->
+  <div class="modal-overlay" id="tablet-connect-modal" style="display:none; z-index:9998;">
+    <div class="modal-content" style="max-width:560px; max-height:92vh; overflow-y:auto; text-align:center;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="color:#eab308; margin:0; display:flex; align-items:center; gap:8px;">
+          📲 Connexion Express des Tablettes iPad
+        </h3>
+        <button class="btn btn-sm btn-secondary" id="btn-close-connect-modal-top" style="width:auto; padding:4px 10px; min-width:32px;">✕</button>
+      </div>
+
+      <!-- Avertissement si Supabase n'est pas encore configuré sur le prof -->
+      <div id="connect-modal-unconfigured-alert" style="background:#451a03; border:1px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:14px; text-align:left; display:none;">
+        <strong style="color:#fde047;">⚠️ Supabase n'est pas encore configuré sur cet appareil</strong>
+        <p style="font-size:0.82rem; color:#fef08a; margin:4px 0 10px 0;">
+          Vous devez d'abord saisir l'URL et la clé anon de votre projet Supabase pour que les tablettes puissent s'y connecter.
+        </p>
+        <button class="btn btn-sm btn-gold" id="btn-connect-modal-open-config" style="width:auto;">⚙️ Configurer Supabase maintenant</button>
+      </div>
+
+      <div id="connect-modal-configured-content">
+        <!-- Onglets du modal -->
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+          <button class="btn btn-sm btn-gold" id="btn-tab-connect-universal" style="flex:1;">⚡ QR Code Universel</button>
+          <button class="btn btn-sm btn-secondary" id="btn-tab-connect-per-table" style="flex:1;">🏓 QR par Table</button>
+          <button class="btn btn-sm btn-secondary" id="btn-tab-connect-hub" style="flex:1;">🖨️ Planche Complète</button>
+        </div>
+
+        <!-- 1. VUE QR CODE UNIVERSEL (RECOMMANDÉ) -->
+        <div id="view-connect-universal">
+          <p style="font-size:0.85rem; color:var(--muted); margin:0 0 10px 0; line-height:1.4;">
+            <strong>Recommandé :</strong> Pointez l'appareil photo de n'importe quel iPad sur ce QR code.<br>
+            L'iPad est configuré en 1 seconde et choisit simplement son numéro de table !
+          </p>
+          <div style="background:white; padding:16px; display:inline-block; border-radius:12px; margin-bottom:10px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+            <div id="qrcode-connect-universal"></div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-secondary" id="btn-copy-universal-link" style="width:auto;">📋 Copier le lien de connexion universel</button>
+          </div>
+        </div>
+
+        <!-- 2. VUE QR CODE PAR TABLE DIRECTE -->
+        <div id="view-connect-per-table" style="display:none;">
+          <p style="font-size:0.85rem; color:var(--muted); margin:0 0 10px 0;">
+            Générez un QR Code assigné directement à une table précise :
+          </p>
+          <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:12px;">
+            <label style="font-weight:bold; font-size:0.9rem;">Choisir la Table :</label>
+            <select id="select-connect-table" style="width:auto; margin:0; padding:6px 14px; font-weight:bold; font-size:0.95rem;"></select>
+          </div>
+          <div style="background:white; padding:16px; display:inline-block; border-radius:12px; margin-bottom:10px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+            <div id="qrcode-connect-per-table"></div>
+          </div>
+          <div>
+            <span id="label-table-qr-badge" class="badge-win" style="display:inline-block; margin-bottom:6px;">🏓 Table 1</span><br>
+            <button class="btn btn-sm btn-secondary" id="btn-copy-table-link" style="width:auto;">📋 Copier le lien direct Table</button>
+          </div>
+        </div>
+
+        <!-- 3. VUE PLANCHE COMPLÈTE & IMPRESSION -->
+        <div id="view-connect-hub" style="display:none; text-align:left;">
+          <div style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:10px;">
+            <h4 style="margin:0 0 6px 0; color:#38bdf8;">🖨️ Planche complète de tous les QR Codes</h4>
+            <p style="font-size:0.83rem; color:var(--muted); margin:0 0 12px 0; line-height:1.4;">
+              Ouvrez le Hub pour afficher ou imprimer tous les QR codes du gymnase (Table 1, Table 2, ...). Chaque QR code contient déjà la clé Supabase : les élèves n'ont qu'à scanner pour être connectés.
+            </p>
+            <button class="btn btn-purple" id="btn-open-full-hub" style="width:100%;">🚀 Ouvrir le Hub des Tables pour Imprimer</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
+        <button class="btn btn-secondary" id="btn-close-connect-modal">Fermer</button>
       </div>
     </div>
   </div>
