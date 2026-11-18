@@ -13,376 +13,490 @@
   
   <style>
     :root {
-      --bg: #090d16;
-      --card: #131c31;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --purple: #a855f7;
-      --purple-hover: #9333ea;
-      --gold: #eab308;
-      --silver: #94a3b8;
-      --bronze: #b45309;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --border: #1e293b;
+      --bg: #0A2240;
+      --card: #103059;
+      --card-2: #143A69;
+      --well: #0A1F3B;
+      --line: rgba(255,255,255,0.10);
+      --line-strong: #1D4677;
+      --border: rgba(255,255,255,0.10);
+      --chalk: #F3F6FA;
+      --text: #F3F6FA;
+      --muted: #A7BAD3;
+      --ball: #FF8A1F;
+      --ball-hover: #FF9D45;
+      --ball-ink: #2B1400;
+      --side-a: #F0505E;
+      --side-b: #3FB6F2;
+      --accent: #3FB6F2;
+      --accent-hover: #2AA3E0;
+      --success: #2FD07F;
+      --danger: #F0505E;
+      --warning: #F6B941;
+      --purple: #9D85FF;
+      --purple-hover: #8A70F5;
+      --gold: #F5C542;
+      --silver: #C3CFDD;
+      --bronze: #E08A3C;
+      --font: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      --font-round: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
     }
 
     * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.45;
       background: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 10px;
-      padding-top: max(10px, env(safe-area-inset-top));
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
-      padding-left: max(10px, env(safe-area-inset-left));
-      padding-right: max(10px, env(safe-area-inset-right));
+      padding: 14px;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      padding-left: max(14px, env(safe-area-inset-left));
+      padding-right: max(14px, env(safe-area-inset-right));
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      font-variant-numeric: tabular-nums;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    
-    h1, h2, h3 { text-align: center; margin: 5px 0 12px 0; font-size: 1.3rem; }
-    
+    .container { max-width: 1320px; margin: 0 auto; }
+
+    h1, h2, h3 { font-family: var(--font-round); font-weight: 750; letter-spacing: -0.01em; margin: 0 0 12px 0; text-align: left; }
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.15rem; }
+    h4 { font-family: var(--font-round); }
+
     .card {
       background: var(--card);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 16px -4px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
     }
-    
+
+    /* ---------- Boutons ---------- */
     .btn {
-      background: var(--accent);
-      color: white;
-      font-weight: bold;
-      padding: 12px 16px;
-      border: none;
-      border-radius: 8px;
+      background: var(--ball);
+      color: var(--ball-ink);
+      font-family: var(--font);
+      font-weight: 700;
+      padding: 12px 18px;
+      border: 1px solid transparent;
+      border-radius: 12px;
       cursor: pointer;
       width: 100%;
-      min-height: 44px;
-      font-size: 0.95rem;
+      min-height: 48px;
+      font-size: 1rem;
+      line-height: 1.2;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: background 0.15s, transform 0.1s, opacity 0.15s;
+      gap: 8px;
+      text-align: center;
+      transition: background 0.15s, transform 0.08s, opacity 0.15s;
       user-select: none;
+      -webkit-user-select: none;
     }
-    .btn:active:not(:disabled) { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-success { background: var(--success); color: #022c14; }
-    .btn-success:hover:not(:disabled) { background: #16a34a; }
-    .btn-danger { background: var(--danger); }
-    .btn-danger:hover:not(:disabled) { background: #dc2626; }
-    .btn-warning { background: var(--warning); color: #271a00; }
-    .btn-warning:hover:not(:disabled) { background: #d97706; }
-    .btn-purple { background: var(--purple); color: #ffffff; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
+    .btn:hover:not(:disabled) { background: var(--ball-hover); }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:focus-visible, .tab-btn:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--chalk); outline-offset: 2px;
+    }
+    .btn-success { background: var(--success); color: #032515; }
+    .btn-success:hover:not(:disabled) { background: #4ADD94; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #F46B77; }
+    .btn-warning { background: var(--warning); color: #2A1B00; }
+    .btn-warning:hover:not(:disabled) { background: #F8C761; }
+    .btn-purple { background: var(--purple); color: #fff; }
     .btn-purple:hover:not(:disabled) { background: var(--purple-hover); }
-    .btn-gold { background: linear-gradient(135deg, #eab308, #ca8a04); color: #000; font-weight: bold; }
-    .btn-secondary { background: #334155; }
-    .btn-secondary:hover:not(:disabled) { background: #475569; }
-    .btn-sm { padding: 6px 12px; font-size: 0.82rem; width: auto; min-height: 36px; }
+    .btn-gold { background: var(--gold); color: #2A2000; }
+    .btn-gold:hover:not(:disabled) { background: #F8D266; }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--line); }
+    .btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.14); }
+    .btn-sm { padding: 8px 14px; font-size: 0.9rem; width: auto; min-height: 42px; border-radius: 10px; }
 
+    /* ---------- Champs ---------- */
     select, input, textarea {
       width: 100%;
-      padding: 10px;
-      font-size: 0.95rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #090d16;
+      padding: 11px 12px;
+      font-size: 1rem;
+      font-family: var(--font);
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background-color: var(--well);
       color: var(--text);
-      margin-top: 4px;
+      margin-top: 6px;
+      min-height: 48px;
     }
-    select:focus, input:focus, textarea:focus {
-      outline: 2px solid var(--accent);
-      border-color: transparent;
+    textarea { min-height: 110px; line-height: 1.5; }
+    select {
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 38px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%23A7BAD3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
     }
-    
+    select:focus, input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    label { color: var(--text); }
+
     .checkbox-label {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.95rem;
+      gap: 12px;
+      font-size: 1rem;
       cursor: pointer;
       margin-top: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 6px;
+      padding: 12px 14px;
+      background: var(--well);
+      border: 1px solid var(--line);
+      border-radius: 12px;
       user-select: none;
+      min-height: 52px;
     }
-    .checkbox-label input { width: auto; margin: 0; min-height: auto; }
+    .checkbox-label input { width: 24px; height: 24px; min-height: 0; margin: 0; accent-color: var(--ball); flex-shrink: 0; }
 
+    /* ---------- En-tête professeur ---------- */
     .prof-bar {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      background: rgba(37, 99, 235, 0.1);
-      border: 1px solid rgba(37, 99, 235, 0.3);
+      gap: 10px 16px;
+      background: var(--card);
+      border: 1px solid var(--line);
       padding: 10px 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      border-radius: 16px;
+      margin-bottom: 14px;
     }
+    .prof-bar select { min-height: 42px; }
+    .prof-bar .btn-sm { min-height: 42px; }
     .group-pill {
-      background: var(--accent);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: bold;
+      background: var(--chalk);
+      color: var(--bg);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
     }
     .connection-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      white-space: nowrap;
     }
     .conn-online { color: var(--success); }
     .conn-offline { color: var(--warning); }
+    .session-chip {
+      background: rgba(47,208,127,0.14); color: var(--success);
+      border: 1px solid rgba(47,208,127,0.35);
+      padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; white-space: nowrap;
+    }
+    #btn-toggle-flash.is-on { background: var(--ball); color: var(--ball-ink); box-shadow: 0 0 0 3px rgba(255,138,31,0.35); }
 
-    .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    /* ---------- Navigation professeur ---------- */
+    .prof-shell { display: block; }
+    .prof-main { min-width: 0; }
+    .nav-tabs {
+      display: flex; gap: 6px; margin-bottom: 14px;
+      flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 2px; scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
     .tab-btn {
-      flex: 1;
-      min-width: 90px;
-      padding: 10px 6px;
-      min-height: 40px;
-      background: var(--card);
-      border: 1px solid var(--border);
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      min-height: 46px;
+      background: transparent;
+      border: 1px solid var(--line);
       color: var(--muted);
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.82rem;
-      transition: all 0.2s;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.15s, color 0.15s;
       user-select: none;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
     }
-    .tab-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
+    .tab-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .tab-btn.active { background: var(--chalk); color: var(--bg); border-color: var(--chalk); }
+    .tab-btn .tab-ico { width: 22px; text-align: center; font-size: 1.05rem; }
+    .nav-sep { display: none; }
+    button.tab-btn { font-family: var(--font); text-align: left; }
+
+    @media (min-width: 1000px) {
+      .prof-shell { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 18px; align-items: start; }
+      .prof-shell .nav-tabs {
+        flex-direction: column; overflow: visible; position: sticky; top: 14px;
+        background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 8px; gap: 4px; margin-bottom: 0;
+      }
+      .prof-shell .tab-btn { border-color: transparent; width: 100%; }
+      .nav-sep { display: block; height: 1px; background: var(--line); margin: 6px 4px; }
     }
 
-    .search-bar-box {
-      margin-bottom: 10px;
-      position: relative;
-    }
+    .search-bar-box { margin-bottom: 10px; position: relative; }
     .search-input {
-      padding-left: 36px;
-      background: #090d16 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 10px center;
+      padding-left: 40px;
+      background: var(--well) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7BAD3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 14px center;
     }
 
-    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 15px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+
+    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 15px; }
     .qr-card {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: var(--card); border-radius: 16px; padding: 14px; text-align: center;
+      border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center;
     }
-    .qr-card div { background: white; padding: 8px; border-radius: 6px; margin: 8px 0; }
+    .qr-card h3 { text-align: center; }
+    .qr-card div { background: white; padding: 8px; border-radius: 8px; margin: 8px 0; }
 
-    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 768px) { .ranking-grid { grid-template-columns: 1fr; } }
-    
-    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; font-size: 0.85rem; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #1e293b; color: var(--text); font-weight: 600; }
-    tr:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
+    .ranking-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 1100px) { .ranking-grid { grid-template-columns: 1fr 1fr; } }
 
-    .rank-cell { font-weight: bold; width: 36px; text-align: center; }
-    .rank-1 { color: #facc15; font-size: 1.05rem; }
-    .rank-2 { color: #e2e8f0; font-size: 1rem; }
-    .rank-3 { color: #f97316; font-size: 0.95rem; }
+    /* ---------- Tableaux ---------- */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 0.95rem; }
+    .table-wrap table { border: none; }
+    th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th { background: var(--card-2); color: var(--muted); font-weight: 600; font-size: 0.85rem; white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    .rank-cell { font-weight: 700; width: 56px; text-align: center; white-space: nowrap; font-family: var(--font-round); }
+    .rank-1 { color: var(--gold); font-size: 1.05rem; }
+    .rank-2 { color: var(--silver); }
+    .rank-3 { color: var(--bronze); }
 
     .badge-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      font-size: 0.75rem;
-      margin-right: 2px;
-      background: #1e293b;
-      border: 1px solid var(--border);
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 50%; font-size: 0.85rem; margin-right: 2px;
+      background: var(--well); border: 1px solid var(--line);
     }
     .badge-win {
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(34, 197, 94, 0.4);
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
+      background: rgba(47,208,127,0.14); color: var(--success);
+      border: 1px solid rgba(47,208,127,0.35);
+      font-weight: 700; padding: 3px 9px; border-radius: 8px; display: inline-block;
+      font-family: var(--font-round);
     }
     .badge-barrage {
-      background: rgba(234, 179, 8, 0.15);
-      color: #facc15;
-      border: 1px solid rgba(234, 179, 8, 0.4);
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
+      background: rgba(245,197,66,0.14); color: var(--gold);
+      border: 1px solid rgba(245,197,66,0.4);
+      font-weight: 700; padding: 3px 9px; border-radius: 8px; display: inline-block;
     }
-    
+
     .flash-banner {
-      background: linear-gradient(90deg, #9333ea, #db2777);
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
+      background: var(--ball);
+      color: var(--ball-ink);
+      padding: 12px 16px;
+      border-radius: 14px;
       text-align: center;
-      font-weight: bold;
-      animation: pulse 2s infinite;
-      margin-bottom: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      font-family: var(--font-round);
+      animation: pulse 1.6s ease-in-out infinite;
+      margin-bottom: 12px;
       display: none;
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
     }
-    @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,138,31,0.55); } 50% { box-shadow: 0 0 0 10px rgba(255,138,31,0); } }
 
     .quest-success-banner {
-      background: linear-gradient(90deg, #10b981, #059669);
-      color: #022c14;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-top: 10px;
-      text-align: center;
-      animation: popIn 0.3s ease-out;
-      border: 1px solid #34d399;
-      display: none;
+      background: var(--success); color: #032515; padding: 12px 16px; border-radius: 14px;
+      font-weight: 700; margin-bottom: 12px; text-align: center; animation: popIn 0.3s ease-out; display: none;
     }
-    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes popIn { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    .stats-box { background: #090d16; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
-    .quest-box { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; padding: 8px; margin-top: 6px; font-size: 0.85rem; color: #e9d5ff; }
-    .handicap-box { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); padding: 8px; border-radius: 8px; margin-top: 8px; font-weight: bold; text-align: center; }
+    .stats-box { background: var(--well); border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 0.9rem; border: 1px solid var(--line); }
+    .quest-box { background: rgba(157,133,255,0.14); border: 1px solid rgba(157,133,255,0.4); border-radius: 10px; padding: 9px 11px; margin-top: 8px; font-size: 0.88rem; color: #E4DCFF; }
+    .handicap-box { background: rgba(246,185,65,0.14); color: #FFD98A; border: 1px solid rgba(246,185,65,0.45); padding: 12px; border-radius: 12px; margin-top: 12px; font-weight: 700; text-align: center; font-size: 1rem; }
 
-    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
     .vs-circle {
-      background: var(--accent);
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      color: white;
+      background: var(--ball); color: var(--ball-ink);
+      width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem; font-family: var(--font-round);
       margin: 0 auto;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+      box-shadow: inset -4px -5px 0 rgba(0,0,0,0.12);
     }
 
-    .score-input { width: 52px; text-align: center; font-weight: bold; padding: 6px; font-size: 1rem; }
+    /* ---------- Vue table : le terrain ---------- */
+    .table-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .table-head h2 { margin: 0; font-size: 1.6rem; }
+    .segmented {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+      background: var(--well); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin-bottom: 14px;
+    }
+    .seg-btn {
+      background: transparent; color: var(--muted); border: none; border-radius: 10px;
+      min-height: 50px; font-size: 1.02rem; font-weight: 700; font-family: var(--font); cursor: pointer;
+    }
+    .seg-btn.is-active { background: var(--chalk); color: var(--bg); }
 
+    .table-layout { display: grid; gap: 16px; align-items: start; }
+    @media (min-width: 900px) { .table-layout { grid-template-columns: minmax(0, 1fr) 330px; } }
+    .table-aside .bareme-table { font-size: 0.8rem; }
+    .table-aside .bareme-table th, .table-aside .bareme-table td { padding: 7px 6px; }
+    .rank-table td:nth-child(2) { white-space: nowrap; font-weight: 600; }
+    .rank-table th, .rank-table td { padding: 10px 8px; }
+    #prof-poules-container { display: grid !important; grid-template-columns: 1fr; gap: 14px !important; }
+    #prof-poules-container .card { margin-bottom: 0 !important; }
+    #prof-poules-container th, #prof-poules-container td { padding: 8px 7px; font-size: 0.88rem; }
+    @media (min-width: 1100px) { #prof-poules-container { grid-template-columns: 1fr 1fr; } }
+    .table-aside .card { margin-bottom: 14px; }
+
+    .pingpong-court {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 64px minmax(0,1fr);
+      background: #1A5797;
+      border: 4px solid var(--chalk);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .pingpong-court::before {
+      content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px;
+      background: rgba(243,246,250,0.28); pointer-events: none;
+    }
+    .court-side { position: relative; padding: 18px; min-width: 0; }
+    .court-label {
+      display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-family: var(--font-round);
+      font-size: 1rem; padding: 4px 12px 4px 8px; border-radius: 999px; background: rgba(10,31,59,0.55);
+    }
+    .court-label::before { content: ""; width: 14px; height: 14px; border-radius: 50%; }
+    .side-a .court-label::before { background: var(--side-a); }
+    .side-b .court-label::before { background: var(--side-b); }
+    .court-side select { min-height: 58px; font-size: 1.12rem; font-weight: 700; border-width: 2px; background-color: rgba(10,31,59,0.85); }
+    .side-a select { border-color: rgba(240,80,94,0.7); }
+    .side-b select { border-color: rgba(63,182,242,0.7); }
+    .court-side .stats-box { background: rgba(10,31,59,0.7); }
+    .court-net {
+      position: relative; display: flex; align-items: center; justify-content: center;
+      background: repeating-linear-gradient(180deg, rgba(243,246,250,0.9) 0 6px, transparent 6px 12px) center / 4px 100% no-repeat;
+    }
+    body.flash-on .pingpong-court { border-color: var(--ball); box-shadow: 0 0 0 4px rgba(255,138,31,0.35); }
+
+    #match-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .btn-win { min-height: 84px; flex-direction: column; gap: 4px; border-radius: 14px; }
+    .btn-win-a { background: var(--side-a); color: #fff; }
+    .btn-win-a:hover:not(:disabled) { background: #F46B77; }
+    .btn-win-b { background: var(--side-b); color: #04223A; }
+    .btn-win-b:hover:not(:disabled) { background: #62C4F5; }
+    .win-name { font-size: 1.2rem; font-family: var(--font-round); font-weight: 800; }
+    .win-delta { font-size: 0.88rem; font-weight: 600; opacity: 0.9; }
+    .match-hint {
+      margin-top: 14px; padding: 18px; border: 2px dashed var(--line-strong); border-radius: 14px;
+      text-align: center; color: var(--muted); font-size: 1rem;
+    }
+    .rule-line { font-size: 0.9rem; color: var(--muted); margin: 0 0 12px 0; }
+
+    .score-input {
+      width: 66px; min-height: 54px; text-align: center; font-weight: 800; padding: 6px;
+      font-size: 1.45rem; font-family: var(--font-round); margin: 0;
+      -moz-appearance: textfield;
+    }
+    .score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .poule-layout { display: grid; gap: 14px; margin-top: 4px; align-items: start; }
+    @media (min-width: 900px) { .poule-layout { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+    .poule-match {
+      background: var(--well); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line);
+    }
+    .poule-match-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto auto minmax(0,1fr); gap: 10px; align-items: center; }
+    .poule-match-row .pm-name { font-weight: 700; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; }
+    .poule-match-row .pm-name.right { text-align: right; }
+    .poule-match.is-done { border-color: rgba(47,208,127,0.4); }
+
+    /* ---------- Modales ---------- */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9998;
-      padding: 15px;
+      position: fixed; inset: 0; background: rgba(4,14,28,0.78);
+      display: none; justify-content: center; align-items: center; z-index: 9998; padding: 16px;
     }
     .modal-content {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: 100%;
-      max-width: 500px;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; padding: 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
     }
 
-    .student-manage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
+    .student-manage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 10px; }
     .student-manage-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #090d16;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      font-size: 0.88rem;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      background: var(--well); padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 0.95rem;
     }
-    .student-manage-item.is-absent { opacity: 0.45; text-decoration: line-through; background: #161e2e; }
+    .student-manage-item.is-absent { opacity: 0.5; }
+    .student-manage-item.is-absent strong { text-decoration: line-through; }
 
-    .rule-card { background: #090d16; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
-    .rule-card h4 { margin: 0 0 4px 0; color: #38bdf8; font-size: 0.95rem; }
-    .rule-card p { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .add-student-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px auto; gap: 12px; align-items: end; }
+    .add-student-row .btn { width: auto; min-width: 140px; min-height: 48px; margin-bottom: 0; }
+    @media (max-width: 640px) { .add-student-row { grid-template-columns: 1fr; } .add-student-row .btn { width: 100%; } }
+    .eval-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
+
+    .rule-card { background: var(--well); border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 12px 12px 0; margin-bottom: 12px; }
+    .rule-card h4 { margin: 0 0 6px 0; color: var(--chalk); font-size: 1rem; }
+    .rule-card p { margin: 0; font-size: 0.92rem; color: var(--muted); line-height: 1.5; }
 
     .section-header {
-      background: #1e293b;
-      color: #38bdf8;
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin: 15px 0 10px 0;
-      font-size: 1rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-left: 4px solid var(--accent);
+      color: var(--chalk); padding: 6px 0 8px 0; margin: 18px 0 12px 0; font-size: 1.1rem; font-weight: 750;
+      font-family: var(--font-round); border-bottom: 2px solid var(--line-strong);
     }
 
-    .bareme-table { width: 100%; margin-top: 8px; font-size: 0.78rem; border-collapse: collapse; }
-    .bareme-table th, .bareme-table td { padding: 6px 8px; text-align: center; border: 1px solid var(--border); }
-    .bareme-table th { background: #1e293b; color: #38bdf8; }
+    .bareme-table { width: 100%; margin-top: 8px; font-size: 0.86rem; border-collapse: collapse; background: transparent; }
+    .bareme-table th, .bareme-table td { padding: 8px 9px; text-align: center; border: 1px solid var(--line); }
+    .bareme-table th { background: var(--card-2); color: var(--muted); }
+    .bareme-table td:first-child { text-align: left; }
 
-    .level-badge { padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 0.75rem; display: inline-block; }
-    .lvl-1 { background: #ef4444; color: white; }
-    .lvl-2 { background: #f97316; color: white; }
-    .lvl-3 { background: #eab308; color: black; }
-    .lvl-4 { background: #22c55e; color: black; }
-    .lvl-5 { background: #15803d; color: white; }
+    .level-badge { padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 0.8rem; display: inline-block; white-space: nowrap; }
+    .lvl-1 { background: #E5484D; color: white; }
+    .lvl-2 { background: #F07B2E; color: white; }
+    .lvl-3 { background: #F2C230; color: #2A2000; }
+    .lvl-4 { background: #3CCB7F; color: #032515; }
+    .lvl-5 { background: #16955A; color: white; }
 
-    .gain-positive { color: var(--success); font-weight: bold; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
-    .gain-negative { color: var(--danger); font-weight: bold; }
+    .gain-positive { color: var(--success); font-weight: 800; }
+    .gain-negative { color: var(--danger); font-weight: 800; }
     .gain-neutral { color: var(--muted); }
 
-    .danger-zone { border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px; }
+    .danger-zone { border: 1px solid rgba(240,80,94,0.5); background: rgba(240,80,94,0.08); padding: 18px; border-radius: 16px; margin-top: 15px; }
 
-    #toast-container { position: fixed; bottom: 15px; right: 15px; z-index: 9999; }
+    #toast-container { position: fixed; bottom: max(18px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
     .toast {
-      background: var(--success);
-      color: #022c14;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      margin-top: 8px;
-      animation: slideIn 0.3s ease-out;
+      background: var(--success); color: #032515; padding: 12px 20px; border-radius: 12px;
+      font-weight: 700; font-size: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      margin-top: 8px; animation: slideIn 0.25s ease-out; max-width: 90vw; text-align: center;
     }
-    @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    @media (max-width: 640px) {
+      .pingpong-court { grid-template-columns: 1fr; }
+      .court-net { min-height: 40px; background: repeating-linear-gradient(90deg, rgba(243,246,250,0.9) 0 6px, transparent 6px 12px) center / 100% 4px no-repeat; }
+      #match-actions { grid-template-columns: 1fr; }
+    }
 
     @media print {
       body { background: white !important; color: black !important; padding: 0; }
       .nav-tabs, button, .btn, #toast-container, .flash-banner, .no-print, .prof-bar, .search-bar-box { display: none !important; }
+      .prof-shell { display: block !important; }
       .card { border: none !important; background: transparent !important; padding: 0 !important; }
       table { border: 1px solid #000 !important; color: black !important; background: white !important; font-size: 10pt !important; }
       th { background: #ddd !important; color: black !important; border: 1px solid #000 !important; }
-      td { border: 1px solid #ccc !important; }
+      td { border: 1px solid #ccc !important; background: white !important; }
       .badge-win { border: 1px solid #000 !important; color: black !important; background: #eee !important; }
       .print-title { display: block !important; text-align: center; font-size: 16pt; margin-bottom: 15px; font-weight: bold; }
     }
@@ -640,11 +754,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         el.title = 'Cliquer pour ouvrir les paramètres Supabase';
         el.onclick = () => { if (window.openSupabaseModal) window.openSupabaseModal(); };
         if (!isSupabaseConfigured()) {
-          el.innerHTML = '<span class="badge-barrage" style="font-size:0.75rem; background:#1e293b; border-color:#64748b; color:#94a3b8;">⚙️ Configurer Supabase</span>';
+          el.innerHTML = '<span class="badge-barrage" style="font-size:0.75rem; background:var(--card-2); border-color:#64748b; color:#94a3b8;">⚙️ Configurer Supabase</span>';
         } else if (isConnected) {
-          el.innerHTML = '<span class="conn-online" style="display:inline-flex; align-items:center; gap:4px;">● Supabase Connecté</span>';
+          el.innerHTML = '<span class="conn-online" style="display:inline-flex; align-items:center; gap:4px;">● Synchronisé</span>';
         } else {
-          el.innerHTML = '<span class="conn-offline" style="display:inline-flex; align-items:center; gap:4px;">● Mode Local (Hors-ligne)</span>';
+          el.innerHTML = '<span class="conn-offline" style="display:inline-flex; align-items:center; gap:4px;">● Hors ligne</span>';
         }
       });
 
@@ -1539,7 +1653,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       appDiv.innerHTML = `
         <div class="container" style="max-width:540px; margin-top:25px; text-align:center;">
-          <div class="card" style="border:2px solid #10b981; background:linear-gradient(180deg, #131c31 0%, #064e3b22 100%);">
+          <div class="card" style="border:2px solid #10b981; background:linear-gradient(180deg, var(--card) 0%, #064e3b22 100%);">
             <div style="font-size:3rem; margin-bottom:8px;">🟢</div>
             <h2 style="color:#34d399; margin:0 0 6px 0;">Tablette Connectée à Supabase !</h2>
             <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;">
@@ -1574,6 +1688,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       else if (role === 'table_select') initTableSelectUI();
       else if (role === 'hub') initHubUI();
       else initProfUI();
+      updateConnectionPills();
     });
 
     /* =========================================================
@@ -1632,7 +1747,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 const lvlNum = getLevelFromNote(grade, player.note12);
                 const desc = LEVEL_DESCRIPTIONS[lvlNum] || LEVEL_DESCRIPTIONS[0];
                 evalHtml = `
-                  <div style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                  <div style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                       <span class="level-badge ${desc.class}">${escapeHtml(desc.name)}</span>
                       <strong style="color:#38bdf8; font-size:1.1rem;">${player.note12} / 12</strong>
@@ -1796,7 +1911,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
         <div class="container">
-          <div id="flash-banner" class="flash-banner">⚡ DÉFI FLASH EN COURS : POINTS DE VICTOIRE DOUBLÉS ! ⚡</div>
+          <div id="flash-banner" class="flash-banner">⚡ Défi flash en cours : les points de victoire sont doublés</div>
           <div id="quest-success-banner" class="quest-success-banner"></div>
           
           <!-- BANDEAU SI TABLETTE NON SYNCHRONISÉE SUPABASE -->
@@ -1812,84 +1927,82 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             </div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <h2 style="margin:0;">🏓 Table ${escapeHtml(tableId)}</h2>
-              <button class="btn btn-sm btn-secondary" id="btn-switch-table-id" style="width:auto; padding:3px 8px; font-size:0.75rem;" title="Changer le numéro de cette table">Changer n°</button>
+          <div class="table-head">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <h2>🏓 Table ${escapeHtml(tableId)}</h2>
+              <button class="btn btn-sm btn-secondary" id="btn-switch-table-id" title="Changer le numéro de cette table">Changer de table</button>
               <span class="conn-status-pill connection-badge"></span>
             </div>
             <span id="group-indicator" class="group-pill"></span>
           </div>
 
-          <div style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
-            <button class="btn btn-sm" id="mode-free-btn" style="flex:1; min-width:110px;">MODE DÉFIS</button>
-            <button class="btn btn-sm btn-secondary" id="mode-poule-btn" style="flex:1; min-width:110px;">MODE POULE</button>
-            <button class="btn btn-sm btn-secondary" id="mode-barrage-btn" style="flex:1; min-width:110px;">⚔️ BARRAGES</button>
+          <div class="segmented" role="tablist">
+            <button class="seg-btn is-active" id="mode-free-btn" role="tab">🏓 Défis</button>
+            <button class="seg-btn" id="mode-poule-btn" role="tab">📊 Poule</button>
+            <button class="seg-btn" id="mode-barrage-btn" role="tab">⚔️ Barrages</button>
           </div>
 
           <!-- 1. MODE DÉFIS LIBRES -->
-          <div id="free-mode-container">
-            <div class="card">
-              <p style="text-align:center; font-size:0.82rem; color:#38bdf8; margin:0 0 10px 0;">
-                ⚡ Règle : Match en 11 pts (2 pts d'écart) • 2 services chacun • <strong>Défis obligatoires</strong> • 1 seul match par adversaire et par séance.
-              </p>
-              <div class="vs-container">
-                <div>
-                  <label style="font-weight:bold; font-size:0.9rem;">Joueur A</label>
-                  <select id="p1-select"><option value="">-- Choisir --</option></select>
+          <div id="free-mode-container" class="table-layout">
+            <div class="table-main">
+              <div class="pingpong-court">
+                <div class="court-side side-a">
+                  <span class="court-label">Joueur A</span>
+                  <select id="p1-select" aria-label="Joueur A"><option value="">Choisir…</option></select>
+                  <div id="p1-stats" class="stats-box" style="display:none;"></div>
                 </div>
-                <div class="vs-circle">VS</div>
-                <div>
-                  <label style="font-weight:bold; font-size:0.9rem;">Joueur B</label>
-                  <select id="p2-select"><option value="">-- Choisir --</option></select>
+                <div class="court-net"><div class="vs-circle">VS</div></div>
+                <div class="court-side side-b">
+                  <span class="court-label">Joueur B</span>
+                  <select id="p2-select" aria-label="Joueur B"><option value="">Choisir…</option></select>
+                  <div id="p2-stats" class="stats-box" style="display:none;"></div>
                 </div>
               </div>
-
-              <div id="p1-stats" class="stats-box" style="display:none;"></div>
-              <div id="p2-stats" class="stats-box" style="display:none;"></div>
 
               <div id="handicap-box" class="handicap-box" style="display:none;"></div>
 
-              <div id="referee-box" style="margin-top:12px; display:none;">
-                <label style="font-weight:bold; font-size:0.9rem;">⚖️ Arbitre du match (Obligatoire) :</label>
-                <select id="referee-select"><option value="">-- Sélectionner l'arbitre --</option></select>
+              <div id="referee-box" class="card" style="margin-top:14px; margin-bottom:0; display:none;">
+                <label style="font-weight:700;">⚖️ Arbitre du match (obligatoire)</label>
+                <select id="referee-select"><option value="">Choisir l'arbitre…</option></select>
               </div>
-            </div>
 
-            <div class="card" id="match-actions" style="display:none;">
-              <h3>Désigner le Vainqueur</h3>
-              <div style="display:flex; flex-direction:column; gap:10px;">
-                <button class="btn btn-success" id="btn-p1-win"></button>
-                <button class="btn btn-success" id="btn-p2-win"></button>
+              <div id="match-actions" style="display:none;">
+                <button class="btn btn-win btn-win-a" id="btn-p1-win"></button>
+                <button class="btn btn-win btn-win-b" id="btn-p2-win"></button>
               </div>
+              <div id="match-hint" class="match-hint">Choisissez les deux joueurs, puis touchez le nom du gagnant.</div>
             </div>
 
             <!-- RAPPEL BARÈME SUR TABLE IPAD -->
-            <div class="card" style="margin-top:15px; background:#090d16;">
-              <h4 style="margin:0 0 6px 0; color:#38bdf8; text-align:center;">📊 Barème des Points Défi EPS</h4>
+            <aside class="table-aside">
+            <div class="card">
+              <h3 style="margin-bottom:6px;">Règles du défi</h3>
+              <p class="rule-line">Match en 11 points, 2 points d'écart. 2 services chacun. Un seul match par adversaire et par séance.</p>
+              <h3 style="margin:14px 0 6px 0;">Barème des points</h3>
               <table class="bareme-table">
                 <thead>
                   <tr>
-                    <th>Écart de points (Niveau)</th>
+                    <th>Situation</th>
                     <th>Victoire</th>
                     <th>Défaite</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Écart >= 10 pts (Favori)</td><td>+2 pts</td><td>-8 pts</td></tr>
-                  <tr><td>Écart 4 à 9 pts (Favori)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
-                  <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
-                  <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
-                  <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
+                  <tr><td>Favori, écart ≥ 10</td><td>+2 pts</td><td>-8 pts</td></tr>
+                  <tr><td>Favori, écart 4 à 9</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
+                  <tr><td>Niveau égal, écart 0 à 3</td><td>+6 pts</td><td>-2 pts</td></tr>
+                  <tr><td>Contre plus fort, 4 à 9</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
+                  <tr><td>Exploit, écart ≥ 10</td><td>+10 pts</td><td>0 pt</td></tr>
                 </tbody>
               </table>
             </div>
+            </aside>
           </div>
 
           <!-- 2. MODE TOURNOI DE POULE -->
           <div id="poule-mode-container" style="display:none;">
             <div class="card">
-              <label style="font-weight:bold;">Sélectionner la Poule / Table :</label>
+              <label style="font-weight:bold;">Poule jouée sur cette table</label>
               <select id="poule-select-dropdown"><option value="">-- Choisir une poule --</option></select>
             </div>
 
@@ -1899,7 +2012,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- 3. MODE BARRAGES & AFFINAGE DE PERFORMANCE -->
           <div id="barrage-mode-container" style="display:none;">
             <div class="card">
-              <label style="font-weight:bold;">Sélectionner la Rencontre de Barrage :</label>
+              <label style="font-weight:bold;">Barrage joué sur cette table</label>
               <select id="barrage-select-dropdown"><option value="">-- Choisir la rencontre --</option></select>
             </div>
 
@@ -1927,18 +2040,39 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       }
 
       function switchMode(mode) {
-        document.getElementById('free-mode-container').style.display = mode === 'free' ? 'block' : 'none';
+        document.getElementById('free-mode-container').style.display = mode === 'free' ? '' : 'none';
         document.getElementById('poule-mode-container').style.display = mode === 'poule' ? 'block' : 'none';
         document.getElementById('barrage-mode-container').style.display = mode === 'barrage' ? 'block' : 'none';
 
-        document.getElementById('mode-free-btn').className = mode === 'free' ? 'btn btn-sm' : 'btn btn-sm btn-secondary';
-        document.getElementById('mode-poule-btn').className = mode === 'poule' ? 'btn btn-sm btn-purple' : 'btn btn-sm btn-secondary';
-        document.getElementById('mode-barrage-btn').className = mode === 'barrage' ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-secondary';
+        document.getElementById('mode-free-btn').classList.toggle('is-active', mode === 'free');
+        document.getElementById('mode-poule-btn').classList.toggle('is-active', mode === 'poule');
+        document.getElementById('mode-barrage-btn').classList.toggle('is-active', mode === 'barrage');
+        try { safeStorage.setItem(`eps_table_mode_${tableId}`, mode); } catch (e) {}
       }
+
+      // Affiche l'aide "choisir deux joueurs" quand les boutons de victoire sont masqués
+      function setMatchActionsVisible(visible) {
+        document.getElementById('match-actions').style.display = visible ? 'grid' : 'none';
+        document.getElementById('match-hint').style.display = visible ? 'none' : 'block';
+      }
+
+      // Garde l'écran de l'iPad allumé pendant la séance (Screen Wake Lock API, iPadOS 16.4+)
+      let wakeLock = null;
+      async function requestWakeLock() {
+        try {
+          if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+            wakeLock = await navigator.wakeLock.request('screen');
+          }
+        } catch (e) { /* non supporté : sans conséquence */ }
+      }
+      requestWakeLock();
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
+      document.addEventListener('touchend', function firstTouch() { requestWakeLock(); document.removeEventListener('touchend', firstTouch); });
 
       document.getElementById('mode-free-btn').onclick = () => switchMode('free');
       document.getElementById('mode-poule-btn').onclick = () => switchMode('poule');
       document.getElementById('mode-barrage-btn').onclick = () => switchMode('barrage');
+      switchMode(safeStorage.getItem(`eps_table_mode_${tableId}`) || 'free');
 
       const btnScanHelp = document.getElementById('btn-table-scan-help');
       if (btnScanHelp) {
@@ -1985,6 +2119,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           currentQuests = cfg.quests || DEFAULT_QUESTS;
 
           document.getElementById('flash-banner').style.display = isFlashActive ? 'block' : 'none';
+          document.body.classList.toggle('flash-on', isFlashActive);
           document.getElementById('referee-box').style.display = options.referee ? 'block' : 'none';
           updateHandicapDisplay();
         }));
@@ -2033,9 +2168,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
         const optionsHtml = activePlayerKeys.map(id => `<option value="${escapeHtml(id)}">${escapeHtml(players[id].name)} (${players[id].points} pts)</option>`).join('');
 
-        p1.innerHTML = '<option value="">-- Joueur A --</option>' + optionsHtml;
-        p2.innerHTML = '<option value="">-- Joueur B --</option>' + optionsHtml;
-        refSel.innerHTML = '<option value="">-- Choisir Arbitre --</option>' + optionsHtml;
+        p1.innerHTML = '<option value="">Choisir le joueur A…</option>' + optionsHtml;
+        p2.innerHTML = '<option value="">Choisir le joueur B…</option>' + optionsHtml;
+        refSel.innerHTML = '<option value="">Choisir l\'arbitre…</option>' + optionsHtml;
 
         p1.value = v1;
         p2.value = v2;
@@ -2125,35 +2260,37 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         });
 
         container.innerHTML = `
-          <div class="card" style="margin-top:10px;">
-            <h3>📊 Rencontres de la Poule (11 Points)</h3>
+          <div class="poule-layout">
+          <div class="card">
+            <h3>Rencontres de la poule (11 points)</h3>
             <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
               ${matches.map((m, idx) => {
                 const restingPlayers = pList.filter(id => id !== m.p1 && id !== m.p2);
                 const restingNames = restingPlayers.map(id => players[id] ? players[id].name : id).join(' ou ');
                 const refereeAdvice = restingNames ? `<div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">⚖️ Arbitre(s) conseillé(s) : <strong>${escapeHtml(restingNames)}</strong></div>` : '';
 
+                const isDone = m.scoreA !== undefined && m.scoreA !== '' && m.scoreB !== undefined && m.scoreB !== '';
                 return `
-                  <div style="background:#090d16; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
-                    <div style="display:flex; align-items:center; justify-content:space-between;">
-                      <span style="font-size:0.88rem; flex:1;"><strong>${escapeHtml(players[m.p1] ? players[m.p1].name : m.p1)}</strong></span>
-                      <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-a" value="${m.scoreA !== undefined ? m.scoreA : ''}" min="0" max="30">
-                      <span style="margin:0 8px; font-weight:bold;">-</span>
-                      <input type="number" class="score-input" id="sc-${pouleKey}-${idx}-b" value="${m.scoreB !== undefined ? m.scoreB : ''}" min="0" max="30">
-                      <span style="font-size:0.88rem; flex:1; text-align:right;"><strong>${escapeHtml(players[m.p2] ? players[m.p2].name : m.p2)}</strong></span>
+                  <div class="poule-match ${isDone ? 'is-done' : ''}">
+                    <div class="poule-match-row">
+                      <span class="pm-name">${escapeHtml(players[m.p1] ? players[m.p1].name : m.p1)}</span>
+                      <input type="number" inputmode="numeric" pattern="[0-9]*" class="score-input" id="sc-${pouleKey}-${idx}-a" value="${m.scoreA !== undefined ? m.scoreA : ''}" min="0" max="30" aria-label="Score">
+                      <span style="font-weight:800; color:var(--muted);">–</span>
+                      <input type="number" inputmode="numeric" pattern="[0-9]*" class="score-input" id="sc-${pouleKey}-${idx}-b" value="${m.scoreB !== undefined ? m.scoreB : ''}" min="0" max="30" aria-label="Score">
+                      <span class="pm-name right">${escapeHtml(players[m.p2] ? players[m.p2].name : m.p2)}</span>
                     </div>
                     ${refereeAdvice}
                   </div>
                 `;
               }).join('')}
             </div>
-            <button class="btn btn-success" id="btn-save-poule-scores" style="margin-top:14px;">💾 Enregistrer les Scores</button>
+            <button class="btn btn-success" id="btn-save-poule-scores" style="margin-top:14px; min-height:56px;">💾 Enregistrer les scores</button>
           </div>
 
           <div class="card">
-            <h3>🏆 Classement Direct de la Poule</h3>
+            <h3>🏆 Classement de la poule</h3>
             ${!isPouleFinished ? `
-              <div style="text-align:center; padding:10px; background:#090d16; border-radius:8px; border:1px solid var(--warning); color:#fcd34d; font-size:0.85rem; margin-bottom:10px;">
+              <div style="text-align:center; padding:10px; background:var(--well); border-radius:8px; border:1px solid var(--warning); color:#fcd34d; font-size:0.85rem; margin-bottom:10px;">
                 ⏳ <strong>Poule en cours (${totalMatchesPlayed} / ${matches.length} matchs joués)</strong><br>
                 Les notes /6 seront calculées et enregistrées une fois tous les scores saisis.
               </div>
@@ -2185,6 +2322,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 }).join('')}
               </tbody>
             </table>
+          </div>
           </div>
         `;
 
@@ -2341,7 +2479,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               ⚡ Match décisif en 11 pts (2 pts d'écart) • <strong>Enjeu : +1 point bonus sur la note pour le vainqueur !</strong>
             </p>
 
-            <div class="vs-container" style="background:#090d16; padding:12px; border-radius:8px; border:1px solid var(--border);">
+            <div class="vs-container" style="background:var(--well); padding:12px; border-radius:8px; border:1px solid var(--border);">
               <div style="text-align:center;">
                 <strong style="font-size:1.05rem; color:white;">${escapeHtml(p1.name)}</strong>
                 <div style="font-size:0.75rem; color:var(--muted); margin-top:2px;">${escapeHtml(b.p1Origin || '')}</div>
@@ -2358,15 +2496,15 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             </div>
 
             <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px;">
-              <input type="number" class="score-input" id="barrage-sc-a" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0">
+              <input type="number" inputmode="numeric" pattern="[0-9]*" class="score-input" id="barrage-sc-a" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0">
               <span style="font-size:1.2rem; font-weight:bold;">-</span>
-              <input type="number" class="score-input" id="barrage-sc-b" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0">
+              <input type="number" inputmode="numeric" pattern="[0-9]*" class="score-input" id="barrage-sc-b" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0">
             </div>
 
             ${refInfo}
 
             <button class="btn btn-gold" id="btn-save-barrage" style="margin-top:14px;">
-              💾 Valider le Match de Barrage (+1 pt bonus)
+              💾 Valider le barrage (+1 pt bonus au gagnant)
             </button>
           </div>
         `;
@@ -2386,6 +2524,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             return showToast("⚠️ Match nul impossible au tennis de table (écart de 2 pts requis) !", "warning");
           }
 
+          if (b.completed && !confirm("Ce barrage a déjà été validé. Remplacer le résultat ?")) return;
+
           const winnerId = valA > valB ? b.p1 : b.p2;
           const loserId = valA > valB ? b.p2 : b.p1;
           const w = players[winnerId];
@@ -2402,7 +2542,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
           }
 
-          // Historique
+          // Historique (on remplace une éventuelle validation précédente de ce barrage)
+          playedMatches.filter(m => m.isBarrage && m.barrageTitle === b.title && (m.session || 1) === sessionNumber)
+            .forEach(m => { updates[getGroupPath(`history/${m.id}`)] = null; });
           const newHistRef = push(ref(db, getGroupPath('history')));
           updates[getGroupPath(`history/${newHistRef.key}`)] = {
             table: b.table || tableId,
@@ -2482,7 +2624,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }
 
         box.innerHTML = `
-          <strong>📊 ${escapeHtml(p.name)} :</strong> ${wins}V / ${losses}D (${winRate}%) | Badges: ${badges}
+          <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span><strong>${wins}</strong> victoire${wins > 1 ? 's' : ''}, <strong>${losses}</strong> défaite${losses > 1 ? 's' : ''}${pMatches.length ? ` (${winRate} %)` : ''}</span>
+            <span>${badges}</span>
+          </div>
           ${questHtml}
         `;
         box.style.display = 'block';
@@ -2505,7 +2650,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           if (id1 && id2) {
             if (id1 === id2) {
               showToast("⚠️ Un joueur ne peut pas s'affronter lui-même !", "warning");
-              actions.style.display = "none";
+              setMatchActionsVisible(false);
               return;
             }
 
@@ -2516,7 +2661,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
             if (alreadyPlayedSession) {
               showToast("⚠️ Revanche interdite : cet adversaire a déjà été affronté cette séance !", "warning");
-              actions.style.display = "none";
+              setMatchActionsVisible(false);
               return;
             }
 
@@ -2525,11 +2670,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             const outcome1 = calculatePointsDelta(p1.points, p2.points, isFlashActive);
             const outcome2 = calculatePointsDelta(p2.points, p1.points, isFlashActive);
 
-            document.getElementById('btn-p1-win').innerHTML = `Victoire de ${escapeHtml(p1.name)} (+${outcome1.gainWinner} pts) <span style="font-size:0.8rem; font-weight:normal; opacity:0.85;">[${escapeHtml(p2.name)}: ${outcome1.lossLoser} pt]</span>`;
-            document.getElementById('btn-p2-win').innerHTML = `Victoire de ${escapeHtml(p2.name)} (+${outcome2.gainWinner} pts) <span style="font-size:0.8rem; font-weight:normal; opacity:0.85;">[${escapeHtml(p1.name)}: ${outcome2.lossLoser} pt]</span>`;
-            actions.style.display = "block";
+            document.getElementById('btn-p1-win').innerHTML = `<span class="win-name">🏆 ${escapeHtml(p1.name)} gagne</span><span class="win-delta">+${outcome1.gainWinner} pts pour ${escapeHtml(p1.name)}, ${outcome1.lossLoser} pour ${escapeHtml(p2.name)}</span>`;
+            document.getElementById('btn-p2-win').innerHTML = `<span class="win-name">🏆 ${escapeHtml(p2.name)} gagne</span><span class="win-delta">+${outcome2.gainWinner} pts pour ${escapeHtml(p2.name)}, ${outcome2.lossLoser} pour ${escapeHtml(p1.name)}</span>`;
+            setMatchActionsVisible(true);
           } else {
-            actions.style.display = "none";
+            setMatchActionsVisible(false);
           }
         }
       });
@@ -2594,7 +2739,18 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           }
 
           if (options.referee && refId && players[refId]) {
-            updates[getGroupPath(`players/${refId}/refereeCount`)] = (players[refId].refereeCount || 0) + 1;
+            const refP = players[refId];
+            const newRefCount = (refP.refereeCount || 0) + 1;
+            updates[getGroupPath(`players/${refId}/refereeCount`)] = newRefCount;
+
+            // Quête q3 « Arbitre au moins 2 matchs » : validée automatiquement côté arbitre
+            if (options.quests && refP.questId === 'q3' && !refP.questCompleted && newRefCount >= 2) {
+              const q3 = currentQuests.find(x => x.id === 'q3');
+              const q3Bonus = q3 ? (q3.bonus || 3) : 3;
+              updates[getGroupPath(`players/${refId}/questCompleted`)] = true;
+              updates[getGroupPath(`players/${refId}/points`)] = refP.points + q3Bonus;
+              setTimeout(() => showToast(`🎯 Quête validée : ${refP.name} a arbitré 2 matchs (+${q3Bonus} pts)`), 700);
+            }
           }
 
           const newMatchRef = push(ref(db, getGroupPath('history')));
@@ -2635,7 +2791,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           document.getElementById('p1-stats').style.display = "none";
           document.getElementById('p2-stats').style.display = "none";
           document.getElementById('handicap-box').style.display = "none";
-          document.getElementById('match-actions').style.display = "none";
+          setMatchActionsVisible(false);
         } catch (err) {
           console.error(err);
           showToast("Erreur lors de l'enregistrement du match", "danger");
@@ -2667,68 +2823,68 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           
           <div class="prof-bar no-print">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <span style="font-weight:bold; font-size:0.95rem;">🏫 Classe :</span>
-              <select id="group-select" style="width:auto; margin:0; padding:6px 10px; font-weight:bold;"></select>
-
-              <span style="font-weight:bold; font-size:0.95rem; margin-left:10px;">🎓 Niveau :</span>
-              <select id="grade-select" style="width:auto; margin:0; padding:6px 10px; font-weight:bold;">
+              <select id="group-select" aria-label="Classe" style="width:auto; margin:0; font-weight:700; min-width:150px;"></select>
+              <select id="grade-select" aria-label="Niveau" style="width:auto; margin:0; font-weight:700;">
                 <option value="6eme">6ème</option>
                 <option value="5eme">5ème</option>
                 <option value="4eme">4ème</option>
                 <option value="3eme">3ème</option>
               </select>
 
-              <button class="btn btn-sm btn-secondary" id="btn-rename-group">✏️ Renommer</button>
-              <button class="btn btn-sm btn-secondary" id="btn-add-group">+ Créer</button>
+              <button class="btn btn-sm btn-secondary" id="btn-rename-group" title="Renommer la classe">✏️ Renommer</button>
+              <button class="btn btn-sm btn-secondary" id="btn-add-group" title="Créer une classe">＋ Classe</button>
             </div>
 
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
               <span class="conn-status-pill connection-badge"></span>
-              <button class="btn btn-sm btn-gold" id="btn-open-connect-modal" style="width:auto; padding:6px 12px; font-weight:bold; display:flex; align-items:center; gap:5px;">📲 Connecter Tablettes</button>
-              <span id="session-pill" class="badge-win" style="padding:6px 12px; font-size:0.85rem;">Séance 1</span>
-              <button class="btn btn-sm btn-purple" id="btn-toggle-flash">⚡ Défi Flash (Pts x2)</button>
+              <span id="session-pill" class="session-chip">Séance 1</span>
+              <button class="btn btn-sm btn-secondary" id="btn-toggle-flash" aria-pressed="false">⚡ Défi flash ×2</button>
+              <button class="btn btn-sm btn-gold" id="btn-open-connect-modal">📲 Connecter les tablettes</button>
             </div>
           </div>
 
-          <div class="nav-tabs no-print">
-            <div class="tab-btn active" data-tab="ranking">🏆 Classement</div>
-            <div class="tab-btn" data-tab="eval">🎯 Evaluation Niveaux</div>
-            <div class="tab-btn" data-tab="poules">📊 Poules & Barrages</div>
-            <div class="tab-btn" data-tab="progress">🚀 Progressions</div>
-            <div class="tab-btn" data-tab="rules">📖 Barème & Règles</div>
-            <div class="tab-btn" data-tab="history">📜 Historique</div>
-            <div class="tab-btn" data-tab="setup">⚙️ Options EPS</div>
-            <div class="tab-btn" data-tab="groups">👥 Élèves</div>
-            <a href="${getSupabaseConfigUrl({ role: 'hub' })}" target="_blank" class="tab-btn" style="text-decoration:none; color:#38bdf8;">📱 Hub QR</a>
-          </div>
+          <div class="prof-shell">
+          <nav class="nav-tabs no-print" aria-label="Sections">
+            <button class="tab-btn active" data-tab="ranking"><span class="tab-ico">🏆</span>Classement</button>
+            <button class="tab-btn" data-tab="poules"><span class="tab-ico">📊</span>Poules et barrages</button>
+            <button class="tab-btn" data-tab="eval"><span class="tab-ico">🎯</span>Évaluation /12</button>
+            <button class="tab-btn" data-tab="progress"><span class="tab-ico">🚀</span>Progressions</button>
+            <button class="tab-btn" data-tab="history"><span class="tab-ico">📜</span>Historique</button>
+            <div class="nav-sep"></div>
+            <button class="tab-btn" data-tab="groups"><span class="tab-ico">👥</span>Élèves</button>
+            <button class="tab-btn" data-tab="setup"><span class="tab-ico">⚙️</span>Séance et options</button>
+            <button class="tab-btn" data-tab="rules"><span class="tab-ico">📖</span>Barème et règles</button>
+            <a href="${getSupabaseConfigUrl({ role: 'hub' })}" target="_blank" class="tab-btn" style="text-decoration:none;"><span class="tab-ico">🖨️</span>Planche QR</a>
+          </nav>
+          <main class="prof-main">
 
           <!-- TAB 1: CLASSEMENT -->
           <div id="tab-ranking">
             <div class="print-title" id="print-title-ranking">Classement Général EPS</div>
             
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;" class="no-print">
-              <div class="search-bar-box" style="flex:1; max-width:300px; margin-bottom:0;">
-                <input type="text" id="ranking-search" class="search-input" placeholder="🔍 Filtrer un élève..." style="margin-top:0;">
+            <div class="toolbar no-print">
+              <div class="search-bar-box" style="flex:1; max-width:340px; margin-bottom:0;">
+                <input type="search" id="ranking-search" class="search-input" placeholder="Rechercher un élève" style="margin-top:0;">
               </div>
               <div style="display:flex; gap:8px;">
-                <button class="btn btn-sm btn-success" id="btn-export-csv" style="width:auto;">📥 Export CSV Pronote (/20)</button>
+                <button class="btn btn-sm btn-success" id="btn-export-csv" style="width:auto;">📥 Export Pronote (/20)</button>
                 <button class="btn btn-sm btn-secondary" onclick="window.print()" style="width:auto;">🖨️ Imprimer</button>
               </div>
             </div>
 
             <div class="ranking-grid">
-              <div>
-                <table>
+              <div class="table-wrap">
+                <table class="rank-table">
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Matchs</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>Rang</th><th>Élève</th><th>Points</th><th>Matchs</th><th>Badges</th><th class="no-print">Bilan</th></tr>
                   </thead>
                   <tbody id="ranking-body-1"></tbody>
                 </table>
               </div>
-              <div>
-                <table>
+              <div class="table-wrap">
+                <table class="rank-table">
                   <thead>
-                    <tr><th>#</th><th>Nom Prénom</th><th>Pts Defis</th><th>Matchs</th><th>Badges</th><th class="no-print">QR</th></tr>
+                    <tr><th>Rang</th><th>Élève</th><th>Points</th><th>Matchs</th><th>Badges</th><th class="no-print">Bilan</th></tr>
                   </thead>
                   <tbody id="ranking-body-2"></tbody>
                 </table>
@@ -2739,21 +2895,21 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- TAB 2: EVALUATION PAR ÉLÈVE (/12 PTS UNIQUEMENT) -->
           <div id="tab-eval" style="display:none;">
             <div class="card">
-              <h3>🎯 Évaluation du Niveau de Jeu (/12)</h3>
+              <h3>🎯 Évaluation du niveau de jeu (/12)</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
                 Saisissez la note sur 12 points de chaque élève (<strong id="eval-grade-indicator">6EME</strong>). Intervalles de 0.5 pt acceptés.
               </p>
-              <div class="search-bar-box no-print" style="max-width:320px; margin:0 auto 12px auto;">
-                <input type="text" id="eval-search" class="search-input" placeholder="🔍 Rechercher un élève..." style="margin-top:0;">
+              <div class="search-bar-box no-print" style="max-width:340px; margin:0 0 14px 0;">
+                <input type="search" id="eval-search" class="search-input" placeholder="Rechercher un élève" style="margin-top:0;">
               </div>
-              <div id="eval-students-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+              <div id="eval-students-list" class="eval-grid"></div>
             </div>
           </div>
 
           <!-- TAB 3: BILAN POULES & BARRAGES (Professeur) -->
           <div id="tab-poules" style="display:none;">
             <div class="card">
-              <h3>📊 Suivi des Poules & Validation des Notes /6</h3>
+              <h3>📊 Suivi des poules et notes /6</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
                 Les notes sur 6 points apparaissent automatiquement lorsque tous les matchs d'une poule ont été complétés.
               </p>
@@ -2764,12 +2920,12 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             <div class="card" style="margin-top:20px; border-color:#eab308; background:rgba(234, 179, 8, 0.03);">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                 <div>
-                  <h3 style="margin:0; color:#facc15; text-align:left;">⚔️ Phase 2 : Matchs de Barrage & d'Affinage de Performance</h3>
+                  <h3 style="margin:0; color:#facc15; text-align:left;">⚔️ Phase 2 : barrages d'affinage</h3>
                   <p style="font-size:0.82rem; color:var(--muted); margin:4px 0 0 0;">
                     Confrontations croisées : 1er P2 vs 3e P1, Grande Finale (1er P1 vs 2e P1), etc. <strong>+1 point bonus sur la note pour chaque vainqueur !</strong>
                   </p>
                 </div>
-                <button class="btn btn-gold btn-sm" id="btn-generate-barrages" style="width:auto;">⚔️ Générer les Barrages d'Affinage</button>
+                <button class="btn btn-gold btn-sm" id="btn-generate-barrages" style="width:auto;">⚔️ Générer les barrages</button>
               </div>
 
               <div id="prof-barrages-container">
@@ -2783,7 +2939,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- TAB 4: PROGRESSIONS -->
           <div id="tab-progress" style="display:none;">
             <div class="card">
-              <h3>🚀 Bilan des Progressions de la Séance</h3>
+              <h3>🚀 Progressions de la séance</h3>
               <p style="font-size:0.85rem; color:var(--muted); text-align:center;">
                 Écart de points entre le capital actuel et le capital initial attribué en début de séance.
               </p>
@@ -2805,7 +2961,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- TAB 5: BARÈME ET RÈGLES DU TOURNOI -->
           <div id="tab-rules" style="display:none;">
             <div class="card">
-              <h3>📖 Barèmes Officiels & Règles EPS</h3>
+              <h3>📖 Barèmes et règles</h3>
               
               <!-- SECTION 1: TOURNOI DÉFIS -->
               <div class="section-header">🏆 Section : Tournoi Défis</div>
@@ -2822,11 +2978,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Écart >= 10 pts (Favori)</td><td>+2 pts</td><td>-8 pts</td></tr>
-                    <tr><td>Écart 4 à 9 pts (Favori)</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
-                    <tr><td>Niveau Égal (Écart 0 à 3)</td><td>+6 pts</td><td>-2 pts</td></tr>
-                    <tr><td>Victoire contre + fort (+4 à +9)</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
-                    <tr><td>Exploit contre +10 pts</td><td>+10 pts</td><td>0 pt</td></tr>
+                    <tr><td>Favori, écart ≥ 10</td><td>+2 pts</td><td>-8 pts</td></tr>
+                    <tr><td>Favori, écart 4 à 9</td><td>+3 à +5 pts</td><td>-3 à -5 pts</td></tr>
+                    <tr><td>Niveau égal, écart 0 à 3</td><td>+6 pts</td><td>-2 pts</td></tr>
+                    <tr><td>Contre plus fort, 4 à 9</td><td>+7 à +9 pts</td><td>-1 pt</td></tr>
+                    <tr><td>Exploit, écart ≥ 10</td><td>+10 pts</td><td>0 pt</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2934,7 +3090,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
                   • <strong>Note Niveau de jeu :</strong> /12 points<br>
                   • <strong>Note Performance Poule :</strong> /6 points<br>
-                  • <strong>Bonus Engagement & Rôles :</strong> /2 points (1 pt si $\ge 2$ arbitrages tiers, 1 pt si quête validée ou $\ge 5$ matchs joués)<br>
+                  • <strong>Bonus Engagement & Rôles :</strong> /2 points (1 pt si au moins 2 arbitrages, 1 pt si quête validée ou au moins 5 matchs joués)<br>
                   • <strong>Bonus Barrage Vainqueur :</strong> +1 point bonus (plafonné à 20).
                 </p>
               </div>
@@ -2945,7 +3101,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- TAB 6: HISTORIQUE -->
           <div id="tab-history" style="display:none;">
             <div class="card">
-              <h3>Flux des Matchs & Corrections</h3>
+              <h3>📜 Historique des matchs</h3>
               <table>
                 <thead>
                   <tr>
@@ -2965,18 +3121,18 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <!-- TAB 7: OPTIONS EPS & PARAMÉTRAGES DES HANDICAPS ET QUÊTES -->
           <div id="tab-setup" style="display:none;">
             <div class="card">
-              <h3>🏆 Constitution des Poules de Niveau (3, 4 ou 5 joueurs)</h3>
+              <h3>🏆 Créer les poules de niveau (3 à 5 joueurs)</h3>
               <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px;">
                 Choisissez la méthode de répartition pour créer automatiquement les poules équilibrées :
               </p>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn btn-purple" id="btn-generate-poules-rank">📊 Générer par Classement Défis</button>
-                <button class="btn btn-purple" id="btn-generate-poules-level" style="background:#0284c7;">🎯 Générer par Niveau de Jeu (1-5)</button>
+                <button class="btn btn-purple" id="btn-generate-poules-rank">📊 Par classement des défis</button>
+                <button class="btn btn-purple" id="btn-generate-poules-level" style="background:#0284c7;">🎯 Par niveau de jeu (note /12)</button>
               </div>
             </div>
 
             <div class="card" style="margin-top:15px;">
-              <h3>🎮 Variantes & Paramètres Pédagogiques</h3>
+              <h3>🎮 Variantes pédagogiques</h3>
               
               <!-- ACTIVER HANDICAPS -->
               <label class="checkbox-label">
@@ -2985,7 +3141,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               </label>
 
               <!-- CONFIGURATION DÉTAILLÉE DES HANDICAPS -->
-              <div id="handicap-settings-box" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
+              <div id="handicap-settings-box" style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
                 <h4 style="margin:0 0 8px 0; color:#fcd34d; font-size:0.9rem;">⚙️ Réglage de la formule des Handicaps de départ</h4>
                 <p style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">
                   Lorsqu'un écart de points est détecté entre deux joueurs, le joueur le moins fort démarre la partie avec des points d'avance.
@@ -3015,7 +3171,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               </label>
 
               <!-- BOUTON ET GESTION DES QUÊTES SECRÈTES PAR MODALE -->
-              <div id="quest-management-box" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
+              <div id="quest-management-box" style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none;">
                 <h4 style="margin:0 0 8px 0; color:#e9d5ff; font-size:0.9rem;">🎯 Distribution & Banque de Quêtes</h4>
                 
                 <button class="btn btn-purple" id="btn-open-quest-modal" style="margin-bottom:12px;">🎯 Attribuer / Modifier les Quêtes des Élèves</button>
@@ -3030,14 +3186,14 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 </div>
               </div>
 
-              <button class="btn btn-success" id="btn-save-options" style="margin-top:15px;">💾 Enregistrer les Options & Paramètres</button>
+              <button class="btn btn-success" id="btn-save-options" style="margin-top:15px;">💾 Enregistrer les options</button>
             </div>
 
             <!-- CARTE CONFIGURATION BASE DE DONNÉES SUPABASE -->
-            <div class="card" style="margin-top:15px; border:1px solid #10b981; background:linear-gradient(180deg, #090d16 0%, #064e3b22 100%);">
+            <div class="card" style="margin-top:15px; border:1px solid #10b981; background:linear-gradient(180deg, var(--well) 0%, #064e3b22 100%);">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <div>
-                  <h3 style="margin:0; color:#34d399;">⚡ Base de données Supabase (Temps Réel)</h3>
+                  <h3 style="margin:0; color:#34d399;">⚡ Synchronisation Supabase</h3>
                   <p style="font-size:0.82rem; color:var(--muted); margin:4px 0 0 0;">
                     Remplace Firebase pour synchroniser les tablettes et l'ordinateur professeur en direct via PostgreSQL.
                   </p>
@@ -3053,31 +3209,54 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             </div>
 
             <div class="card" style="margin-top:15px;">
-              <h3>🔄 Gestion de la Séance</h3>
-              <button class="btn btn-warning" id="btn-next-session">Passer à la Séance Suivante</button>
+              <h3>🔄 Séance</h3>
+              <button class="btn btn-warning" id="btn-next-session">Passer à la séance suivante</button>
             </div>
           </div>
 
           <!-- TAB 8: GESTION DES ÉLÈVES -->
           <div id="tab-groups" style="display:none;">
             <div class="card">
+              <h3>➕ Ajouter un élève</h3>
+              <p class="rule-line">L'élève rejoint la classe sans toucher aux autres : points, matchs et historique sont conservés.</p>
+              <div class="add-student-row">
+                <div>
+                  <label for="new-student-name" style="font-weight:600; font-size:0.9rem;">Nom et prénom</label>
+                  <input type="text" id="new-student-name" placeholder="Ex. : Martin Léa" autocomplete="off" enterkeyhint="done">
+                </div>
+                <div>
+                  <label for="new-student-points" style="font-weight:600; font-size:0.9rem;">Points de départ</label>
+                  <input type="number" inputmode="numeric" id="new-student-points" placeholder="Auto">
+                </div>
+                <button class="btn btn-success" id="btn-add-student">Ajouter</button>
+              </div>
+              <p class="rule-line" style="margin:8px 0 0 0;">Laissez « Points de départ » vide : l'élève démarre juste sous le dernier du classement, puis remonte par les défis.</p>
+            </div>
+
+            <div class="card">
               <h3>👥 Élèves de la classe (<span id="active-class-label"></span>)</h3>
               <div id="student-manage-container" class="student-manage-list"></div>
             </div>
 
             <div class="card" style="margin-top:15px;">
-              <h3>➕ Importer / Remplacer la liste des élèves</h3>
-              <textarea id="import-names" rows="4" placeholder="Eleve 1&#10;Eleve 2&#10;Eleve 3"></textarea>
-              <button class="btn btn-success" id="btn-init-class" style="margin-top:8px;">Remplacer la liste complète</button>
+              <h3>📋 Coller une liste d'élèves</h3>
+              <p class="rule-line">Un élève par ligne.</p>
+              <textarea id="import-names" rows="4" placeholder="Martin Léa&#10;Bernard Hugo&#10;Petit Inès"></textarea>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <button class="btn btn-success" id="btn-append-class">➕ Ajouter à la suite de la classe</button>
+                <button class="btn btn-danger" id="btn-init-class">♻️ Remplacer toute la classe</button>
+              </div>
             </div>
 
             <div class="card danger-zone">
-              <h3 style="color:#f87171;">⚠️ Zone de Nettoyage</h3>
+              <h3 style="color:#f87171;">⚠️ Zone de nettoyage</h3>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                <button class="btn btn-warning" id="btn-reset-session-data">🧹 Remise à zéro Matchs</button>
-                <button class="btn btn-danger" id="btn-delete-current-group">🗑️ Supprimer la Classe</button>
+                <button class="btn btn-warning" id="btn-reset-session-data">🧹 Remettre les matchs à zéro</button>
+                <button class="btn btn-danger" id="btn-delete-current-group">🗑️ Supprimer la classe</button>
               </div>
             </div>
+          </div>
+          </main>
           </div>
 
         </div>
@@ -3139,6 +3318,15 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       let questBank = DEFAULT_QUESTS;
       let rankingSearchQuery = "";
       let evalSearchQuery = "";
+      let flashActive = false;
+
+      function renderFlashButton() {
+        const btn = document.getElementById('btn-toggle-flash');
+        if (!btn) return;
+        btn.textContent = flashActive ? '⚡ Défi flash actif' : '⚡ Défi flash ×2';
+        btn.classList.toggle('is-on', flashActive);
+        btn.setAttribute('aria-pressed', flashActive ? 'true' : 'false');
+      }
 
       let profListeners = [];
       function cleanupProfListeners() {
@@ -3155,7 +3343,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       document.getElementById('group-select').onchange = (e) => {
         currentGroup = e.target.value;
-        localStorage.setItem('eps_current_group', currentGroup);
+        safeStorage.setItem('eps_current_group', currentGroup);
         set(ref(db, 'activeGroup'), currentGroup);
         attachListeners();
         showToast(`Classe changée : ${currentGroup.replace(/_/g, ' ')}`);
@@ -3189,7 +3377,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           updates[`groups/${formatted}`] = {
             players: playersData,
             history: historyMatches.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {}),
-            config: { sessionNumber: currentSession, gradeLevel: currentGradeLevel, flashMode: false, options, quests: questBank }
+            config: { sessionNumber: currentSession, gradeLevel: currentGradeLevel, flashMode: false, options, quests: questBank },
+            poules: activePoulesData,
+            barrages: activeBarragesData
           };
           updates[`groups/${currentGroup}`] = null;
           updates['activeGroup'] = formatted;
@@ -3197,7 +3387,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           await update(ref(db), updates);
 
           currentGroup = formatted;
-          localStorage.setItem('eps_current_group', currentGroup);
+          safeStorage.setItem('eps_current_group', currentGroup);
           attachListeners();
           showToast(`Classe renommée en : ${formatted.replace(/_/g, ' ')}`);
         }
@@ -3208,7 +3398,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (name && name.trim()) {
           const formatted = name.trim().replace(/\s+/g, '_');
           currentGroup = formatted;
-          localStorage.setItem('eps_current_group', currentGroup);
+          safeStorage.setItem('eps_current_group', currentGroup);
           
           const updates = {};
           updates[`groups/${formatted}`] = true;
@@ -3233,6 +3423,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           currentGradeLevel = cfg.gradeLevel || '6eme';
           options = cfg.options || { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
           questBank = cfg.quests || DEFAULT_QUESTS;
+          flashActive = !!cfg.flashMode;
+          renderFlashButton();
 
           document.getElementById('grade-select').value = currentGradeLevel;
           document.getElementById('eval-grade-indicator').textContent = currentGradeLevel.toUpperCase();
@@ -3310,7 +3502,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           container.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Aucun élève enregistré dans cette classe.</p>';
         } else {
           container.innerHTML = sorted.map(p => `
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:#090d16; padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--well); padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
               <span style="font-size:0.88rem; font-weight:bold; flex:1;">${escapeHtml(p.name)}</span>
               <select class="quest-assign-select" data-id="${escapeHtml(p.id)}" style="width:60%; margin:0; font-size:0.82rem;">
                 <option value="">-- Aucune quête --</option>
@@ -3366,7 +3558,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       function renderQuestBankManager() {
         const container = document.getElementById('quest-list-container');
         container.innerHTML = questBank.map((q, idx) => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#131c31; padding:6px 10px; border-radius:6px; font-size:0.82rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:6px 10px; border-radius:6px; font-size:0.82rem;">
             <span>${escapeHtml(q.text)} (<strong>+${q.bonus} pts</strong>)</span>
             <button class="btn btn-sm btn-danger btn-remove-quest" data-index="${idx}" style="padding:4px 8px;">🗑️</button>
           </div>
@@ -3432,8 +3624,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           const desc = LEVEL_DESCRIPTIONS[lvlNum] || LEVEL_DESCRIPTIONS[0];
 
           return `
-            <div class="card" style="background:#090d16; margin-bottom:0; padding:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-              <div style="flex:1; min-width:180px;">
+            <div class="card" style="background:var(--well); margin-bottom:0; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="flex:1; min-width:0;">
                 <strong style="font-size:1rem; color:white;">${escapeHtml(p.name)}</strong>
                 <div style="margin-top:4px;">
                   <span class="level-badge ${desc.class}">${escapeHtml(desc.name)}</span>
@@ -3441,8 +3633,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               </div>
 
               <div style="display:flex; align-items:center; gap:8px;">
-                <label style="font-size:0.85rem; font-weight:bold; color:var(--muted);">Note /12 :</label>
-                <select class="eval-note-select" data-id="${escapeHtml(p.id)}" style="width:115px; margin:0; font-weight:bold; color:#38bdf8;">
+                <select class="eval-note-select" data-id="${escapeHtml(p.id)}" aria-label="Note sur 12 de ${escapeHtml(p.name)}" style="width:120px; margin:0; font-weight:800; color:var(--accent); font-size:1.05rem;">
                   <option value="">-- / 12 --</option>
                   ${noteOptions.map(n => `
                     <option value="${n}" ${currentNote !== "" && parseFloat(currentNote) === n ? 'selected' : ''}>${n} / 12</option>
@@ -3479,7 +3670,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         const pouleKeys = Object.keys(activePoulesData);
 
         if (pouleKeys.length === 0) {
-          container.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:0.9rem;">Aucune poule générée pour le moment. Allez dans l\'onglet Options EPS pour en créer.</p>';
+          container.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:0.9rem;">Aucune poule générée pour le moment. Créez-les dans l\'onglet Séance et options.</p>';
           return;
         }
 
@@ -3527,7 +3718,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           });
 
           return `
-            <div class="card" style="background:#090d16; margin-bottom:10px;">
+            <div class="card" style="background:var(--well); margin-bottom:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <h4 style="color:#38bdf8; margin:0; font-size:1rem;">Poule ${idx + 1} (Table ${idx + 1})</h4>
                 <span style="font-size:0.8rem; font-weight:bold; color:${isPouleFinished ? 'var(--success)' : 'var(--warning)'};">
@@ -3594,7 +3785,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
               const winnerName = isDone && b.winnerId ? (playersData[b.winnerId] ? playersData[b.winnerId].name : b.winnerId) : null;
 
               return `
-                <div style="background:#090d16; border:1px solid ${isDone ? 'var(--gold)' : 'var(--border)'}; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="background:var(--well); border:1px solid ${isDone ? 'var(--gold)' : 'var(--border)'}; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                   <div>
                     <span class="badge-barrage" style="font-size:0.78rem;">Table ${b.table}</span>
                     <strong style="color:#fde047; font-size:0.9rem; margin-left:6px;">${escapeHtml(b.title)}</strong>
@@ -3607,9 +3798,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                   </div>
 
                   <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="number" class="score-input prof-barrage-sc-a" data-key="${escapeHtml(k)}" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0" style="width:48px;">
+                    <input type="number" inputmode="numeric" class="score-input prof-barrage-sc-a" data-key="${escapeHtml(k)}" value="${b.scoreA !== undefined ? b.scoreA : ''}" min="0" max="30" placeholder="0" style="width:48px;">
                     <span style="font-weight:bold;">-</span>
-                    <input type="number" class="score-input prof-barrage-sc-b" data-key="${escapeHtml(k)}" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0" style="width:48px;">
+                    <input type="number" inputmode="numeric" class="score-input prof-barrage-sc-b" data-key="${escapeHtml(k)}" value="${b.scoreB !== undefined ? b.scoreB : ''}" min="0" max="30" placeholder="0" style="width:48px;">
                     <button class="btn btn-sm btn-gold btn-save-prof-barrage" data-key="${escapeHtml(k)}" style="width:auto; padding:5px 10px;">💾</button>
                     ${isDone ? `<span class="badge-win" title="Vainqueur : ${escapeHtml(winnerName || '')}">🏆 +1 pt</span>` : ''}
                   </div>
@@ -3651,6 +3842,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
           }
 
+          historyMatches.filter(m => m.isBarrage && m.barrageTitle === b.title && (m.session || 1) === currentSession)
+            .forEach(m => { updates[getGroupPath(`history/${m.key}`)] = null; });
           const newHistRef = push(ref(db, getGroupPath('history')));
           updates[getGroupPath(`history/${newHistRef.key}`)] = {
             table: b.table || 1,
@@ -3887,6 +4080,73 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       document.getElementById('btn-generate-barrages').onclick = generateBarrages;
 
+      // GÉNÉRATION DES POULES DE NIVEAU (3 à 5 joueurs, matchs en tournante)
+      function roundRobinMatches(ids) {
+        const list = ids.slice();
+        if (list.length % 2 === 1) list.push(null);
+        const n = list.length;
+        const matches = [];
+        for (let r = 0; r < n - 1; r++) {
+          for (let i = 0; i < n / 2; i++) {
+            const a = list[i], b = list[n - 1 - i];
+            if (a && b) matches.push({ p1: a, p2: b, scoreA: "", scoreB: "" });
+          }
+          list.splice(1, 0, list.pop()); // rotation (le premier reste fixe)
+        }
+        return matches;
+      }
+
+      async function generatePoules(mode) {
+        const present = Object.entries(playersData)
+          .filter(([, p]) => !p.absent)
+          .map(([id, p]) => ({ id, ...p }));
+
+        if (present.length < 3) {
+          return showToast("⚠️ Il faut au moins 3 élèves présents pour créer des poules", "warning");
+        }
+        if (Object.keys(activePoulesData).length > 0 &&
+            !confirm("Des poules existent déjà. Les remplacer ? Leurs scores et les barrages seront effacés.")) {
+          return;
+        }
+
+        if (mode === 'level') {
+          const lvl = p => (p.note12 !== undefined && p.note12 !== "" && p.note12 !== null) ? getLevelFromNote(currentGradeLevel, p.note12) : 0;
+          const noEval = present.filter(p => lvl(p) === 0).length;
+          if (noEval > 0 && !confirm(`${noEval} élève(s) n'ont pas de note /12. Ils seront placés selon leurs points de défi. Continuer ?`)) return;
+          present.sort((a, b) =>
+            (lvl(b) - lvl(a)) ||
+            ((parseFloat(b.note12) || 0) - (parseFloat(a.note12) || 0)) ||
+            ((b.points || 0) - (a.points || 0)));
+        } else {
+          present.sort((a, b) => (b.points || 0) - (a.points || 0));
+        }
+
+        // Nombre de poules : tailles comprises entre 3 et 5, 4 de préférence
+        const n = present.length;
+        const k = Math.max(Math.ceil(n / 5), Math.min(Math.floor(n / 3), Math.max(1, Math.round(n / 4))));
+        const base = Math.floor(n / k);
+        const extra = n % k;
+
+        const poules = {};
+        let cursor = 0;
+        for (let i = 0; i < k; i++) {
+          const size = base + (i < extra ? 1 : 0);
+          const ids = present.slice(cursor, cursor + size).map(p => p.id);
+          cursor += size;
+          poules[`poule_${i + 1}`] = { players: ids, matches: roundRobinMatches(ids), mode };
+        }
+
+        const updates = {};
+        updates[getGroupPath('poules')] = poules;
+        updates[getGroupPath('barrages')] = null;
+        await update(ref(db), updates);
+        showToast(`✅ ${k} poule(s) créée(s) pour ${n} élèves. Poule 1 sur la table 1, etc.`);
+        switchTab('poules');
+      }
+
+      document.getElementById('btn-generate-poules-rank').onclick = () => generatePoules('rank');
+      document.getElementById('btn-generate-poules-level').onclick = () => generatePoules('level');
+
       // CLASSEMENT AVEC PODIUM & FILTRAGE RECHERCHE
       function renderRankingTable() {
         let sorted = Object.entries(playersData)
@@ -4005,6 +4265,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       function renderStudentManageList() {
         const container = document.getElementById('student-manage-container');
+        const ptsInput = document.getElementById('new-student-points');
+        if (ptsInput) ptsInput.placeholder = `Auto (${defaultStartPoints()})`;
         const sorted = Object.entries(playersData)
           .map(([id, p]) => ({ id, ...p }))
           .sort((a,b) => (a.name || '').localeCompare(b.name || ''));
@@ -4062,7 +4324,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             <td>${escapeHtml(m.loserName)} (${m.lossLoser})</td>
             <td>${escapeHtml(m.refereeName || '-')}</td>
             <td class="no-print">
-              <button class="btn btn-danger btn-sm btn-cancel-match" data-key="${escapeHtml(m.key)}" data-wid="${escapeHtml(m.winnerId)}" data-lid="${escapeHtml(m.loserId)}" data-gw="${m.gainWinner}" data-ll="${m.lossLoser}" data-ref="${escapeHtml(m.refereeId || '')}">
+              <button class="btn btn-danger btn-sm btn-cancel-match" data-key="${escapeHtml(m.key)}" data-wid="${escapeHtml(m.winnerId)}" data-lid="${escapeHtml(m.loserId)}" data-gw="${m.gainWinner}" data-ll="${m.lossLoser}" data-ref="${escapeHtml(m.refereeId || '')}" data-barrage="${m.isBarrage ? '1' : ''}" data-title="${escapeHtml(m.barrageTitle || '')}">
                 Annuler
               </button>
             </td>
@@ -4085,6 +4347,24 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             const l = playersData[lId];
 
             const updates = {};
+            // Un barrage ne modifie pas les points de défi : on retire seulement le bonus et on rouvre le barrage
+            if (btn.dataset.barrage === '1') {
+              if (w) updates[getGroupPath(`players/${wId}/barrageBonus`)] = null;
+              if (l) updates[getGroupPath(`players/${lId}/barrageBonus`)] = null;
+              Object.keys(activeBarragesData).forEach(k => {
+                const b = activeBarragesData[k];
+                if (b && b.title === btn.dataset.title && ((b.p1 === wId && b.p2 === lId) || (b.p1 === lId && b.p2 === wId))) {
+                  updates[getGroupPath(`barrages/${k}/completed`)] = false;
+                  updates[getGroupPath(`barrages/${k}/winnerId`)] = null;
+                  updates[getGroupPath(`barrages/${k}/scoreA`)] = "";
+                  updates[getGroupPath(`barrages/${k}/scoreB`)] = "";
+                }
+              });
+              updates[getGroupPath(`history/${matchKey}`)] = null;
+              await update(ref(db), updates);
+              showToast("Barrage annulé", "warning");
+              return;
+            }
             if (w) {
               updates[getGroupPath(`players/${wId}/points`)] = w.points - gainW;
               updates[getGroupPath(`players/${wId}/matches`)] = Math.max(0, (w.matches || 1) - 1);
@@ -4149,13 +4429,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         URL.revokeObjectURL(url);
       };
 
-      let flashActive = false;
       document.getElementById('btn-toggle-flash').onclick = () => {
         flashActive = !flashActive;
         set(ref(db, getGroupPath('config/flashMode')), flashActive);
-        document.getElementById('btn-toggle-flash').textContent = flashActive 
-          ? "⚡ DÉFI FLASH ACTIF !" 
-          : "⚡ Défi Flash (Pts x2)";
+        renderFlashButton();
+        showToast(flashActive ? "⚡ Défi flash activé : points de victoire doublés" : "Défi flash terminé", flashActive ? "warning" : "success");
       };
 
       document.getElementById('btn-save-options').onclick = async () => {
@@ -4247,6 +4525,111 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }
       };
 
+      // ---------- AJOUT D'ÉLÈVES SANS EFFACER LA CLASSE ----------
+      function makePlayerId(taken) {
+        let id;
+        do {
+          id = 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        } while (playersData[id] || taken.has(id));
+        taken.add(id);
+        return id;
+      }
+
+      // Par défaut : juste sous le dernier du classement actuel
+      function defaultStartPoints() {
+        const pts = Object.values(playersData).map(p => p.points).filter(n => typeof n === 'number' && !isNaN(n));
+        return pts.length ? Math.min(...pts) - 1 : 100;
+      }
+
+      async function addStudents(names, startPts) {
+        const known = new Set(Object.values(playersData).map(p => (p.name || '').trim().toLowerCase()));
+        const toAdd = [];
+        const duplicates = [];
+        names.forEach(n => {
+          const key = n.toLowerCase();
+          if (known.has(key)) duplicates.push(n);
+          else { known.add(key); toAdd.push(n); }
+        });
+
+        if (toAdd.length === 0) {
+          showToast(duplicates.length === 1 ? `${duplicates[0]} est déjà dans la classe` : "Ces élèves sont déjà dans la classe", "warning");
+          return 0;
+        }
+
+        const updates = {};
+        const taken = new Set();
+        let pts = startPts;
+        toAdd.forEach(name => {
+          const id = makePlayerId(taken);
+          const randomQuest = questBank.length > 0 ? questBank[Math.floor(Math.random() * questBank.length)] : null;
+          // Chemin propre à l'élève : seuls ses champs sont écrits, les autres élèves ne sont pas touchés
+          updates[getGroupPath(`players/${id}`)] = {
+            name,
+            points: pts,
+            startPoints: pts,
+            matches: 0,
+            refereeCount: 0,
+            absent: false,
+            questCompleted: false,
+            barrageBonus: 0,
+            questId: randomQuest ? randomQuest.id : null
+          };
+          pts--;
+        });
+
+        await update(ref(db), updates);
+
+        let msg = toAdd.length === 1
+          ? `✅ ${toAdd[0]} ajouté(e) avec ${startPts} pts`
+          : `✅ ${toAdd.length} élèves ajoutés à partir de ${startPts} pts`;
+        if (duplicates.length) msg += ` (déjà présents, ignorés : ${duplicates.join(', ')})`;
+        showToast(msg);
+        if (Object.keys(activePoulesData).length > 0) {
+          setTimeout(() => showToast("ℹ️ Les poules déjà créées ne changent pas : régénérez-les pour inclure les nouveaux élèves", "warning"), 1200);
+        }
+        return toAdd.length;
+      }
+
+      async function handleAddOneStudent() {
+        const nameInput = document.getElementById('new-student-name');
+        const ptsInput = document.getElementById('new-student-points');
+        const name = nameInput.value.trim().replace(/\s+/g, ' ');
+        if (!name) {
+          nameInput.focus();
+          return showToast("Saisissez le nom de l'élève", "warning");
+        }
+        const typed = ptsInput.value.trim();
+        const startPts = typed !== '' && !isNaN(parseInt(typed)) ? parseInt(typed) : defaultStartPoints();
+
+        const btn = document.getElementById('btn-add-student');
+        btn.disabled = true;
+        try {
+          const added = await addStudents([name], startPts);
+          if (added) {
+            nameInput.value = '';
+            ptsInput.value = '';
+            nameInput.focus();
+          }
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      document.getElementById('btn-add-student').onclick = handleAddOneStudent;
+      document.getElementById('new-student-name').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddOneStudent(); }
+      });
+
+      document.getElementById('btn-append-class').onclick = async () => {
+        const names = document.getElementById('import-names').value
+          .split('\n')
+          .map(n => n.trim().replace(/\s+/g, ' '))
+          .filter(n => n.length > 0);
+        if (names.length === 0) return showToast("Collez au moins un nom (un par ligne)", "warning");
+        const added = await addStudents(names, defaultStartPoints());
+        if (added) document.getElementById('import-names').value = '';
+      };
+
       document.getElementById('btn-init-class').onclick = async () => {
         const names = document.getElementById('import-names').value
           .split('\n')
@@ -4255,7 +4638,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
         if (names.length === 0) return showToast("Saisir au moins un nom d'élève", "danger");
 
-        if (confirm(`Remplacer les élèves de la classe "${currentGroup.replace(/_/g, ' ')}" ?`)) {
+        if (confirm(`Remplacer TOUTE la classe "${currentGroup.replace(/_/g, ' ')}" ?\n\nLes élèves actuels, leurs points, l'historique des matchs, les poules et les barrages seront effacés.\n\nPour ajouter des élèves sans rien effacer, utilisez plutôt « Ajouter à la suite ».`)) {
           let startPoints = 100;
           const newPlayers = {};
           names.forEach((name, idx) => {
@@ -4325,7 +4708,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             await set(ref(db, "groups/Classe_1"), true);
           }
 
-          localStorage.setItem('eps_current_group', currentGroup);
+          safeStorage.setItem('eps_current_group', currentGroup);
           await set(ref(db, 'activeGroup'), currentGroup);
           attachListeners();
           showToast("Classe supprimée", "warning");
@@ -4350,7 +4733,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       </p>
 
       <!-- Statut de la connexion -->
-      <div id="supabase-status-banner" style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:14px;">
+      <div id="supabase-status-banner" style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:14px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:0.85rem; font-weight:bold;">État de la connexion :</span>
           <span id="supabase-modal-badge" class="badge-barrage" style="font-size:0.75rem;">Vérification...</span>
@@ -4378,7 +4761,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <span style="font-size:0.82rem; font-weight:bold; color:#e2e8f0;">Script SQL à exécuter dans Supabase :</span>
           <button class="btn btn-sm btn-purple" id="btn-copy-sql-modal" style="width:auto; padding:3px 10px; font-size:0.75rem;">📋 Copier le Script SQL</button>
         </div>
-        <pre id="supabase-sql-code" style="background:#090d16; border:1px solid var(--border); border-radius:6px; padding:10px; font-size:0.72rem; color:#94a3b8; max-height:120px; overflow-y:auto; margin:0; font-family:monospace; white-space:pre-wrap;"></pre>
+        <pre id="supabase-sql-code" style="background:var(--well); border:1px solid var(--border); border-radius:6px; padding:10px; font-size:0.72rem; color:#94a3b8; max-height:120px; overflow-y:auto; margin:0; font-family:monospace; white-space:pre-wrap;"></pre>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:4px;">
           💡 Dans Supabase : Ouvrez votre projet ➔ allez dans le menu <strong>SQL Editor</strong> ➔ collez le script ci-dessus et cliquez sur <strong>Run</strong>.
         </p>
@@ -4458,7 +4841,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
         <!-- 3. VUE PLANCHE COMPLÈTE & IMPRESSION -->
         <div id="view-connect-hub" style="display:none; text-align:left;">
-          <div style="background:#090d16; border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:10px;">
+          <div style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:10px;">
             <h4 style="margin:0 0 6px 0; color:#38bdf8;">🖨️ Planche complète de tous les QR Codes</h4>
             <p style="font-size:0.83rem; color:var(--muted); margin:0 0 12px 0; line-height:1.4;">
               Ouvrez le Hub pour afficher ou imprimer tous les QR codes du gymnase (Table 1, Table 2, ...). Chaque QR code contient déjà la clé Supabase : les élèves n'ont qu'à scanner pour être connectés.
