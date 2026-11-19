@@ -198,6 +198,7 @@
     }
     .conn-online { color: var(--success); }
     .conn-offline { color: var(--warning); }
+    .conn-pending { color: var(--accent); }
     .session-chip {
       background: rgba(47,208,127,0.14); color: var(--success);
       border: 1px solid rgba(47,208,127,0.35);
@@ -479,6 +480,171 @@
     }
     @keyframes slideIn { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+
+    /* ---------- Suggestions d'adversaires ---------- */
+    .suggest-box { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+    .suggest-title { font-weight: 700; margin-bottom: 8px; }
+    .suggest-title small { color: var(--muted); font-weight: 500; }
+    .suggest-list { display: flex; gap: 8px; flex-wrap: wrap; }
+    .suggest-chip {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px;
+      background: var(--well); color: var(--text); border: 2px solid var(--line-strong); border-radius: 12px;
+      padding: 8px 14px; cursor: pointer; font-family: var(--font); text-align: left;
+    }
+    .suggest-chip strong { font-size: 1rem; }
+    .suggest-chip span { font-size: 0.82rem; color: var(--muted); }
+    .suggest-chip:active { transform: scale(0.97); }
+    .suggest-chip:hover { border-color: var(--side-b); }
+
+    /* ---------- Annulation du dernier match ---------- */
+    .undo-bar {
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 9997; display: flex; align-items: center; gap: 16px;
+      background: var(--chalk); color: var(--bg); padding: 10px 10px 10px 20px; border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45); font-weight: 700; max-width: 94vw;
+    }
+    .undo-bar .btn { background: var(--bg); color: var(--chalk); min-height: 48px; white-space: nowrap; }
+
+    /* ---------- Bilan élève ---------- */
+    .bilan-modal-content { max-width: 1040px; max-height: 92vh; }
+    .bilan-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .bilan-kpis { display: flex; gap: 10px; }
+    .bilan-kpis > div { background: var(--well); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; min-width: 96px; }
+    .bilan-kpis span { display: block; font-family: var(--font-round); font-weight: 800; font-size: 1.5rem; }
+    .bilan-kpis small { color: var(--muted); font-size: 0.78rem; }
+    .bilan-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 860px) { .bilan-grid { grid-template-columns: 1.4fr 1fr; } }
+    .bilan-card { background: var(--well); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
+    .bilan-h { margin: 0 0 8px 0; font-size: 0.95rem; color: var(--muted); font-weight: 700; }
+    .bilan-details summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; margin-top: 8px; }
+    .lvl-timeline { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .lvl-step { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+    .lvl-step small { color: var(--muted); font-size: 0.75rem; }
+    .lvl-arrow { color: var(--muted); font-weight: 800; }
+
+    /* ---------- Records ---------- */
+    .records-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+    .record-card { background: var(--well); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .record-ico { font-size: 1.6rem; }
+    .record-title { color: var(--muted); font-size: 0.85rem; font-weight: 600; margin-top: 4px; }
+    .record-holder { font-family: var(--font-round); font-weight: 800; font-size: 1.15rem; margin-top: 2px; }
+    .record-value { color: var(--ball); font-weight: 700; font-size: 0.92rem; }
+
+    /* ---------- Tables en direct ---------- */
+    .live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+    .live-card { background: var(--well); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+    .live-card.play { border-color: rgba(63,182,242,0.7); }
+    .live-card.wait { border-color: rgba(246,185,65,0.7); }
+    .live-card.done { border-color: rgba(47,208,127,0.7); }
+    .live-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .live-num { font-family: var(--font-round); font-weight: 800; font-size: 1.2rem; }
+    .live-status { font-size: 0.82rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,0.08); }
+    .live-card.play .live-status { background: rgba(63,182,242,0.18); color: var(--side-b); }
+    .live-card.wait .live-status { background: rgba(246,185,65,0.18); color: var(--warning); }
+    .live-card.done .live-status { background: rgba(47,208,127,0.18); color: var(--success); }
+    .live-detail { font-weight: 700; margin-top: 8px; min-height: 1.4em; }
+    .live-foot { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
+
+    /* ---------- Grille d'observation ---------- */
+    .obs-layout { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; }
+    @media (min-width: 900px) { .obs-layout { grid-template-columns: 240px minmax(0, 1fr); } }
+    .obs-list { display: flex; flex-direction: column; gap: 4px; max-height: 70vh; overflow-y: auto; }
+    .obs-item {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left;
+      background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px 12px; min-height: 46px; font-family: var(--font); font-size: 0.95rem; cursor: pointer;
+    }
+    .obs-item.is-active { background: var(--chalk); color: var(--bg); border-color: var(--chalk); font-weight: 700; }
+    .obs-item-note { font-family: var(--font-round); font-weight: 800; display: inline-flex; gap: 6px; align-items: baseline; }
+    .obs-item-note small { font-weight: 600; opacity: 0.6; font-size: 0.75rem; }
+    .obs-panel { background: var(--well); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
+    .obs-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+    .obs-note { display: flex; align-items: center; gap: 8px; }
+    .obs-proposal { background: rgba(255,138,31,0.12); border: 1px solid rgba(255,138,31,0.4); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; }
+    .obs-criterion { margin-top: 12px; }
+    .obs-crit-label { font-weight: 700; margin-bottom: 6px; }
+    .obs-levels { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+    .obs-level {
+      display: flex; flex-direction: column; gap: 3px; align-items: flex-start; text-align: left;
+      background: var(--card); color: var(--text); border: 2px solid var(--line); border-radius: 10px;
+      padding: 8px; min-height: 70px; cursor: pointer; font-family: var(--font);
+    }
+    .obs-level strong { font-size: 0.72rem; letter-spacing: 0.02em; color: var(--muted); }
+    .obs-level span { font-size: 0.85rem; line-height: 1.25; }
+    .obs-level.is-active strong { color: inherit; }
+    .obs-level.lvl-btn-1.is-active { background: #E5484D; border-color: #E5484D; color: #fff; }
+    .obs-level.lvl-btn-2.is-active { background: #F07B2E; border-color: #F07B2E; color: #fff; }
+    .obs-level.lvl-btn-3.is-active { background: #F2C230; border-color: #F2C230; color: #2A2000; }
+    .obs-level.lvl-btn-4.is-active { background: #3CCB7F; border-color: #3CCB7F; color: #032515; }
+    .obs-level.lvl-btn-5.is-active { background: #16955A; border-color: #16955A; color: #fff; }
+
+    /* ---------- Quêtes ---------- */
+    .quest-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--well); padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); }
+    .quest-status-box { display: flex; align-items: center; gap: 6px; min-width: 130px; justify-content: flex-end; }
+    .quest-status { font-size: 0.8rem; font-weight: 700; }
+    .quest-status.done { color: var(--success); }
+    .quest-status.auto { color: var(--muted); font-weight: 600; }
+    .quest-tag { display: inline-block; margin-left: 6px; font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.08); color: var(--muted); }
+    .quest-tag.auto { background: rgba(63,182,242,0.15); color: var(--side-b); }
+    .add-quest-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) 80px auto; gap: 6px; align-items: center; }
+    @media (max-width: 900px) { .add-quest-row { grid-template-columns: 1fr; } }
+    #quest-assign-modal .modal-content { max-width: 760px; }
+    .history-bonus td { background: rgba(157,133,255,0.08) !important; }
+
+    /* ---------- Divers ---------- */
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-row .btn { width: auto; flex: 1 1 200px; }
+    .shortnames-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sn-chip { font-size: 0.82rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted); }
+    .sn-chip b { color: var(--text); }
+
+    /* ---------- Écran projeté ---------- */
+    body.board-mode { padding: 0; overflow: hidden; }
+    .board { height: 100vh; display: flex; flex-direction: column; padding: 1.4vw 1.8vw; gap: 1.2vw; }
+    .board-head { display: flex; align-items: center; justify-content: space-between; gap: 1vw; }
+    .board-title { font-family: var(--font-round); font-weight: 800; font-size: 2.2vw; }
+    .board-title span { color: var(--muted); font-weight: 700; margin-left: 0.6vw; }
+    .board-meta { display: flex; align-items: center; gap: 1vw; font-size: 1.3vw; color: var(--muted); font-weight: 700; }
+    .board-flash { background: var(--ball); color: var(--ball-ink); font-weight: 800; font-size: 1.5vw; padding: 0.5vw 1.4vw; border-radius: 999px; animation: pulse 1.6s ease-in-out infinite; }
+    .board-main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.65fr 1fr; gap: 1.4vw; }
+    .board-rank { display: flex; flex-direction: column; gap: 1vw; min-height: 0; }
+    .board-podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vw; }
+    .podium-card { background: var(--card); border: 2px solid var(--line); border-radius: 1.2vw; padding: 1vw 1.2vw; display: flex; flex-direction: column; gap: 0.2vw; }
+    .podium-card.p1 { border-color: var(--gold); background: linear-gradient(180deg, rgba(245,197,66,0.18), var(--card)); }
+    .podium-card.p2 { border-color: var(--silver); }
+    .podium-card.p3 { border-color: var(--bronze); }
+    .podium-medal { font-size: 2.2vw; line-height: 1; }
+    .podium-name { font-family: var(--font-round); font-weight: 800; font-size: 1.9vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .podium-pts { font-family: var(--font-round); font-weight: 800; font-size: 2.6vw; }
+    .podium-pts small { font-size: 1.1vw; color: var(--muted); }
+    .board-list { flex: 1; min-height: 0; display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--rows, 10), minmax(1.6vw, 3.6vw)); grid-template-columns: 1fr 1fr; gap: 0.35vw 1.2vw; align-content: start; }
+    .board-row { display: grid; grid-template-columns: 2.6vw 1fr auto 5.2vw; align-items: center; gap: 0.6vw; background: var(--card); border-radius: 0.6vw; padding: 0 0.9vw; font-size: clamp(12px, 1.35vw, 26px); min-height: 0; }
+    .br-rank { color: var(--muted); font-weight: 800; font-family: var(--font-round); }
+    .br-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .br-pts { font-family: var(--font-round); font-weight: 800; }
+    .board-prog { font-weight: 800; font-size: 0.85em; color: var(--muted); text-align: right; white-space: nowrap; }
+    .board-prog.up { color: var(--success); }
+    .board-prog.down { color: var(--danger); }
+    .podium-card .board-prog { text-align: left; font-size: 1.2vw; }
+    .board-side { display: flex; flex-direction: column; gap: 1.2vw; min-height: 0; }
+    .board-panel { background: var(--card); border: 1px solid var(--line); border-radius: 1.2vw; padding: 1vw 1.2vw; min-height: 0; overflow: hidden; }
+    .board-panel:first-child { flex: 1.2; }
+    .board-panel h2 { font-size: 1.4vw; margin: 0 0 0.8vw 0; color: var(--muted); }
+    .board-feed { display: flex; flex-direction: column; gap: 0.5vw; }
+    .feed-item { display: grid; grid-template-columns: 2.2vw 1fr auto; align-items: center; gap: 0.6vw; font-size: 1.25vw; background: var(--well); border-radius: 0.6vw; padding: 0.5vw 0.8vw; }
+    .feed-item.is-new { animation: feedIn 0.9s ease-out; box-shadow: 0 0 0 2px var(--ball); }
+    @keyframes feedIn { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .feed-ico { font-size: 1.5vw; }
+    .feed-pts { font-family: var(--font-round); font-weight: 800; color: var(--success); }
+    .board-panel .records-grid { grid-template-columns: 1fr 1fr; gap: 0.6vw; }
+    .board-panel .record-card { padding: 0.7vw 0.9vw; border-radius: 0.8vw; }
+    .board-panel .record-ico { font-size: 1.4vw; }
+    .board-panel .record-title { font-size: 0.9vw; }
+    .board-panel .record-holder { font-size: 1.2vw; }
+    .board-panel .record-value { font-size: 0.95vw; }
+    .board-empty { color: var(--muted); font-size: 1.3vw; }
+    body.board-mode .connection-badge { font-size: 0.9vw; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
@@ -591,6 +757,9 @@ CREATE TABLE IF NOT EXISTS public.tournoi_data (
 -- Activation du Temps Réel (Realtime)
 ALTER PUBLICATION supabase_realtime ADD TABLE public.tournoi_data;
 
+-- Suppressions visibles en temps réel par toutes les tablettes
+ALTER TABLE public.tournoi_data REPLICA IDENTITY FULL;
+
 -- Autorisation d'accès (RLS) public anonyme pour les tablettes
 ALTER TABLE public.tournoi_data ENABLE ROW LEVEL SECURITY;
 
@@ -654,13 +823,38 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       data: {}
     };
 
+    // =====================================================================
+    //  MOTEUR DE DONNÉES v2 — synchronisation sans perte + file hors ligne
+    //  • Supabase : une ligne par élève / match / poule / barrage
+    //    (chemins "players/<id>", "history/<id>", "poules/<id>", "barrages/<id>", "config")
+    //  • Les tablettes n'écrivent jamais la fiche d'un élève : elles ajoutent
+    //    des lignes d'historique. Points, matchs, arbitrages, notes de poule et
+    //    bonus de barrage sont RECALCULÉS à partir de l'historique.
+    //  • Toute écriture passe par une file d'attente persistée (hors ligne OK).
+    // =====================================================================
+    const SB_TABLE = 'tournoi_data';
+    const COLLECTIONS = ['players', 'history', 'poules', 'barrages'];
+    const QUEUE_KEY = `eps_sync_queue_v2_${role}${role === 'table' ? '_' + tableId : ''}`;
+
     function saveToStorage(groupId, path, val) {
       safeStorage.setItem(`eps_db_${groupId}_${path}`, JSON.stringify(val));
     }
 
     function loadFromStorage(groupId, path) {
       const raw = safeStorage.getItem(`eps_db_${groupId}_${path}`);
-      return raw ? JSON.parse(raw) : null;
+      try { return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+    }
+
+    // Méta (liste des classes + classe active) aussi gardée localement
+    (function loadLocalMeta() {
+      try {
+        const m = JSON.parse(safeStorage.getItem('eps_meta') || 'null');
+        if (m && m.list) localCache.groups = m.list;
+        if (m && m.activeGroup && !safeStorage.getItem('eps_current_group')) localCache.activeGroup = m.activeGroup;
+      } catch (e) {}
+    })();
+    function saveLocalMeta() {
+      safeStorage.setItem('eps_meta', JSON.stringify({ activeGroup: localCache.activeGroup, list: localCache.groups }));
     }
 
     function getLocalGroupData(groupId) {
@@ -682,6 +876,103 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       return localCache.data[groupId];
     }
 
+    // ---------- Calculs dérivés (points, matchs, arbitrages, notes) ----------
+    function isMatchEntry(m) { return !!m && m.type !== 'bonus' && !m.isBarrage; }
+    function isBonusEntry(m) { return !!m && m.type === 'bonus'; }
+
+    function computePouleStandings(poule) {
+      const pList = (poule && poule.players) || [];
+      const matches = (poule && poule.matches) || [];
+      const stats = {};
+      pList.forEach(id => { stats[id] = { id, victoires: 0, ptsPoule: 0, pour: 0, contre: 0, diff: 0, joues: 0 }; });
+      let played = 0;
+      matches.forEach(m => {
+        if (m.scoreA === undefined || m.scoreB === undefined || m.scoreA === "" || m.scoreB === "" || m.scoreA === null || m.scoreB === null) return;
+        played++;
+        const a = parseInt(m.scoreA), b = parseInt(m.scoreB);
+        if (stats[m.p1]) { stats[m.p1].joues++; stats[m.p1].pour += a; stats[m.p1].contre += b; }
+        if (stats[m.p2]) { stats[m.p2].joues++; stats[m.p2].pour += b; stats[m.p2].contre += a; }
+        if (a > b) { if (stats[m.p1]) { stats[m.p1].victoires++; stats[m.p1].ptsPoule += 3; } if (stats[m.p2]) stats[m.p2].ptsPoule += 1; }
+        else if (b > a) { if (stats[m.p2]) { stats[m.p2].victoires++; stats[m.p2].ptsPoule += 3; } if (stats[m.p1]) stats[m.p1].ptsPoule += 1; }
+      });
+      Object.values(stats).forEach(s => { s.diff = s.pour - s.contre; });
+      const sorted = Object.values(stats).sort((x, y) => (y.ptsPoule - x.ptsPoule) || (y.diff - x.diff) || (y.pour - x.pour));
+      return { sorted, played, total: matches.length, finished: matches.length > 0 && played === matches.length };
+    }
+
+    function historyAggregates(history, session) {
+      const agg = {};
+      const get = id => (agg[id] = agg[id] || { delta: 0, deltaBefore: 0, matches: 0, refs: 0, quests: {} });
+      Object.values(history || {}).forEach(e => {
+        if (!e) return;
+        const s = e.session || 1;
+        if (isBonusEntry(e)) {
+          const a = get(e.playerId);
+          const pts = Number(e.points) || 0;
+          a.delta += pts;
+          if (s < session) a.deltaBefore += pts;
+          if (e.reason === 'quest' && e.questId) a.quests[`${s}:${e.questId}`] = true;
+          return;
+        }
+        if (e.isBarrage) return;
+        const w = get(e.winnerId), l = get(e.loserId);
+        const gw = Number(e.gainWinner) || 0, ll = Number(e.lossLoser) || 0;
+        w.delta += gw; l.delta += ll;
+        if (s < session) { w.deltaBefore += gw; l.deltaBefore += ll; }
+        w.matches++; l.matches++;
+        if (e.refereeId) get(e.refereeId).refs++;
+      });
+      return agg;
+    }
+
+    function deriveGroupPlayers(groupId) {
+      const grp = getLocalGroupData(groupId);
+      const cfg = grp.config || {};
+      const session = cfg.sessionNumber || 1;
+      const raw = grp.players || {};
+      const agg = historyAggregates(grp.history, session);
+
+      // Notes de poule issues des poules terminées
+      const pouleNotes = {};
+      Object.values(grp.poules || {}).forEach(poule => {
+        const st = computePouleStandings(poule);
+        if (st.finished) st.sorted.forEach((s, idx) => { pouleNotes[s.id] = getPouleNote6(idx + 1, s.victoires); });
+      });
+      // Bonus de barrage issus des barrages validés
+      const barrageBonus = {};
+      Object.values(grp.barrages || {}).forEach(b => {
+        if (b && b.completed && b.winnerId) {
+          barrageBonus[b.winnerId] = 1;
+          const loser = b.winnerId === b.p1 ? b.p2 : b.p1;
+          if (loser && barrageBonus[loser] === undefined) barrageBonus[loser] = 0;
+        }
+      });
+
+      const out = {};
+      Object.keys(raw).forEach(id => {
+        const p = raw[id] || {};
+        const a = agg[id] || { delta: 0, deltaBefore: 0, matches: 0, refs: 0, quests: {} };
+        const base = p.basePoints !== undefined ? Number(p.basePoints) : ((p.points !== undefined ? Number(p.points) : 100) - a.delta);
+        const d = { ...p, id };
+        d.basePoints = base;
+        d.points = base + a.delta;
+        d.startPoints = base + a.deltaBefore;
+        d.matches = a.matches;
+        d.refereeCount = a.refs + (Number(p.refereeExtra) || 0);
+        d.questCompleted = !!p.questCompleted || (!!p.questId && !!a.quests[`${session}:${p.questId}`]);
+        if (pouleNotes[id] !== undefined) d.pouleNote = pouleNotes[id];
+        if (barrageBonus[id] !== undefined) d.barrageBonus = barrageBonus[id];
+        out[id] = d;
+      });
+      return out;
+    }
+
+    // Données brutes (pour sauvegarde, copie de classe)
+    function getRawGroup(groupId) {
+      const g = getLocalGroupData(groupId);
+      return JSON.parse(JSON.stringify({ config: g.config, players: g.players, history: g.history, poules: g.poules, barrages: g.barrages }));
+    }
+
     function getValAtPath(fullPath) {
       if (!fullPath) return null;
       if (fullPath === '.info/connected') return isConnected;
@@ -694,7 +985,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         const grp = getLocalGroupData(groupId);
         if (parts.length === 1) return grp;
         const cat = parts[1];
-        let val = grp[cat];
+        let val = cat === 'players' ? deriveGroupPlayers(groupId) : grp[cat];
         for (let i = 2; i < parts.length; i++) {
           if (val === null || val === undefined) return null;
           val = val[parts[i]];
@@ -712,35 +1003,113 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       const id = nextListenerId++;
       const entry = { id, path, callback, onlyOnce: !!(options && options.onlyOnce) };
       listeners.push(entry);
-
       const currentVal = getValAtPath(path);
-      try {
-        callback({ val: () => currentVal });
-      } catch (err) {
-        console.error("Erreur onValue callback initial:", err);
-      }
-
+      try { callback({ val: () => currentVal }); } catch (err) { console.error("Erreur onValue callback initial:", err); }
       if (entry.onlyOnce) {
         listeners = listeners.filter(l => l.id !== id);
         return () => {};
       }
-      return () => {
-        listeners = listeners.filter(l => l.id !== id);
-      };
+      return () => { listeners = listeners.filter(l => l.id !== id); };
     }
 
     function notifyListeners(changedPath) {
-      listeners.forEach(l => {
+      listeners.slice().forEach(l => {
         if (l.path === changedPath || l.path.startsWith(changedPath + '/') || changedPath.startsWith(l.path + '/')) {
           const val = getValAtPath(l.path);
-          try {
-            l.callback({ val: () => val });
-          } catch (e) {
-            console.error("Erreur notification listener:", e);
-          }
+          try { l.callback({ val: () => val }); } catch (e) { console.error("Erreur notification listener:", e); }
         }
       });
     }
+
+    function notifyGroupCategory(groupId, cat) {
+      notifyListeners(`groups/${groupId}/${cat}`);
+      // Les élèves dépendent de l'historique, des poules, des barrages et de la séance
+      if (cat !== 'players') notifyListeners(`groups/${groupId}/players`);
+    }
+
+    // ---------- File d'attente de synchronisation (persistée) ----------
+    let syncQueue = [];
+    try { syncQueue = JSON.parse(safeStorage.getItem(QUEUE_KEY) || '[]') || []; } catch (e) { syncQueue = []; }
+    syncQueue.forEach(o => { delete o.inflight; });
+    let flushing = false;
+    let flushTimer = null;
+    let lastSyncError = null;
+
+    function persistQueue() {
+      safeStorage.setItem(QUEUE_KEY, JSON.stringify(syncQueue.map(o => { const c = { ...o }; delete c.inflight; return c; })));
+    }
+
+    function enqueue(op) {
+      op.ts = op.ts || Date.now();
+      if (op.kind === 'upsert' || op.kind === 'delete') {
+        syncQueue = syncQueue.filter(o => o.inflight || !(o.group === op.group && (o.kind === 'upsert' || o.kind === 'delete') && o.path === op.path));
+      } else if (op.kind === 'deletePrefix') {
+        syncQueue = syncQueue.filter(o => o.inflight || !(o.group === op.group && (o.kind === 'upsert' || o.kind === 'delete') && o.path.startsWith(op.prefix)));
+      } else if (op.kind === 'deleteGroup') {
+        syncQueue = syncQueue.filter(o => o.inflight || o.group !== op.group);
+      }
+      syncQueue.push(op);
+      persistQueue();
+    }
+
+    function pendingCount() { return syncQueue.length; }
+
+    function scheduleFlush(delay) {
+      if (flushTimer) clearTimeout(flushTimer);
+      flushTimer = setTimeout(() => { flushTimer = null; flushQueue(); }, delay);
+    }
+
+    async function flushQueue() {
+      if (flushing) return;
+      if (!supabaseClient || !isSupabaseConfigured()) { updateConnectionPills(); return; }
+      if (syncQueue.length === 0) { updateConnectionPills(); return; }
+      flushing = true;
+      updateConnectionPills();
+      try {
+        while (syncQueue.length) {
+          const first = syncQueue[0];
+          let batch;
+          if (first.kind === 'upsert') {
+            batch = [];
+            for (const o of syncQueue) { if (o.kind !== 'upsert' || batch.length >= 200) break; batch.push(o); }
+          } else {
+            batch = [first];
+          }
+          batch.forEach(o => { o.inflight = true; });
+          let res;
+          if (first.kind === 'upsert') {
+            res = await supabaseClient.from(SB_TABLE).upsert(batch.map(o => ({
+              group_id: o.group, path: o.path, data: o.data === undefined ? {} : o.data, updated_at: new Date(o.ts).toISOString()
+            })));
+          } else if (first.kind === 'delete') {
+            res = await supabaseClient.from(SB_TABLE).delete().eq('group_id', first.group).eq('path', first.path);
+          } else if (first.kind === 'deletePrefix') {
+            res = await supabaseClient.from(SB_TABLE).delete().eq('group_id', first.group).like('path', first.prefix + '%');
+          } else if (first.kind === 'deleteGroup') {
+            res = await supabaseClient.from(SB_TABLE).delete().eq('group_id', first.group);
+          }
+          if (res && res.error) {
+            batch.forEach(o => { delete o.inflight; });
+            throw res.error;
+          }
+          const sent = new Set(batch);
+          syncQueue = syncQueue.filter(o => !sent.has(o));
+          persistQueue();
+          lastSyncError = null;
+          updateConnectionPills();
+        }
+      } catch (e) {
+        lastSyncError = e;
+        console.warn("Synchronisation différée :", e && e.message ? e.message : e);
+      } finally {
+        flushing = false;
+        updateConnectionPills();
+        if (syncQueue.length) scheduleFlush(lastSyncError ? 6000 : 300);
+      }
+    }
+
+    window.addEventListener('online', () => { scheduleFlush(300); if (supabaseClient) resyncCurrentGroup(); });
+    window.addEventListener('offline', () => { setConnectionStatus(false); });
 
     function setConnectionStatus(status) {
       isConnected = !!status;
@@ -749,50 +1118,45 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
     }
 
     function updateConnectionPills() {
+      const n = pendingCount();
       document.querySelectorAll('.conn-status-pill').forEach(el => {
         el.style.cursor = 'pointer';
-        el.title = 'Cliquer pour ouvrir les paramètres Supabase';
+        el.title = 'Paramètres de synchronisation';
         el.onclick = () => { if (window.openSupabaseModal) window.openSupabaseModal(); };
         if (!isSupabaseConfigured()) {
-          el.innerHTML = '<span class="badge-barrage" style="font-size:0.75rem; background:var(--card-2); border-color:#64748b; color:#94a3b8;">⚙️ Configurer Supabase</span>';
-        } else if (isConnected) {
-          el.innerHTML = '<span class="conn-online" style="display:inline-flex; align-items:center; gap:4px;">● Synchronisé</span>';
+          el.innerHTML = '<span class="conn-offline">⚙️ Local uniquement</span>';
+        } else if (isConnected && n === 0) {
+          el.innerHTML = '<span class="conn-online">● Synchronisé</span>';
+        } else if (isConnected && n > 0) {
+          el.innerHTML = `<span class="conn-pending">⏳ Envoi… ${n}</span>`;
         } else {
-          el.innerHTML = '<span class="conn-offline" style="display:inline-flex; align-items:center; gap:4px;">● Hors ligne</span>';
+          el.innerHTML = n > 0
+            ? `<span class="conn-offline">● Hors ligne · ${n} en attente</span>`
+            : '<span class="conn-offline">● Hors ligne</span>';
         }
       });
 
       const modalBadge = document.getElementById('supabase-modal-badge');
       const modalMsg = document.getElementById('supabase-modal-msg');
       const statusBadgeProf = document.getElementById('supabase-status-badge');
-      
-      const badgeText = !isSupabaseConfigured() ? 'Non configuré' : (isConnected ? '🟢 Supabase Connecté' : '🔴 Hors-ligne');
+      const badgeText = !isSupabaseConfigured() ? 'Non configuré' : (isConnected ? '🟢 Connecté' : '🔴 Hors ligne');
       const badgeColor = !isSupabaseConfigured() ? '#94a3b8' : (isConnected ? '#34d399' : '#f87171');
-      
-      if (statusBadgeProf) {
-        statusBadgeProf.textContent = badgeText;
-        statusBadgeProf.style.color = badgeColor;
-      }
-
+      if (statusBadgeProf) { statusBadgeProf.textContent = badgeText + (n ? ` · ${n} en attente` : ''); statusBadgeProf.style.color = badgeColor; }
       if (modalBadge) {
         if (!isSupabaseConfigured()) {
-          modalBadge.style.background = '#854d0e';
-          modalBadge.style.borderColor = '#eab308';
-          modalBadge.style.color = '#fef08a';
+          modalBadge.style.background = '#854d0e'; modalBadge.style.borderColor = '#eab308'; modalBadge.style.color = '#fef08a';
           modalBadge.textContent = 'Non configuré';
-          if (modalMsg) modalMsg.textContent = 'Veuillez renseigner votre URL de projet Supabase et votre clé API anon.';
+          if (modalMsg) modalMsg.textContent = 'Renseignez l\'URL du projet Supabase et la clé anon.';
         } else if (isConnected) {
-          modalBadge.style.background = '#065f46';
-          modalBadge.style.borderColor = '#10b981';
-          modalBadge.style.color = '#a7f3d0';
-          modalBadge.textContent = '🟢 Connecté (Temps Réel Actif)';
-          if (modalMsg) modalMsg.textContent = 'Synchronisation PostgreSQL opérationnelle en direct avec les tablettes.';
+          modalBadge.style.background = '#065f46'; modalBadge.style.borderColor = '#10b981'; modalBadge.style.color = '#a7f3d0';
+          modalBadge.textContent = '🟢 Connecté (temps réel actif)';
+          if (modalMsg) modalMsg.textContent = n ? `${n} modification(s) en cours d'envoi.` : 'Toutes les modifications sont enregistrées en ligne.';
         } else {
-          modalBadge.style.background = '#991b1b';
-          modalBadge.style.borderColor = '#ef4444';
-          modalBadge.style.color = '#fecaca';
-          modalBadge.textContent = '🔴 Déconnecté';
-          if (modalMsg) modalMsg.textContent = 'Tentative de reconnexion à Supabase... Vérifiez votre connexion Internet ou la table tournoi_data.';
+          modalBadge.style.background = '#991b1b'; modalBadge.style.borderColor = '#ef4444'; modalBadge.style.color = '#fecaca';
+          modalBadge.textContent = '🔴 Hors ligne';
+          if (modalMsg) modalMsg.textContent = n
+            ? `${n} modification(s) gardée(s) sur cet appareil : elles partiront automatiquement au retour du réseau.`
+            : 'Reconnexion en cours… Les matchs saisis sont gardés sur l\'appareil.';
         }
       }
     }
@@ -801,125 +1165,102 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       updateConnectionPills();
     }
 
-    // --- ADAPTATEUR DE PERSISTANCE ET SYNCHRONISATION SUPABASE ---
+    // ---------- Écriture locale + mise en file ----------
     async function update(dummyRef, updates) {
       if (!updates || typeof updates !== 'object') return;
-
-      const modifiedCategories = new Set();
+      const touched = new Map(); // groupId -> { cats:Set, whole:Set, items:Set("cat/id"), config:bool }
+      const touch = (g) => { if (!touched.has(g)) touched.set(g, { cats: new Set(), whole: new Set(), items: new Set() }); return touched.get(g); };
       let metaModified = false;
 
       for (const fullPath in updates) {
         const val = updates[fullPath];
         if (fullPath === 'activeGroup') {
-          localCache.activeGroup = val;
-          metaModified = true;
-          notifyListeners('activeGroup');
-          continue;
+          localCache.activeGroup = val; metaModified = true; notifyListeners('activeGroup'); continue;
         }
         if (fullPath === 'groups') {
           if (val && typeof val === 'object') localCache.groups = { ...val };
-          metaModified = true;
+          metaModified = true; notifyListeners('groups'); continue;
+        }
+        if (!fullPath.startsWith('groups/')) continue;
+        const parts = fullPath.substring(7).split('/');
+        const groupId = parts[0];
+
+        if (parts.length === 1) {
+          if (val === null) {
+            delete localCache.groups[groupId];
+            delete localCache.data[groupId];
+            ['config', ...COLLECTIONS].forEach(c => safeStorage.removeItem(`eps_db_${groupId}_${c}`));
+            enqueue({ kind: 'deleteGroup', group: groupId });
+            metaModified = true;
+          } else {
+            localCache.groups[groupId] = true;
+            const grp = getLocalGroupData(groupId);
+            if (val && typeof val === 'object') {
+              const t = touch(groupId);
+              ['config', ...COLLECTIONS].forEach(c => {
+                if (val[c] !== undefined) {
+                  grp[c] = val[c] || (c === 'config' ? grp.config : {});
+                  t.cats.add(c);
+                  if (c !== 'config') t.whole.add(c);
+                }
+              });
+              t.cats.add('config');
+            }
+            metaModified = true;
+          }
           notifyListeners('groups');
           continue;
         }
-        if (fullPath.startsWith('groups/')) {
-          const parts = fullPath.substring(7).split('/');
-          const groupId = parts[0];
-          if (parts.length === 1) {
-            if (val === null) {
-              delete localCache.groups[groupId];
-              delete localCache.data[groupId];
-              metaModified = true;
-              if (supabaseClient && isSupabaseConfigured()) {
-                supabaseClient.from('tournoi_data').delete().eq('group_id', groupId).then();
-              }
-            } else if (typeof val === 'object') {
-              localCache.groups[groupId] = true;
-              const grp = getLocalGroupData(groupId);
-              if (val.players) grp.players = val.players;
-              if (val.history) grp.history = val.history;
-              if (val.config) grp.config = val.config;
-              if (val.poules) grp.poules = val.poules;
-              if (val.barrages) grp.barrages = val.barrages;
-              modifiedCategories.add(`${groupId}::config`);
-              modifiedCategories.add(`${groupId}::players`);
-              modifiedCategories.add(`${groupId}::history`);
-              modifiedCategories.add(`${groupId}::poules`);
-              modifiedCategories.add(`${groupId}::barrages`);
-              metaModified = true;
-            } else {
-              localCache.groups[groupId] = true;
-              getLocalGroupData(groupId);
-              metaModified = true;
-            }
-            notifyListeners('groups');
-            continue;
-          }
-          const category = parts[1];
-          const grp = getLocalGroupData(groupId);
-          modifiedCategories.add(`${groupId}::${category}`);
 
-          if (parts.length === 2) {
-            grp[category] = val === null ? {} : val;
-          } else {
-            if (!grp[category] || typeof grp[category] !== 'object') grp[category] = {};
-            let target = grp[category];
-            for (let i = 2; i < parts.length - 1; i++) {
-              const subKey = parts[i];
-              if (!target[subKey] || typeof target[subKey] !== 'object') target[subKey] = {};
-              target = target[subKey];
-            }
-            const lastKey = parts[parts.length - 1];
-            if (val === null) {
-              delete target[lastKey];
-            } else {
-              target[lastKey] = val;
-            }
-          }
-        }
-      }
-
-      // Sauvegarde immédiate dans le stockage local pour fluidité 100% sans latence
-      for (const item of modifiedCategories) {
-        const [groupId, category] = item.split('::');
+        const category = parts[1];
         const grp = getLocalGroupData(groupId);
-        saveToStorage(groupId, category, grp[category]);
-        notifyListeners(`groups/${groupId}/${category}`);
-      }
+        const t = touch(groupId);
+        t.cats.add(category);
 
-      // Synchronisation avec Supabase (PostgreSQL)
-      if (supabaseClient && isSupabaseConfigured()) {
-        try {
-          const rowsToUpsert = [];
-          for (const item of modifiedCategories) {
-            const [groupId, category] = item.split('::');
-            const grp = getLocalGroupData(groupId);
-            rowsToUpsert.push({
-              group_id: groupId,
-              path: category,
-              data: grp[category] || {},
-              updated_at: new Date().toISOString()
-            });
+        if (parts.length === 2) {
+          grp[category] = val === null ? {} : val;
+          if (COLLECTIONS.includes(category)) t.whole.add(category);
+        } else {
+          if (!grp[category] || typeof grp[category] !== 'object') grp[category] = {};
+          let target = grp[category];
+          for (let i = 2; i < parts.length - 1; i++) {
+            const subKey = parts[i];
+            if (!target[subKey] || typeof target[subKey] !== 'object') target[subKey] = {};
+            target = target[subKey];
           }
-          if (metaModified) {
-            rowsToUpsert.push({
-              group_id: '_meta_',
-              path: 'groups',
-              data: { activeGroup: localCache.activeGroup, list: localCache.groups },
-              updated_at: new Date().toISOString()
-            });
-          }
-          if (rowsToUpsert.length > 0) {
-            const { error } = await supabaseClient.from('tournoi_data').upsert(rowsToUpsert);
-            if (error) {
-              console.error("Supabase upsert error:", error);
-              showToast("⚠️ Erreur de synchronisation Supabase", "danger");
-            }
-          }
-        } catch (e) {
-          console.error("Supabase sync exception:", e);
+          const lastKey = parts[parts.length - 1];
+          if (val === null) delete target[lastKey]; else target[lastKey] = val;
+          if (COLLECTIONS.includes(category)) t.items.add(`${category}/${parts[2]}`);
         }
       }
+
+      // Sauvegarde locale immédiate, puis mise en file pour Supabase
+      for (const [groupId, t] of touched) {
+        const grp = getLocalGroupData(groupId);
+        t.cats.forEach(c => saveToStorage(groupId, c, grp[c]));
+
+        if (t.cats.has('config')) enqueue({ kind: 'upsert', group: groupId, path: 'config', data: grp.config || {} });
+        t.whole.forEach(c => {
+          enqueue({ kind: 'deletePrefix', group: groupId, prefix: `${c}/` });
+          Object.keys(grp[c] || {}).forEach(id => enqueue({ kind: 'upsert', group: groupId, path: `${c}/${id}`, data: grp[c][id] }));
+        });
+        t.items.forEach(key => {
+          const [c, id] = [key.split('/')[0], key.split('/').slice(1).join('/')];
+          if (t.whole.has(c)) return;
+          const item = grp[c] ? grp[c][id] : undefined;
+          if (item === undefined || item === null) enqueue({ kind: 'delete', group: groupId, path: key });
+          else enqueue({ kind: 'upsert', group: groupId, path: key, data: item });
+        });
+      }
+      if (metaModified) {
+        saveLocalMeta();
+        enqueue({ kind: 'upsert', group: '_meta_', path: 'groups', data: { activeGroup: localCache.activeGroup, list: localCache.groups } });
+      }
+
+      for (const [groupId, t] of touched) t.cats.forEach(c => notifyGroupCategory(groupId, c));
+
+      updateConnectionPills();
+      if (supabaseClient && isSupabaseConfigured()) scheduleFlush(30);
     }
 
     async function set(refObj, val) {
@@ -945,42 +1286,98 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
     const db = { isSupabase: true };
 
-    // Chargement et abonnement Temps Réel Supabase
+    // ---------- Migration des anciennes données (points stockés -> points calculés) ----------
+    async function migrateGroupIfNeeded(groupId) {
+      const grp = getLocalGroupData(groupId);
+      const raw = grp.players || {};
+      const ids = Object.keys(raw).filter(id => raw[id] && raw[id].basePoints === undefined);
+      if (ids.length === 0) return;
+      const agg = historyAggregates(grp.history, (grp.config && grp.config.sessionNumber) || 1);
+      const updates = {};
+      ids.forEach(id => {
+        const p = raw[id];
+        const a = agg[id] || { delta: 0, refs: 0 };
+        const stored = p.points !== undefined ? Number(p.points) : 100;
+        updates[`groups/${groupId}/players/${id}/basePoints`] = stored - a.delta;
+        updates[`groups/${groupId}/players/${id}/refereeExtra`] = Math.max(0, (Number(p.refereeCount) || 0) - a.refs);
+      });
+      await update(null, updates);
+    }
+
+    // ---------- Lecture Supabase ----------
+    async function fetchAllRows(groupId) {
+      const rows = [];
+      const PAGE = 1000;
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await supabaseClient.from(SB_TABLE).select('path, data').eq('group_id', groupId).order('path').range(from, from + PAGE - 1);
+        if (error) throw error;
+        rows.push(...(data || []));
+        if (!data || data.length < PAGE) break;
+      }
+      return rows;
+    }
+
+    function applyPendingToState(state, groupId) {
+      syncQueue.forEach(o => {
+        if (o.group !== groupId) return;
+        if (o.kind === 'deleteGroup') { state.config = null; COLLECTIONS.forEach(c => { state[c] = {}; }); return; }
+        if (o.kind === 'deletePrefix') { const c = o.prefix.replace(/\/$/, ''); if (state[c]) state[c] = {}; return; }
+        if (o.path === 'config') { if (o.kind === 'upsert') state.config = o.data; return; }
+        const [c, ...rest] = o.path.split('/');
+        const id = rest.join('/');
+        if (!COLLECTIONS.includes(c) || !id) return;
+        if (o.kind === 'upsert') state[c][id] = o.data; else delete state[c][id];
+      });
+    }
+
     async function loadGroupFromSupabase(groupId) {
       if (!supabaseClient || !isSupabaseConfigured()) return;
-      const grpData = getLocalGroupData(groupId);
+      const grp = getLocalGroupData(groupId);
       try {
-        const { data: rows, error } = await supabaseClient
-          .from('tournoi_data')
-          .select('path, data')
-          .eq('group_id', groupId);
-
-        if (error) {
-          console.warn("Erreur chargement classe Supabase:", error);
+        const rows = await fetchAllRows(groupId);
+        if (rows.length === 0) {
+          // Classe neuve côté serveur : on envoie l'état local
+          enqueue({ kind: 'upsert', group: groupId, path: 'config', data: grp.config || {} });
+          COLLECTIONS.forEach(c => Object.keys(grp[c] || {}).forEach(id => enqueue({ kind: 'upsert', group: groupId, path: `${c}/${id}`, data: grp[c][id] })));
+          scheduleFlush(50);
           return;
         }
+        const state = { config: null, players: {}, history: {}, poules: {}, barrages: {} };
+        const legacy = [];
+        // 1) anciennes lignes "players", "history"… (format v1)
+        rows.forEach(r => {
+          if (COLLECTIONS.includes(r.path)) {
+            legacy.push(r.path);
+            Object.assign(state[r.path], r.data || {});
+          }
+        });
+        // 2) lignes v2 par élément (prioritaires)
+        rows.forEach(r => {
+          if (r.path === 'config') { state.config = r.data; return; }
+          const slash = r.path.indexOf('/');
+          if (slash < 0) return;
+          const c = r.path.slice(0, slash), id = r.path.slice(slash + 1);
+          if (COLLECTIONS.includes(c)) state[c][id] = r.data;
+        });
+        applyPendingToState(state, groupId);
 
-        if (rows && rows.length > 0) {
-          rows.forEach(r => {
-            if (r.path && r.data) {
-              grpData[r.path] = r.data;
-              saveToStorage(groupId, r.path, r.data);
-              notifyListeners(`groups/${groupId}/${r.path}`);
-            }
+        if (state.config) grp.config = state.config;
+        COLLECTIONS.forEach(c => { grp[c] = state[c]; });
+        ['config', ...COLLECTIONS].forEach(c => saveToStorage(groupId, c, grp[c]));
+
+        // Conversion des lignes v1 en lignes v2
+        if (legacy.length) {
+          legacy.forEach(c => {
+            Object.keys(grp[c] || {}).forEach(id => enqueue({ kind: 'upsert', group: groupId, path: `${c}/${id}`, data: grp[c][id] }));
+            enqueue({ kind: 'delete', group: groupId, path: c });
           });
-        } else {
-          // Si la classe est neuve dans Supabase, sauvegarder l'état local
-          const initialRows = [
-            { group_id: groupId, path: 'config', data: grpData.config },
-            { group_id: groupId, path: 'players', data: grpData.players },
-            { group_id: groupId, path: 'history', data: grpData.history },
-            { group_id: groupId, path: 'poules', data: grpData.poules },
-            { group_id: groupId, path: 'barrages', data: grpData.barrages }
-          ];
-          await supabaseClient.from('tournoi_data').upsert(initialRows);
+          scheduleFlush(50);
         }
+        await migrateGroupIfNeeded(groupId);
+
+        ['config', ...COLLECTIONS].forEach(c => notifyListeners(`groups/${groupId}/${c}`));
       } catch (err) {
-        console.warn("Exception chargement groupe Supabase:", err);
+        console.warn("Lecture Supabase impossible (on garde les données locales) :", err);
       }
     }
 
@@ -988,36 +1385,57 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       if (!supabaseClient || !isSupabaseConfigured()) return;
       try {
         const { data: row, error } = await supabaseClient
-          .from('tournoi_data')
-          .select('data')
-          .eq('group_id', '_meta_')
-          .eq('path', 'groups')
-          .maybeSingle();
-
-        if (error) {
-          console.warn("Erreur chargement meta Supabase:", error);
-          return;
-        }
-
+          .from(SB_TABLE).select('data').eq('group_id', '_meta_').eq('path', 'groups').maybeSingle();
+        if (error) { console.warn("Erreur chargement meta Supabase:", error); return; }
         if (row && row.data) {
-          if (row.data.list) {
-            localCache.groups = row.data.list;
-            notifyListeners('groups');
-          }
-          if (row.data.activeGroup) {
-            localCache.activeGroup = row.data.activeGroup;
-            notifyListeners('activeGroup');
-          }
+          if (row.data.list) { localCache.groups = row.data.list; notifyListeners('groups'); }
+          if (row.data.activeGroup) { localCache.activeGroup = row.data.activeGroup; notifyListeners('activeGroup'); }
+          saveLocalMeta();
         } else {
-          await supabaseClient.from('tournoi_data').upsert({
-            group_id: '_meta_',
-            path: 'groups',
-            data: { activeGroup: localCache.activeGroup, list: localCache.groups }
-          });
+          enqueue({ kind: 'upsert', group: '_meta_', path: 'groups', data: { activeGroup: localCache.activeGroup, list: localCache.groups } });
+          scheduleFlush(50);
         }
       } catch (e) {
         console.warn("Exception meta Supabase:", e);
       }
+    }
+
+    function hasPendingFor(groupId, path) {
+      return syncQueue.some(o => o.group === groupId && (
+        o.kind === 'deleteGroup' ||
+        ((o.kind === 'upsert' || o.kind === 'delete') && o.path === path) ||
+        (o.kind === 'deletePrefix' && path.startsWith(o.prefix))
+      ));
+    }
+
+    function applyRemoteRow(groupId, path, data, isDelete) {
+      if (hasPendingFor(groupId, path)) return; // notre modification locale non envoyée est prioritaire
+      const grp = getLocalGroupData(groupId);
+      if (path === 'config') {
+        if (!isDelete) { grp.config = data || {}; saveToStorage(groupId, 'config', grp.config); notifyGroupCategory(groupId, 'config'); }
+        return;
+      }
+      if (COLLECTIONS.includes(path)) {
+        // Ancien client (v1) : collection entière
+        if (isDelete) return;
+        grp[path] = { ...(grp[path] || {}), ...(data || {}) };
+        saveToStorage(groupId, path, grp[path]);
+        notifyGroupCategory(groupId, path);
+        if (role === 'prof') {
+          Object.keys(data || {}).forEach(id => enqueue({ kind: 'upsert', group: groupId, path: `${path}/${id}`, data: data[id] }));
+          enqueue({ kind: 'delete', group: groupId, path });
+          scheduleFlush(100);
+        }
+        return;
+      }
+      const slash = path.indexOf('/');
+      if (slash < 0) return;
+      const c = path.slice(0, slash), id = path.slice(slash + 1);
+      if (!COLLECTIONS.includes(c)) return;
+      if (!grp[c] || typeof grp[c] !== 'object') grp[c] = {};
+      if (isDelete) delete grp[c][id]; else grp[c][id] = data;
+      saveToStorage(groupId, c, grp[c]);
+      notifyGroupCategory(groupId, c);
     }
 
     function subscribeToGroup(groupId) {
@@ -1026,29 +1444,16 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         try { supabaseClient.removeChannel(groupChannel); } catch (e) {}
         groupChannel = null;
       }
-
-      groupChannel = supabaseClient.channel(`realtime_group_${groupId}`)
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'tournoi_data',
-          filter: `group_id=eq.${groupId}`
-        }, (payload) => {
-          if (payload.new && payload.new.path) {
-            const cat = payload.new.path;
-            const val = payload.new.data || {};
-            const grp = getLocalGroupData(groupId);
-            grp[cat] = val;
-            saveToStorage(groupId, cat, val);
-            notifyListeners(`groups/${groupId}/${cat}`);
-          }
-        })
+      groupChannel = supabaseClient.channel(`realtime_group_${groupId}_${Math.random().toString(36).slice(2, 7)}`)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: SB_TABLE, filter: `group_id=eq.${groupId}` },
+          (payload) => { if (payload.new && payload.new.path) applyRemoteRow(groupId, payload.new.path, payload.new.data, false); })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: SB_TABLE, filter: `group_id=eq.${groupId}` },
+          (payload) => { if (payload.new && payload.new.path) applyRemoteRow(groupId, payload.new.path, payload.new.data, false); })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: SB_TABLE },
+          (payload) => { const o = payload.old || {}; if (o.group_id === groupId && o.path) applyRemoteRow(groupId, o.path, null, true); })
         .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            setConnectionStatus(true);
-          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-            setConnectionStatus(false);
-          }
+          if (status === 'SUBSCRIBED') { setConnectionStatus(true); scheduleFlush(50); }
+          else if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setConnectionStatus(false);
         });
     }
 
@@ -1058,74 +1463,109 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         try { supabaseClient.removeChannel(metaChannel); } catch (e) {}
         metaChannel = null;
       }
-
-      metaChannel = supabaseClient.channel('realtime_meta')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'tournoi_data',
-          filter: `group_id=eq._meta_`
-        }, (payload) => {
-          if (payload.new && payload.new.path === 'groups') {
+      metaChannel = supabaseClient.channel('realtime_meta_' + Math.random().toString(36).slice(2, 7))
+        .on('postgres_changes', { event: '*', schema: 'public', table: SB_TABLE, filter: `group_id=eq._meta_` }, (payload) => {
+          if (payload.new && payload.new.path === 'groups' && !hasPendingFor('_meta_', 'groups')) {
             const meta = payload.new.data || {};
-            if (meta.list) {
-              localCache.groups = meta.list;
-              notifyListeners('groups');
-            }
+            if (meta.list) { localCache.groups = meta.list; notifyListeners('groups'); }
             if (meta.activeGroup && meta.activeGroup !== localCache.activeGroup) {
               localCache.activeGroup = meta.activeGroup;
               notifyListeners('activeGroup');
             }
+            saveLocalMeta();
           }
         })
         .subscribe();
     }
 
+    // Resynchronisation complète (au retour du réseau, au réveil de l'iPad, et toutes les 2 min)
+    let resyncBusy = false;
+    async function resyncCurrentGroup() {
+      if (resyncBusy || !isSupabaseConfigured()) return;
+      if (!supabaseClient || !supabaseReadyFired) { if (!initInProgress) initSupabase(); return; }
+      resyncBusy = true;
+      try {
+        await flushQueue();
+        await loadGroupFromSupabase(currentGroup);
+        if (!groupChannel || groupChannel.state !== 'joined') subscribeToGroup(currentGroup);
+      } finally { resyncBusy = false; }
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') resyncCurrentGroup(); });
+    setInterval(() => { if (document.visibilityState === 'visible') resyncCurrentGroup(); }, 120000);
+
+    // Synchronisation entre onglets d'un même appareil (ex. écran projeté ouvert à côté de la vue prof)
+    window.addEventListener('storage', (e) => {
+      if (!e.key) return;
+      if (e.key === 'eps_meta') {
+        try {
+          const m = JSON.parse(e.newValue || 'null');
+          if (m && m.list) { localCache.groups = m.list; notifyListeners('groups'); }
+          if (m && m.activeGroup && m.activeGroup !== localCache.activeGroup) { localCache.activeGroup = m.activeGroup; notifyListeners('activeGroup'); }
+        } catch (err) {}
+        return;
+      }
+      const m = e.key.match(/^eps_db_(.+)_(config|players|history|poules|barrages)$/);
+      if (!m) return;
+      const [, groupId, cat] = m;
+      if (!localCache.data[groupId]) return;
+      try {
+        localCache.data[groupId][cat] = e.newValue ? JSON.parse(e.newValue) : (cat === 'config' ? localCache.data[groupId].config : {});
+        notifyGroupCategory(groupId, cat);
+      } catch (err) {}
+    });
+
+    // Accès de diagnostic depuis la console du navigateur
+    window.__eps = { deriveGroupPlayers, getLocalGroupData, getRawGroup, pendingCount, flushQueue };
+
+    let supabaseReadyFired = false;
+    const supabaseReadyCallbacks = [];
+    function onSupabaseReady(cb) { if (supabaseReadyFired) cb(); else supabaseReadyCallbacks.push(cb); }
+    function withTimeout(promise, ms) {
+      return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('délai dépassé')), ms))]);
+    }
+
+    let initInProgress = false;
     async function initSupabase() {
       if (!isSupabaseConfigured()) {
         setConnectionStatus(false);
         return;
       }
-
+      if (initInProgress) return;
+      initInProgress = true;
       try {
         let factory = window.supabase?.createClient;
         if (!factory) {
           const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
           factory = mod.createClient;
         }
-
-        if (!factory) {
-          console.warn("SDK Supabase non disponible");
-          setConnectionStatus(false);
-          return;
-        }
+        if (!factory) { console.warn("SDK Supabase non disponible"); setConnectionStatus(false); return; }
 
         supabaseClient = factory(SUPABASE_URL, SUPABASE_KEY, {
           auth: { persistSession: false },
           realtime: { params: { eventsPerSecond: 20 } }
         });
 
-        const { error: testErr } = await supabaseClient
-          .from('tournoi_data')
-          .select('group_id')
-          .limit(1);
-
+        const { error: testErr } = await withTimeout(supabaseClient.from(SB_TABLE).select('group_id').limit(1), 10000);
         if (testErr) {
           console.warn("Table tournoi_data inaccessible ou non créée:", testErr);
           setConnectionStatus(false);
           return;
         }
 
+        await flushQueue();
         await loadMetaFromSupabase();
         subscribeToMeta();
-
         await loadGroupFromSupabase(currentGroup);
         subscribeToGroup(currentGroup);
-
         setConnectionStatus(true);
+        scheduleFlush(50);
+        supabaseReadyFired = true;
+        supabaseReadyCallbacks.splice(0).forEach(cb => { try { cb(); } catch (e) { console.warn(e); } });
       } catch (err) {
-        console.error("Erreur initialisation Supabase:", err);
+        console.warn("Supabase injoignable pour l'instant (mode hors ligne) :", err && err.message ? err.message : err);
         setConnectionStatus(false);
+      } finally {
+        initInProgress = false;
       }
     }
 
@@ -1191,10 +1631,12 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
     }
 
     const DEFAULT_QUESTS = [
-      { id: 'q1', text: '🎯 Bat un joueur mieux classé que toi', bonus: 3 },
-      { id: 'q2', text: '🛡️ Enchaîne 2 victoires consécutives', bonus: 3 },
-      { id: 'q3', text: '🏓 Arbitre au moins 2 matchs', bonus: 3 },
-      { id: 'q4', text: '⚡ Réalise un défi contre un adversaire inédit', bonus: 2 }
+      { id: 'q1', type: 'beat_higher', text: '🎯 Bats un joueur mieux classé que toi', bonus: 3 },
+      { id: 'q2', type: 'streak2', text: '🛡️ Enchaîne 2 victoires de suite', bonus: 3 },
+      { id: 'q3', type: 'referee2', text: '🏓 Arbitre au moins 2 matchs', bonus: 3 },
+      { id: 'q4', type: 'new_opponent', text: '⚡ Bats un adversaire que tu n\'as jamais affronté', bonus: 2 },
+      { id: 'q5', type: 'three_opponents', text: '🌍 Bats 3 adversaires différents', bonus: 3 },
+      { id: 'q6', type: 'five_matches', text: '🔥 Joue 5 matchs dans la séance', bonus: 2 }
     ];
 
     function getGroupPath(subpath) {
@@ -1349,12 +1791,351 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
     // Calcul de la note totale officielle sur 20 points pour Pronote
     function calculateTotalNote20(player) {
-      if (player.note12 === undefined || player.note12 === "") return "";
+      if (player.note12 === undefined || player.note12 === null || player.note12 === "") return "";
       const n12 = parseFloat(player.note12) || 0;
       const n6 = player.pouleNote !== undefined && player.pouleNote !== "" ? parseFloat(player.pouleNote) : 0;
       const n2 = getBonus2Points(player);
       const bBonus = player.barrageBonus ? 1 : 0;
       return Math.min(20, Math.round((n12 + n6 + n2 + bBonus) * 10) / 10);
+    }
+
+    // =====================================================================
+    //  QUÊTES VÉRIFIÉES AUTOMATIQUEMENT
+    // =====================================================================
+    const QUEST_TYPES = {
+      beat_higher:     { label: 'Battre un joueur mieux classé', auto: true },
+      streak2:         { label: '2 victoires de suite dans la séance', auto: true },
+      referee2:        { label: 'Arbitrer 2 matchs dans la séance', auto: true },
+      new_opponent:    { label: 'Battre un adversaire jamais affronté', auto: true },
+      three_opponents: { label: 'Battre 3 adversaires différents dans la séance', auto: true },
+      five_matches:    { label: 'Jouer 5 matchs dans la séance', auto: true },
+      exploit:         { label: 'Réussir un exploit (gain de 9 pts ou plus)', auto: true },
+      comeback:        { label: 'Gagner 10 pts ou plus sur la séance', auto: true },
+      manual:          { label: 'Validée à la main par le professeur', auto: false }
+    };
+    const LEGACY_QUEST_TYPES = { q1: 'beat_higher', q2: 'streak2', q3: 'referee2', q4: 'new_opponent' };
+    function questType(q) { return (q && (q.type || LEGACY_QUEST_TYPES[q.id])) || 'manual'; }
+    function isAutoQuest(q) { return !!(QUEST_TYPES[questType(q)] || {}).auto; }
+
+    /**
+     * Renvoie les quêtes réussies grâce au match qui vient d'être joué.
+     * ctx = { players (dérivés, AVANT le match), history (tableau des entrées existantes),
+     *         match (nouvelle entrée), session, quests }
+     */
+    function evaluateQuestsAfterMatch(ctx) {
+      const { players, history, match, session, quests } = ctx;
+      const results = [];
+      const sessionMatches = history.filter(e => isMatchEntry(e) && (e.session || 1) === session).concat([match]);
+      const involved = [match.winnerId, match.loserId, match.refereeId].filter(Boolean);
+      involved.forEach(pid => {
+        const p = players[pid];
+        if (!p || !p.questId || p.questCompleted) return;
+        const q = (quests || []).find(x => x.id === p.questId);
+        if (!q || !isAutoQuest(q)) return;
+        const mine = sessionMatches.filter(e => e.winnerId === pid || e.loserId === pid).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        let ok = false;
+        switch (questType(q)) {
+          case 'beat_higher':
+            ok = match.winnerId === pid && players[match.loserId] && p.points < players[match.loserId].points; break;
+          case 'streak2':
+            ok = mine.length >= 2 && mine.slice(-2).every(e => e.winnerId === pid); break;
+          case 'referee2':
+            ok = sessionMatches.filter(e => e.refereeId === pid).length >= 2; break;
+          case 'new_opponent':
+            ok = match.winnerId === pid && !history.some(e => isMatchEntry(e) &&
+              ((e.winnerId === pid && e.loserId === match.loserId) || (e.loserId === pid && e.winnerId === match.loserId))); break;
+          case 'three_opponents':
+            ok = new Set(mine.filter(e => e.winnerId === pid).map(e => e.loserId)).size >= 3; break;
+          case 'five_matches':
+            ok = mine.length >= 5; break;
+          case 'exploit':
+            ok = match.winnerId === pid && (match.rawGain || 0) >= 9; break;
+          case 'comeback': {
+            const net = mine.reduce((s, e) => s + (e.winnerId === pid ? (Number(e.gainWinner) || 0) : (Number(e.lossLoser) || 0)), 0);
+            ok = net >= 10; break;
+          }
+        }
+        if (ok) results.push({ playerId: pid, quest: q });
+      });
+      return results;
+    }
+
+    // =====================================================================
+    //  NOMS COURTS (tablettes et écran projeté)
+    // =====================================================================
+    function splitStudentName(full, order) {
+      const words = String(full || '').trim().split(/\s+/).filter(Boolean);
+      if (words.length <= 1) return { first: words[0] || '', last: '' };
+      const isUpper = w => w.length > 1 && w === w.toLocaleUpperCase('fr') && w !== w.toLocaleLowerCase('fr');
+      const upper = words.filter(isUpper);
+      if (upper.length && upper.length < words.length) {
+        return { first: words.filter(w => !isUpper(w)).join(' '), last: upper.join(' ') };
+      }
+      if (order === 'prenom-nom') return { first: words[0], last: words.slice(1).join(' ') };
+      return { first: words.slice(1).join(' '), last: words[0] };
+    }
+
+    function buildShortNames(players, order) {
+      const ids = Object.keys(players || {});
+      const parts = {};
+      ids.forEach(id => { parts[id] = splitStudentName(players[id].name, order); });
+      const cap = s => s ? s.toLocaleLowerCase('fr').replace(/(^|[\s\-'])([a-zà-ÿ])/g, (m, a, b) => a + b.toLocaleUpperCase('fr')) : '';
+      const out = {};
+      const byFirst = {};
+      ids.forEach(id => { const k = parts[id].first.toLowerCase(); (byFirst[k] = byFirst[k] || []).push(id); });
+      Object.values(byFirst).forEach(group => {
+        let n = 1;
+        const make = (id, len) => {
+          const { first, last } = parts[id];
+          const lastClean = last.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+          return lastClean ? `${cap(first)} ${cap(lastClean.slice(0, len))}.` : cap(first);
+        };
+        while (n < 6) {
+          const labels = group.map(id => make(id, n));
+          if (new Set(labels).size === labels.length) break;
+          n++;
+        }
+        group.forEach(id => { out[id] = make(id, n); });
+      });
+      return out;
+    }
+
+    // Applique les noms courts sur une copie des élèves (le vrai nom reste dans fullName)
+    function withDisplayNames(players, cfg) {
+      const out = {};
+      const useShort = !!(cfg && cfg.options && cfg.options.shortNames);
+      const shorts = useShort ? buildShortNames(players, (cfg.options && cfg.options.nameOrder) || 'nom-prenom') : null;
+      Object.keys(players || {}).forEach(id => {
+        out[id] = { ...players[id], fullName: players[id].name, name: useShort ? shorts[id] : players[id].name };
+      });
+      return out;
+    }
+
+    // =====================================================================
+    //  BILAN ÉLÈVE (courbe, adversaires, niveau)
+    // =====================================================================
+    function sessionPointsSeries(player, historyArr, currentSession) {
+      const base = Number(player.basePoints) || 0;
+      const perSession = {};
+      historyArr.forEach(e => {
+        const s = e.session || 1;
+        let d = 0;
+        if (isBonusEntry(e) && e.playerId === player.id) d = Number(e.points) || 0;
+        else if (isMatchEntry(e)) {
+          if (e.winnerId === player.id) d = Number(e.gainWinner) || 0;
+          else if (e.loserId === player.id) d = Number(e.lossLoser) || 0;
+        }
+        if (d) perSession[s] = (perSession[s] || 0) + d;
+      });
+      const pts = [];
+      let acc = base;
+      for (let s = 1; s <= currentSession; s++) { acc += perSession[s] || 0; pts.push({ label: `S${s}`, value: acc }); }
+      return pts;
+    }
+
+    function matchPointsSeries(player, historyArr, session) {
+      let acc = Number(player.startPoints) || 0;
+      const pts = [{ label: 'Début', value: acc }];
+      historyArr.filter(e => (e.session || 1) === session)
+        .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+        .forEach(e => {
+          let d = null;
+          if (isBonusEntry(e) && e.playerId === player.id) d = Number(e.points) || 0;
+          else if (isMatchEntry(e) && (e.winnerId === player.id || e.loserId === player.id)) d = e.winnerId === player.id ? (Number(e.gainWinner) || 0) : (Number(e.lossLoser) || 0);
+          if (d !== null) { acc += d; pts.push({ label: `M${pts.length}`, value: acc }); }
+        });
+      return pts;
+    }
+
+    function lineChartSVG(points, opts = {}) {
+      const W = opts.width || 560, H = opts.height || 190, P = { l: 40, r: 16, t: 18, b: 28 };
+      if (points.length === 0) return '';
+      const vals = points.map(p => p.value);
+      let min = Math.min(...vals), max = Math.max(...vals);
+      if (min === max) { min -= 5; max += 5; }
+      const pad = (max - min) * 0.12; min -= pad; max += pad;
+      const x = i => P.l + (points.length === 1 ? (W - P.l - P.r) / 2 : i * (W - P.l - P.r) / (points.length - 1));
+      const y = v => P.t + (max - v) * (H - P.t - P.b) / (max - min);
+      const ticks = 4;
+      let grid = '';
+      for (let i = 0; i <= ticks; i++) {
+        const v = min + (max - min) * i / ticks;
+        grid += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,0.08)"/>
+                 <text x="${P.l - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#A7BAD3">${Math.round(v)}</text>`;
+      }
+      const path = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
+      const step = Math.max(1, Math.ceil(points.length / 12));
+      const labels = points.map((p, i) => (i % step === 0 || i === points.length - 1)
+        ? `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#A7BAD3">${escapeHtml(p.label)}</text>` : '').join('');
+      const dots = points.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.value)}" r="${points.length > 20 ? 2.5 : 4}" fill="#FF8A1F"><title>${escapeHtml(p.label)} : ${p.value} pts</title></circle>`).join('');
+      const last = points[points.length - 1];
+      return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Évolution des points" style="display:block;">
+        ${grid}
+        <path d="${path}" fill="none" stroke="#FF8A1F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}${labels}
+        <text x="${x(points.length - 1)}" y="${y(last.value) - 10}" text-anchor="middle" font-size="12" font-weight="700" fill="#F3F6FA">${last.value}</text>
+      </svg>`;
+    }
+
+    function buildBilanHTML(playerId, players, historyArr, cfg) {
+      const p = players[playerId];
+      if (!p) return '<p>Élève introuvable.</p>';
+      const session = (cfg && cfg.sessionNumber) || 1;
+      const grade = (cfg && cfg.gradeLevel) || '6eme';
+      const nameOf = id => players[id] ? players[id].name : '?';
+      const matches = historyArr.filter(e => isMatchEntry(e) && (e.winnerId === playerId || e.loserId === playerId));
+      const wins = matches.filter(e => e.winnerId === playerId).length;
+      const ranking = Object.values(players).sort((a, b) => b.points - a.points);
+      const rank = ranking.findIndex(x => x.id === playerId) + 1;
+
+      // Courbe
+      const perSession = sessionPointsSeries(p, historyArr, session);
+      const chart = session >= 2
+        ? `<h4 class="bilan-h">Points en fin de séance</h4>${lineChartSVG(perSession)}`
+        : `<h4 class="bilan-h">Points match après match (séance 1)</h4>${lineChartSVG(matchPointsSeries(p, historyArr, session))}`;
+      const chartThis = session >= 2
+        ? `<details class="bilan-details"><summary>Voir la séance en cours match par match</summary>${lineChartSVG(matchPointsSeries(p, historyArr, session), { height: 160 })}</details>` : '';
+
+      // Adversaires
+      const opp = {};
+      matches.forEach(e => {
+        const o = e.winnerId === playerId ? e.loserId : e.winnerId;
+        const r = opp[o] = opp[o] || { id: o, v: 0, d: 0, net: 0, last: 0 };
+        if (e.winnerId === playerId) { r.v++; r.net += Number(e.gainWinner) || 0; } else { r.d++; r.net += Number(e.lossLoser) || 0; }
+        r.last = Math.max(r.last, e.timestamp || 0);
+      });
+      const oppRows = Object.values(opp).sort((a, b) => (b.v + b.d) - (a.v + a.d) || b.last - a.last).map(r => `
+        <tr><td>${escapeHtml(nameOf(r.id))}</td><td>${r.v + r.d}</td><td style="color:var(--success); font-weight:700;">${r.v}</td>
+        <td style="color:var(--danger); font-weight:700;">${r.d}</td><td><span class="${r.net > 0 ? 'gain-positive' : r.net < 0 ? 'gain-negative' : 'gain-neutral'}">${r.net > 0 ? '+' : ''}${r.net}</span></td></tr>`).join('');
+
+      // Niveau
+      const evals = Object.entries(p.evalHistory || {}).map(([s, v]) => ({ s: Number(s), ...v })).sort((a, b) => a.s - b.s);
+      if (p.note12 !== undefined && p.note12 !== null && p.note12 !== '' && !evals.some(e => e.s === session)) {
+        evals.push({ s: session, note: p.note12, level: getLevelFromNote(grade, p.note12) });
+      }
+      const levelChips = evals.length
+        ? evals.map((e, i) => {
+            const d = LEVEL_DESCRIPTIONS[e.level] || LEVEL_DESCRIPTIONS[0];
+            return `${i ? '<span class="lvl-arrow">→</span>' : ''}<span class="lvl-step"><small>Séance ${e.s}</small><span class="level-badge ${d.class}">${escapeHtml(d.name)}</span><small>${e.note} / 12</small></span>`;
+          }).join('')
+        : '<span style="color:var(--muted);">Pas encore évalué.</span>';
+
+      const total20 = calculateTotalNote20(p);
+      const quests = (cfg && cfg.quests) || DEFAULT_QUESTS;
+      const q = p.questId ? quests.find(x => x.id === p.questId) : null;
+      const questDone = historyArr.filter(e => isBonusEntry(e) && e.playerId === playerId && e.reason === 'quest');
+
+      return `
+        <div class="bilan-head">
+          <div>
+            <h2 style="margin:0;">${escapeHtml(p.name)}</h2>
+            <div style="color:var(--muted); margin-top:4px;">${rank}e sur ${ranking.length} · ${matches.length} match${matches.length > 1 ? 's' : ''} · ${wins} victoire${wins > 1 ? 's' : ''} · ${p.refereeCount || 0} arbitrage${(p.refereeCount || 0) > 1 ? 's' : ''}</div>
+          </div>
+          <div class="bilan-kpis">
+            <div><span>${p.points}</span><small>points</small></div>
+            <div><span class="${p.points - p.startPoints > 0 ? 'gain-positive' : p.points - p.startPoints < 0 ? 'gain-negative' : ''}">${p.points - p.startPoints > 0 ? '+' : ''}${p.points - p.startPoints}</span><small>cette séance</small></div>
+            ${total20 !== '' ? `<div><span>${total20}</span><small>note /20 estimée</small></div>` : ''}
+          </div>
+        </div>
+        <div class="bilan-grid">
+          <div class="bilan-card">${chart}${chartThis}</div>
+          <div class="bilan-card">
+            <h4 class="bilan-h">Évolution du niveau de jeu</h4>
+            <div class="lvl-timeline">${levelChips}</div>
+            <h4 class="bilan-h" style="margin-top:16px;">Badges et quêtes</h4>
+            <div>${getPlayerBadgesHTML(p, matches)}</div>
+            ${q ? `<div class="quest-box" style="${p.questCompleted ? 'background:rgba(47,208,127,0.14); border-color:rgba(47,208,127,0.4); color:#C9F5DC;' : ''}">${p.questCompleted ? '✅' : '🎯'} ${escapeHtml(q.text)} (+${q.bonus} pts)</div>` : ''}
+            ${questDone.length ? `<div style="font-size:0.85rem; color:var(--muted); margin-top:6px;">Quêtes réussies : ${questDone.length}</div>` : ''}
+            ${total20 !== '' ? `<div style="font-size:0.85rem; color:var(--muted); margin-top:12px;">Note /20 = jeu ${p.note12}/12 + poule ${p.pouleNote !== undefined && p.pouleNote !== null ? p.pouleNote : 0}/6 + rôles ${getBonus2Points(p)}/2${p.barrageBonus ? ' + barrage 1' : ''}</div>` : ''}
+          </div>
+        </div>
+        <div class="bilan-card" style="margin-top:14px;">
+          <h4 class="bilan-h">Adversaires rencontrés</h4>
+          ${oppRows ? `<div class="table-wrap"><table><thead><tr><th>Adversaire</th><th>Matchs</th><th>V</th><th>D</th><th>Points gagnés</th></tr></thead><tbody>${oppRows}</tbody></table></div>`
+            : '<p style="color:var(--muted); margin:0;">Aucun match joué pour l\'instant.</p>'}
+        </div>`;
+    }
+
+    function openBilanModal(playerId, players, historyArr, cfg) {
+      const modal = document.getElementById('bilan-modal');
+      document.getElementById('bilan-modal-body').innerHTML = buildBilanHTML(playerId, players, historyArr, cfg);
+      modal.style.display = 'flex';
+    }
+    window.closeBilanModal = () => { const m = document.getElementById('bilan-modal'); if (m) m.style.display = 'none'; };
+
+    // =====================================================================
+    //  RECORDS DE LA CLASSE
+    // =====================================================================
+    function computeRecords(players, historyArr) {
+      const matches = historyArr.filter(isMatchEntry).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      const nameOf = id => players[id] ? players[id].name : null;
+      const best = (scores, fmt) => {
+        const entries = Object.entries(scores).filter(([id, v]) => players[id] && v > 0);
+        if (!entries.length) return null;
+        const top = Math.max(...entries.map(e => e[1]));
+        const holders = entries.filter(e => e[1] === top).map(e => nameOf(e[0]));
+        return { holders, value: fmt(top) };
+      };
+      const records = [];
+
+      const streak = {}, cur = {};
+      matches.forEach(e => {
+        cur[e.winnerId] = (cur[e.winnerId] || 0) + 1;
+        streak[e.winnerId] = Math.max(streak[e.winnerId] || 0, cur[e.winnerId]);
+        cur[e.loserId] = 0;
+      });
+      Object.keys(streak).forEach(id => { if (streak[id] < 2) delete streak[id]; });
+      const r1 = best(streak, v => `${v} victoires d'affilée`);
+      if (r1) records.push({ icon: '🛡️', title: 'Plus longue série', ...r1 });
+
+      let exploit = null;
+      matches.forEach(e => {
+        const g = Number(e.rawGain || e.gainWinner) || 0;
+        if (players[e.winnerId] && (!exploit || g > exploit.g)) exploit = { g, e };
+      });
+      if (exploit && exploit.g > 0) records.push({ icon: '⚡', title: 'Plus gros exploit', holders: [nameOf(exploit.e.winnerId)], value: `+${exploit.g} pts contre ${nameOf(exploit.e.loserId) || exploit.e.loserName || '?'}` });
+
+      const sess = {};
+      historyArr.forEach(e => {
+        const s = e.session || 1;
+        const add = (id, d) => { const k = `${id}|${s}`; sess[k] = (sess[k] || 0) + d; };
+        if (isBonusEntry(e)) add(e.playerId, Number(e.points) || 0);
+        else if (isMatchEntry(e)) { add(e.winnerId, Number(e.gainWinner) || 0); add(e.loserId, Number(e.lossLoser) || 0); }
+      });
+      const bestSess = {};
+      Object.entries(sess).forEach(([k, v]) => { const id = k.split('|')[0]; bestSess[id] = Math.max(bestSess[id] || 0, v); });
+      const r3 = best(bestSess, v => `+${v} pts en une séance`);
+      if (r3) records.push({ icon: '🚀', title: 'Meilleure remontée', ...r3 });
+
+      const wins = {}, played = {}, opps = {};
+      matches.forEach(e => {
+        wins[e.winnerId] = (wins[e.winnerId] || 0) + 1;
+        [e.winnerId, e.loserId].forEach(id => { played[id] = (played[id] || 0) + 1; });
+        (opps[e.winnerId] = opps[e.winnerId] || new Set()).add(e.loserId);
+        (opps[e.loserId] = opps[e.loserId] || new Set()).add(e.winnerId);
+      });
+      const r4 = best(wins, v => `${v} victoire${v > 1 ? 's' : ''}`);
+      if (r4) records.push({ icon: '🏆', title: 'Plus de victoires', ...r4 });
+      const r5 = best(played, v => `${v} match${v > 1 ? 's' : ''} joué${v > 1 ? 's' : ''}`);
+      if (r5) records.push({ icon: '🔥', title: 'Le plus endurant', ...r5 });
+      const oppCount = {}; Object.entries(opps).forEach(([id, s]) => { oppCount[id] = s.size; });
+      const r6 = best(oppCount, v => `${v} adversaire${v > 1 ? 's' : ''} différent${v > 1 ? 's' : ''}`);
+      if (r6) records.push({ icon: '🌍', title: 'Le plus curieux', ...r6 });
+      const refs = {}; Object.values(players).forEach(p => { refs[p.id] = p.refereeCount || 0; });
+      const r7 = best(refs, v => `${v} arbitrage${v > 1 ? 's' : ''}`);
+      if (r7) records.push({ icon: '⚖️', title: 'Meilleur arbitre', ...r7 });
+      return records;
+    }
+
+    function recordsHTML(records) {
+      if (!records.length) return '<p style="color:var(--muted);">Les records apparaîtront après les premiers matchs.</p>';
+      return `<div class="records-grid">${records.map(r => `
+        <div class="record-card">
+          <div class="record-ico">${r.icon}</div>
+          <div class="record-title">${escapeHtml(r.title)}</div>
+          <div class="record-holder">${escapeHtml(r.holders.slice(0, 3).join(', '))}${r.holders.length > 3 ? ` +${r.holders.length - 3}` : ''}</div>
+          <div class="record-value">${escapeHtml(r.value)}</div>
+        </div>`).join('')}</div>`;
     }
 
     function initSupabaseModal() {
@@ -1682,13 +2463,16 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       initSupabaseModal();
       initTabletConnectModal();
       initConnectionIndicator();
-      await initSupabase();
+      // L'interface s'affiche tout de suite avec les données de l'appareil (fonctionne hors ligne),
+      // la synchronisation Supabase se branche ensuite.
       if (studentQRId) initStudentQRView();
       else if (role === 'table') initTableUI();
       else if (role === 'table_select') initTableSelectUI();
       else if (role === 'hub') initHubUI();
+      else if (role === 'board') initBoardUI();
       else initProfUI();
       updateConnectionPills();
+      initSupabase();
     });
 
     /* =========================================================
@@ -1697,137 +2481,30 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
     function initStudentQRView() {
       const appDiv = document.getElementById('app');
       appDiv.innerHTML = `
-        <div class="container" style="max-width:520px; margin-top:20px;">
-          <div class="card" style="text-align:center;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <span class="conn-status-pill connection-badge"></span>
-              <span class="group-pill" id="student-group-pill"></span>
-            </div>
-            <h2 style="color:#38bdf8; margin:0 0 10px 0;">🪪 Bilan Élève — Tournoi EPS</h2>
-            <div id="student-profile-card">Chargement des données...</div>
+        <div class="container" style="max-width:980px; margin-top:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+            <span class="conn-status-pill connection-badge"></span>
+            <span class="group-pill" id="student-group-pill"></span>
           </div>
-        </div>
-      `;
-
+          <div class="card" id="student-profile-card">Chargement des données…</div>
+        </div>`;
+      let cfg = {}, players = {}, history = [];
+      let subs = [];
+      const render = () => {
+        const card = document.getElementById('student-profile-card');
+        if (!players[studentQRId]) { card.innerHTML = "<p style='color:var(--muted);'>Élève introuvable pour cette classe.</p>"; return; }
+        card.innerHTML = buildBilanHTML(studentQRId, withDisplayNames(players, cfg), history, cfg);
+      };
       onValue(ref(db, 'activeGroup'), (snap) => {
-        if (snap.val()) {
-          currentGroup = snap.val();
-          document.getElementById('student-group-pill').textContent = currentGroup.replace(/_/g, ' ');
-          loadStudentData();
-        }
+        if (!snap.val()) return;
+        currentGroup = snap.val();
+        document.getElementById('student-group-pill').textContent = currentGroup.replace(/_/g, ' ');
+        subs.forEach(u => u && u()); subs = [];
+        if (supabaseClient && isSupabaseConfigured()) { loadGroupFromSupabase(currentGroup); subscribeToGroup(currentGroup); }
+        subs.push(onValue(ref(db, getGroupPath('config')), s => { cfg = s.val() || {}; }));
+        subs.push(onValue(ref(db, getGroupPath('history')), s => { history = Object.entries(s.val() || {}).map(([k, v]) => ({ id: k, ...v })); }));
+        subs.push(onValue(ref(db, getGroupPath('players')), s => { players = s.val() || {}; render(); }));
       });
-
-      function loadStudentData() {
-        if (supabaseClient && isSupabaseConfigured()) {
-          loadGroupFromSupabase(currentGroup);
-          subscribeToGroup(currentGroup);
-        }
-        onValue(ref(db, getGroupPath(`players/${studentQRId}`)), (snap) => {
-          const player = snap.val();
-          if (!player) {
-            document.getElementById('student-profile-card').innerHTML = "<p style='color:var(--muted);'>Élève introuvable pour cette classe.</p>";
-            return;
-          }
-          player.id = studentQRId;
-
-          onValue(ref(db, getGroupPath('config')), (cfgSnap) => {
-            const cfg = cfgSnap.val() || {};
-            const grade = cfg.gradeLevel || '6eme';
-            const questList = cfg.quests || DEFAULT_QUESTS;
-
-            onValue(ref(db, getGroupPath('history')), (historySnap) => {
-              const matches = Object.entries(historySnap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
-              const pMatches = matches.filter(m => m.winnerId === studentQRId || m.loserId === studentQRId);
-              const wins = pMatches.filter(m => m.winnerId === studentQRId).length;
-              const losses = pMatches.length - wins;
-              const badges = getPlayerBadgesHTML(player, pMatches);
-
-              let evalHtml = '<p style="color:var(--muted); font-size:0.85rem;">Non évalué par le professeur pour l\'instant.</p>';
-              if (player.note12 !== undefined && player.note12 !== "") {
-                const lvlNum = getLevelFromNote(grade, player.note12);
-                const desc = LEVEL_DESCRIPTIONS[lvlNum] || LEVEL_DESCRIPTIONS[0];
-                evalHtml = `
-                  <div style="background:var(--well); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <span class="level-badge ${desc.class}">${escapeHtml(desc.name)}</span>
-                      <strong style="color:#38bdf8; font-size:1.1rem;">${player.note12} / 12</strong>
-                    </div>
-                    <ul style="font-size:0.8rem; color:var(--muted); margin:8px 0 0 0; padding-left:16px;">
-                      <li><strong>Service :</strong> ${escapeHtml(desc.service)}</li>
-                      <li><strong>Déplacements :</strong> ${escapeHtml(desc.deplacements)}</li>
-                      <li><strong>Actions :</strong> ${escapeHtml(desc.actions)}</li>
-                      <li><strong>Tactique :</strong> ${escapeHtml(desc.tactique)}</li>
-                    </ul>
-                  </div>
-                `;
-              }
-
-              let questTxt = 'Aucune quête en cours';
-              if (player.questId) {
-                const q = questList.find(x => x.id === player.questId);
-                if (q) {
-                  const statusIcon = player.questCompleted ? '✅ Réussie ! ' : '⏳ ';
-                  questTxt = `${statusIcon}${escapeHtml(q.text)} (+${q.bonus} pts bonus)`;
-                }
-              }
-
-              let pouleNoteHtml = player.pouleNote !== undefined ? `${player.pouleNote} / 6` : 'En cours de poule';
-              const total20 = calculateTotalNote20(player);
-
-              let barrageStatusHtml = '';
-              if (player.barrageBonus) {
-                barrageStatusHtml = `
-                  <div style="background:rgba(234, 179, 8, 0.15); border:1px solid #eab308; border-radius:8px; padding:8px 12px; margin-bottom:12px; text-align:center; color:#fde047; font-weight:bold; font-size:0.9rem;">
-                    ⚔️ Vainqueur du Match de Barrage / Affinage (+1 point bonus inclus sur la note) !
-                  </div>
-                `;
-              }
-
-              document.getElementById('student-profile-card').innerHTML = `
-                <h1 style="font-size:1.8rem; margin:10px 0 5px 0;">${escapeHtml(player.name)}</h1>
-                <p class="group-pill" style="display:inline-block; margin-bottom:15px;">Classe : ${escapeHtml(currentGroup.replace(/_/g, ' '))} (${grade.toUpperCase()})</p>
-                
-                ${barrageStatusHtml}
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
-                  <div class="stats-box">
-                    <div style="font-size:0.8rem; color:var(--muted);">Points Tournoi</div>
-                    <div style="font-size:1.5rem; font-weight:bold; color:var(--success);">${player.points} pts</div>
-                  </div>
-                  <div class="stats-box">
-                    <div style="font-size:0.8rem; color:var(--muted);">Note Poule</div>
-                    <div style="font-size:1.5rem; font-weight:bold; color:#a855f7;">${pouleNoteHtml}</div>
-                  </div>
-                </div>
-
-                ${total20 !== "" ? `
-                  <div class="stats-box" style="background:rgba(37, 99, 235, 0.15); border:1px solid #3b82f6; text-align:center; margin-bottom:12px;">
-                    <div style="font-size:0.8rem; color:#93c5fd;">Estimation Note Globale EPS</div>
-                    <div style="font-size:1.7rem; font-weight:bold; color:#60a5fa;">${total20} / 20</div>
-                    <div style="font-size:0.75rem; color:var(--muted);">Jeu (/12) + Poule (/6) + Rôle/Quête (/2) ${player.barrageBonus ? '+ Barrage (+1)' : ''}</div>
-                  </div>
-                ` : ''}
-
-                <div class="stats-box" style="text-align:left; margin-bottom:10px;">
-                  <strong>🎯 Évaluation Niveau de Jeu :</strong>
-                  ${evalHtml}
-                </div>
-
-                <div class="quest-box" style="text-align:left; margin-bottom:10px; ${player.questCompleted ? 'background:rgba(34, 197, 94, 0.15); border-color:#22c55e; color:#bbf7d0;' : ''}">
-                  <strong>🎯 Quête Secrète Individuelle :</strong><br>${questTxt}
-                </div>
-
-                <div class="stats-box" style="text-align:left; margin-bottom:10px;">
-                  <strong>📊 Bilan Matchs :</strong> ${wins} Victoires / ${losses} Défaites (${pMatches.length} joués) | Arbitrages : ${player.refereeCount || 0}
-                </div>
-                <div class="stats-box" style="text-align:left;">
-                  <strong>🎖️ Badges Débloqués :</strong> ${badges}
-                </div>
-              `;
-            }, { onlyOnce: true });
-          }, { onlyOnce: true });
-        }, { onlyOnce: true });
-      }
     }
 
     /* =========================================================
@@ -1905,6 +2582,116 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
     }
 
     /* =========================================================
+       ÉCRAN PROJETÉ (vidéoprojecteur)  —  ?role=board
+       ========================================================= */
+    function initBoardUI() {
+      document.body.classList.add('board-mode');
+      const appDiv = document.getElementById('app');
+      appDiv.innerHTML = `
+        <div class="board">
+          <header class="board-head">
+            <div class="board-title">🏓 Tournoi défis <span id="board-class"></span></div>
+            <div id="board-flash" class="board-flash" style="display:none;">⚡ Défi flash : points de victoire doublés</div>
+            <div class="board-meta"><span id="board-session"></span><span id="board-clock"></span><span class="conn-status-pill connection-badge"></span></div>
+          </header>
+          <main class="board-main">
+            <section class="board-rank">
+              <div id="board-podium" class="board-podium"></div>
+              <div id="board-list" class="board-list"></div>
+            </section>
+            <aside class="board-side">
+              <div class="board-panel">
+                <h2>En direct</h2>
+                <div id="board-feed" class="board-feed"></div>
+              </div>
+              <div class="board-panel">
+                <h2>Records de la classe</h2>
+                <div id="board-records"></div>
+              </div>
+            </aside>
+          </main>
+        </div>`;
+
+      let cfg = {}, players = {}, history = [];
+      let seenKeys = null;
+      let listenersB = [];
+      const tick = () => {
+        const d = new Date();
+        document.getElementById('board-clock').textContent = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      };
+      tick(); setInterval(tick, 15000);
+
+      function render() {
+        const session = cfg.sessionNumber || 1;
+        document.getElementById('board-class').textContent = currentGroup.replace(/_/g, ' ');
+        document.getElementById('board-session').textContent = `Séance ${session}`;
+        document.getElementById('board-flash').style.display = cfg.flashMode ? 'block' : 'none';
+        document.body.classList.toggle('flash-on', !!cfg.flashMode);
+
+        const ranked = Object.values(players).filter(p => !p.absent).sort((a, b) => b.points - a.points);
+        const prog = p => p.points - p.startPoints;
+        const progHtml = p => { const d = prog(p); return `<span class="board-prog ${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '▲ +' + d : d < 0 ? '▼ ' + d : '='}</span>`; };
+
+        const medals = ['🥇', '🥈', '🥉'];
+        document.getElementById('board-podium').innerHTML = ranked.slice(0, 3).map((p, i) => `
+          <div class="podium-card p${i + 1}">
+            <div class="podium-medal">${medals[i]}</div>
+            <div class="podium-name">${escapeHtml(p.name)}</div>
+            <div class="podium-pts">${p.points}<small> pts</small></div>
+            ${progHtml(p)}
+          </div>`).join('') || '<p class="board-empty">Le classement apparaîtra dès que la classe aura des élèves.</p>';
+
+        const rest = ranked.slice(3);
+        document.getElementById('board-list').innerHTML = rest.map((p, i) => `
+          <div class="board-row"><span class="br-rank">${i + 4}</span><span class="br-name">${escapeHtml(p.name)}</span><span class="br-pts">${p.points}</span>${progHtml(p)}</div>`).join('');
+        const list = document.getElementById('board-list');
+        list.style.setProperty('--rows', Math.max(1, Math.ceil(rest.length / 2)));
+
+        // Fil des événements
+        const nameOf = id => players[id] ? players[id].name : '?';
+        const events = history.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 6);
+        const fresh = seenKeys ? new Set(events.filter(e => !seenKeys.has(e.id)).map(e => e.id)) : new Set();
+        seenKeys = new Set(history.map(e => e.id));
+        document.getElementById('board-feed').innerHTML = events.length ? events.map(e => {
+          let icon = '🏓', text = '', pts = '';
+          if (isBonusEntry(e)) { icon = '🎯'; text = `<b>${escapeHtml(nameOf(e.playerId))}</b> réussit sa quête`; pts = `+${e.points}`; }
+          else if (e.isBarrage) { icon = '⚔️'; text = `<b>${escapeHtml(nameOf(e.winnerId))}</b> remporte son barrage`; pts = `${e.scoreA}–${e.scoreB}`; }
+          else {
+            const exploit = (e.rawGain || 0) >= 9;
+            icon = exploit ? '⚡' : (e.isFlash ? '🔥' : '🏓');
+            text = `<b>${escapeHtml(nameOf(e.winnerId))}</b> bat ${escapeHtml(nameOf(e.loserId))}${exploit ? ' : exploit !' : ''}`;
+            pts = `+${e.gainWinner}`;
+          }
+          return `<div class="feed-item ${fresh.has(e.id) ? 'is-new' : ''}"><span class="feed-ico">${icon}</span><span class="feed-text">${text}</span><span class="feed-pts">${pts}</span></div>`;
+        }).join('') : '<p class="board-empty">Les matchs apparaîtront ici en direct.</p>';
+
+        const recs = computeRecords(players, history).slice(0, 4);
+        document.getElementById('board-records').innerHTML = recordsHTML(recs);
+      }
+
+      function attach() {
+        listenersB.forEach(u => u && u()); listenersB = [];
+        if (supabaseClient && isSupabaseConfigured()) { loadGroupFromSupabase(currentGroup); subscribeToGroup(currentGroup); }
+        migrateGroupIfNeeded(currentGroup);
+        seenKeys = null;
+        listenersB.push(onValue(ref(db, getGroupPath('config')), s => { cfg = s.val() || {}; }));
+        listenersB.push(onValue(ref(db, getGroupPath('history')), s => {
+          history = Object.entries(s.val() || {}).map(([k, v]) => ({ id: k, ...v }));
+        }));
+        listenersB.push(onValue(ref(db, getGroupPath('players')), s => {
+          players = withDisplayNames(s.val() || {}, cfg);
+          render();
+        }));
+      }
+      onValue(ref(db, 'activeGroup'), s => { if (s.val()) { currentGroup = s.val(); attach(); } });
+
+      // Plein écran au toucher / clic
+      document.addEventListener('click', () => {
+        try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); } catch (e) {}
+      });
+    }
+
+    /* =========================================================
        2. VUE IPAD TABLE (Défis, Poules & Barrages)
        ========================================================= */
     function initTableUI() {
@@ -1959,6 +2746,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 </div>
               </div>
 
+              <div id="suggest-box" class="suggest-box" style="display:none;"></div>
+
               <div id="handicap-box" class="handicap-box" style="display:none;"></div>
 
               <div id="referee-box" class="card" style="margin-top:14px; margin-bottom:0; display:none;">
@@ -1999,6 +2788,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             </aside>
           </div>
 
+          <div id="undo-bar" class="undo-bar" role="status" style="display:none;">
+            <span id="undo-text"></span>
+            <button class="btn btn-sm" id="btn-undo-last">↩️ Annuler <span id="undo-count">30</span> s</button>
+          </div>
+
           <!-- 2. MODE TOURNOI DE POULE -->
           <div id="poule-mode-container" style="display:none;">
             <div class="card">
@@ -2032,6 +2826,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       let options = { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
       let currentQuests = DEFAULT_QUESTS;
       let isSubmittingMatch = false;
+      let cfgCache = {};
+      let rawPlayers = {};
+      let allHistory = [];
+      let currentMode = 'free';
+      let lastMatchAt = null;
 
       let tableListeners = [];
       function cleanupTableListeners() {
@@ -2048,6 +2847,51 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         document.getElementById('mode-poule-btn').classList.toggle('is-active', mode === 'poule');
         document.getElementById('mode-barrage-btn').classList.toggle('is-active', mode === 'barrage');
         try { safeStorage.setItem(`eps_table_mode_${tableId}`, mode); } catch (e) {}
+        currentMode = mode;
+        trackPresence();
+      }
+
+      // ---------- Présence en direct (vue prof « Tables en direct ») ----------
+      let presenceChannel = null;
+      let presenceState = {};
+      let trackTimer = null;
+      function presencePayload() {
+        return {
+          table: tableId,
+          mode: currentMode,
+          p1: document.getElementById('p1-select') ? document.getElementById('p1-select').value : '',
+          p2: document.getElementById('p2-select') ? document.getElementById('p2-select').value : '',
+          poule: document.getElementById('poule-select-dropdown') ? document.getElementById('poule-select-dropdown').value : '',
+          barrage: document.getElementById('barrage-select-dropdown') ? document.getElementById('barrage-select-dropdown').value : '',
+          lastMatchAt,
+          pending: pendingCount(),
+          online: navigator.onLine !== false,
+          ts: Date.now()
+        };
+      }
+      function trackPresence() {
+        if (trackTimer) clearTimeout(trackTimer);
+        trackTimer = setTimeout(() => {
+          try { if (presenceChannel) presenceChannel.track(presencePayload()); } catch (e) {}
+        }, 250);
+      }
+      function setupPresence() {
+        if (!supabaseClient || !isSupabaseConfigured()) return;
+        if (presenceChannel) { try { supabaseClient.removeChannel(presenceChannel); } catch (e) {} presenceChannel = null; }
+        presenceChannel = supabaseClient.channel(`presence_${currentGroup}`, { config: { presence: { key: `table_${tableId}` } } });
+        presenceChannel
+          .on('presence', { event: 'sync' }, () => { presenceState = presenceChannel.presenceState() || {}; renderSuggestions(); })
+          .subscribe((status) => { if (status === 'SUBSCRIBED') trackPresence(); });
+      }
+      setInterval(trackPresence, 30000);
+      function busyElsewhere() {
+        const busy = new Set();
+        Object.entries(presenceState).forEach(([key, metas]) => {
+          if (key === `table_${tableId}`) return;
+          const m = (metas || [])[0];
+          if (m && m.mode === 'free') { if (m.p1) busy.add(m.p1); if (m.p2) busy.add(m.p2); }
+        });
+        return busy;
       }
 
       // Affiche l'aide "choisir deux joueurs" quand les boutons de victoire sont masqués
@@ -2109,10 +2953,14 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (supabaseClient && isSupabaseConfigured()) {
           loadGroupFromSupabase(currentGroup);
           subscribeToGroup(currentGroup);
+          setupPresence();
         }
+        migrateGroupIfNeeded(currentGroup);
+        onSupabaseReady(() => { if (!presenceChannel) setupPresence(); });
 
         tableListeners.push(onValue(ref(db, getGroupPath('config')), (snap) => {
           const cfg = snap.val() || {};
+          cfgCache = cfg;
           isFlashActive = cfg.flashMode || false;
           sessionNumber = cfg.sessionNumber || 1;
           options = cfg.options || { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
@@ -2125,14 +2973,17 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }));
 
         tableListeners.push(onValue(ref(db, getGroupPath('players')), (snap) => {
-          players = snap.val() || {};
+          rawPlayers = snap.val() || {};
+          players = withDisplayNames(rawPlayers, cfgCache);
           updatePlayerDropdowns();
           updateSelectedPlayerStats();
           renderBarrageDetails();
+          renderSuggestions();
         }));
 
         tableListeners.push(onValue(ref(db, getGroupPath('history')), (snap) => {
-          playedMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
+          allHistory = Object.entries(snap.val() || {}).map(([key, val]) => ({ id: key, ...val }));
+          playedMatches = allHistory.filter(isMatchEntry);
           playerMatchesMap = {};
           playedMatches.forEach(m => {
             if (!playerMatchesMap[m.winnerId]) playerMatchesMap[m.winnerId] = [];
@@ -2141,6 +2992,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             playerMatchesMap[m.loserId].push(m);
           });
           updateSelectedPlayerStats();
+          renderSuggestions();
         }));
 
         tableListeners.push(onValue(ref(db, getGroupPath('poules')), (snap) => {
@@ -2199,7 +3051,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         renderPouleDetails();
       }
 
-      document.getElementById('poule-select-dropdown').onchange = renderPouleDetails;
+      document.getElementById('poule-select-dropdown').onchange = () => { renderPouleDetails(); trackPresence(); };
 
       function renderPouleDetails() {
         const pouleKey = document.getElementById('poule-select-dropdown').value;
@@ -2386,12 +3238,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
             const allFilled = updatedMatches.every(m => m.scoreA !== "" && m.scoreB !== "");
             if (allFilled) {
-              freshSorted.forEach((st, idx) => {
-                const note6 = getPouleNote6(idx + 1, st.victoires);
-                updates[getGroupPath(`players/${st.id}/pouleNote`)] = note6;
-              });
+              // Les notes /6 sont calculées automatiquement à partir des scores de la poule
               await update(ref(db), updates);
-              showToast("Poule terminée ! Notes /6 enregistrées.");
+              showToast(`Poule terminée ! Notes /6 calculées (1er : ${players[freshSorted[0].id] ? players[freshSorted[0].id].name : ''}).`);
             } else {
               await update(ref(db), updates);
               showToast("Scores de poule enregistrés.");
@@ -2437,7 +3286,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         renderBarrageDetails();
       }
 
-      document.getElementById('barrage-select-dropdown').onchange = renderBarrageDetails;
+      document.getElementById('barrage-select-dropdown').onchange = () => { renderBarrageDetails(); trackPresence(); };
 
       function renderBarrageDetails() {
         const bKey = document.getElementById('barrage-select-dropdown').value;
@@ -2536,11 +3385,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           updates[getGroupPath(`barrages/${bKey}/winnerId`)] = winnerId;
           updates[getGroupPath(`barrages/${bKey}/completed`)] = true;
 
-          // +1 point bonus sur la note de barrage
-          updates[getGroupPath(`players/${winnerId}/barrageBonus`)] = 1;
-          if (loserId && players[loserId]) {
-            updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
-          }
+          // Le +1 point bonus est calculé à partir du barrage validé
 
           // Historique (on remplace une éventuelle validation précédente de ce barrage)
           playedMatches.filter(m => m.isBarrage && m.barrageTitle === b.title && (m.session || 1) === sessionNumber)
@@ -2553,8 +3398,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             barrageTitle: b.title,
             winnerId: winnerId,
             loserId: loserId,
-            winnerName: players[winnerId] ? players[winnerId].name : winnerId,
-            loserName: players[loserId] ? players[loserId].name : loserId,
+            winnerName: players[winnerId] ? (players[winnerId].fullName || players[winnerId].name) : winnerId,
+            loserName: players[loserId] ? (players[loserId].fullName || players[loserId].name) : loserId,
             scoreA: valA,
             scoreB: valB,
             gainWinner: 1,
@@ -2618,7 +3463,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (options.quests && p.questId) {
           const q = currentQuests.find(x => x.id === p.questId);
           if (q) {
-            const statusTxt = p.questCompleted ? '✅ <em>Quête déjà validée !</em>' : `🎯 <strong>Quête Secrète :</strong> ${escapeHtml(q.text)} (+${q.bonus} pts bonus)`;
+            const statusTxt = p.questCompleted ? '✅ <em>Quête réussie !</em>' : `<strong>Quête secrète :</strong> ${escapeHtml(q.text)} (+${q.bonus} pts)${isAutoQuest(q) ? '' : ' <small>(validée par le prof)</small>'}`;
             questHtml = `<div class="quest-box">${statusTxt}</div>`;
           }
         }
@@ -2629,6 +3474,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             <span>${badges}</span>
           </div>
           ${questHtml}
+          <button class="btn btn-sm btn-secondary btn-open-bilan" data-id="${escapeHtml(playerId)}" style="margin-top:8px; width:100%;">📈 Voir mon bilan</button>
         `;
         box.style.display = 'block';
       }
@@ -2640,8 +3486,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       }
 
       document.getElementById('app').addEventListener('change', (e) => {
+ if (e.target.id === 'referee-select') trackPresence();
         if (e.target.id === 'p1-select' || e.target.id === 'p2-select') {
           updateSelectedPlayerStats();
+          renderSuggestions();
+          trackPresence();
           
           const id1 = document.getElementById('p1-select').value;
           const id2 = document.getElementById('p2-select').value;
@@ -2683,43 +3532,41 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (isSubmittingMatch) return;
         if (!winnerId || !loserId || winnerId === loserId) return;
 
+        const refId = document.getElementById('referee-select').value;
         if (options.referee) {
-          const refId = document.getElementById('referee-select').value;
-          if (!refId) return showToast("⚠️ Choisir un arbitre !", "danger");
-          if (refId === winnerId || refId === loserId) return showToast("⚠️ L'arbitre doit être tiers !", "danger");
+          if (!refId) return showToast("⚠️ Choisissez l'arbitre du match", "danger");
+          if (refId === winnerId || refId === loserId) return showToast("⚠️ L'arbitre ne peut pas être un des deux joueurs", "danger");
         }
 
         const w = players[winnerId];
         const l = players[loserId];
         if (!w || !l) return;
 
-        const refId = document.getElementById('referee-select').value;
         const { gainWinner, lossLoser, rawGain } = calculatePointsDelta(w.points, l.points, isFlashActive);
+        const fullName = (p) => p ? (p.fullName || p.name) : '';
+        const now = Date.now();
 
-        let questBonusEarned = 0;
-        let questCompletedNow = false;
-        let questTextValidee = "";
+        const matchKey = push(ref(db, getGroupPath('history'))).key;
+        const matchEntry = {
+          table: tableId,
+          session: sessionNumber,
+          winnerId,
+          loserId,
+          refereeId: options.referee && refId ? refId : null,
+          refereeName: options.referee && players[refId] ? fullName(players[refId]) : null,
+          winnerName: fullName(w),
+          loserName: fullName(l),
+          gainWinner,
+          lossLoser,
+          rawGain,
+          isFlash: isFlashActive,
+          timestamp: now
+        };
 
-        if (options.quests && w.questId && !w.questCompleted) {
-          const q = currentQuests.find(x => x.id === w.questId);
-          if (q) {
-            let passed = false;
-            if (q.id === 'q1' && w.points < l.points) passed = true;
-            else if (q.id === 'q2') {
-              const pMatches = (playerMatchesMap[winnerId] || []).slice().sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-              if (pMatches.length > 0 && pMatches[0].winnerId === winnerId) passed = true;
-            } else if (q.id === 'q4') {
-              const neverFaced = !(playerMatchesMap[winnerId] || []).some(m => m.winnerId === loserId || m.loserId === loserId);
-              if (neverFaced) passed = true;
-            }
-
-            if (passed) {
-              questBonusEarned = q.bonus || 3;
-              questCompletedNow = true;
-              questTextValidee = q.text;
-            }
-          }
-        }
+        // Quêtes réussies grâce à ce match (vainqueur, perdant et arbitre)
+        const questWins = options.quests ? evaluateQuestsAfterMatch({
+          players, history: allHistory, match: matchEntry, session: sessionNumber, quests: currentQuests
+        }) : [];
 
         isSubmittingMatch = true;
         document.getElementById('btn-p1-win').disabled = true;
@@ -2727,63 +3574,31 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
         try {
           const updates = {};
-          const totalWinnerGain = gainWinner + questBonusEarned;
-
-          updates[getGroupPath(`players/${winnerId}/points`)] = w.points + totalWinnerGain;
-          updates[getGroupPath(`players/${loserId}/points`)] = l.points + lossLoser;
-          updates[getGroupPath(`players/${winnerId}/matches`)] = (w.matches || 0) + 1;
-          updates[getGroupPath(`players/${loserId}/matches`)] = (l.matches || 0) + 1;
-
-          if (questCompletedNow) {
-            updates[getGroupPath(`players/${winnerId}/questCompleted`)] = true;
-          }
-
-          if (options.referee && refId && players[refId]) {
-            const refP = players[refId];
-            const newRefCount = (refP.refereeCount || 0) + 1;
-            updates[getGroupPath(`players/${refId}/refereeCount`)] = newRefCount;
-
-            // Quête q3 « Arbitre au moins 2 matchs » : validée automatiquement côté arbitre
-            if (options.quests && refP.questId === 'q3' && !refP.questCompleted && newRefCount >= 2) {
-              const q3 = currentQuests.find(x => x.id === 'q3');
-              const q3Bonus = q3 ? (q3.bonus || 3) : 3;
-              updates[getGroupPath(`players/${refId}/questCompleted`)] = true;
-              updates[getGroupPath(`players/${refId}/points`)] = refP.points + q3Bonus;
-              setTimeout(() => showToast(`🎯 Quête validée : ${refP.name} a arbitré 2 matchs (+${q3Bonus} pts)`), 700);
-            }
-          }
-
-          const newMatchRef = push(ref(db, getGroupPath('history')));
-          updates[getGroupPath(`history/${newMatchRef.key}`)] = {
-            table: tableId,
-            session: sessionNumber,
-            winnerId,
-            loserId,
-            refereeId: options.referee ? refId : null,
-            refereeName: options.referee && players[refId] ? players[refId].name : null,
-            winnerName: w.name,
-            loserName: l.name,
-            gainWinner: totalWinnerGain,
-            lossLoser,
-            rawGain,
-            questBonusEarned,
-            isFlash: isFlashActive,
-            timestamp: Date.now()
-          };
+          updates[getGroupPath(`history/${matchKey}`)] = matchEntry;
+          const createdKeys = [matchKey];
+          questWins.forEach((qw, i) => {
+            const k = `${matchKey}_q${i}`;
+            createdKeys.push(k);
+            updates[getGroupPath(`history/${k}`)] = {
+              type: 'bonus', reason: 'quest', playerId: qw.playerId, playerName: fullName(players[qw.playerId]),
+              questId: qw.quest.id, questText: qw.quest.text, points: Number(qw.quest.bonus) || 3,
+              session: sessionNumber, table: tableId, linkedMatch: matchKey, timestamp: now + 1 + i
+            };
+          });
 
           await update(ref(db), updates);
+          lastMatchAt = now;
 
-          const isExploit = rawGain >= 9;
-          playVictorySound(isExploit);
+          playVictorySound(rawGain >= 9 || questWins.length > 0);
 
-          if (questCompletedNow) {
+          if (questWins.length) {
             const qBanner = document.getElementById('quest-success-banner');
-            qBanner.innerHTML = `🎉 <strong>QUÊTE ACCOMPLIE !</strong> ${escapeHtml(w.name)} valide sa quête : <em>"${escapeHtml(questTextValidee)}"</em> (+${questBonusEarned} pts bonus) !`;
+            qBanner.innerHTML = questWins.map(qw => `🎉 <strong>Quête réussie !</strong> ${escapeHtml(players[qw.playerId].name)} : <em>${escapeHtml(qw.quest.text)}</em> (+${qw.quest.bonus} pts)`).join('<br>');
             qBanner.style.display = 'block';
-            setTimeout(() => { qBanner.style.display = 'none'; }, 6000);
+            setTimeout(() => { qBanner.style.display = 'none'; }, 7000);
           }
 
-          showToast(`Match enregistré ! ${w.name} (+${totalWinnerGain} pts)`);
+          showUndoBar(createdKeys, `✅ ${w.name} bat ${l.name} : +${gainWinner} / ${lossLoser}`);
 
           document.getElementById('p1-select').value = "";
           document.getElementById('p2-select').value = "";
@@ -2792,6 +3607,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           document.getElementById('p2-stats').style.display = "none";
           document.getElementById('handicap-box').style.display = "none";
           setMatchActionsVisible(false);
+          renderSuggestions();
+          trackPresence();
         } catch (err) {
           console.error(err);
           showToast("Erreur lors de l'enregistrement du match", "danger");
@@ -2804,11 +3621,93 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }
       }
 
+      // ---------- Annuler le dernier match (30 secondes) ----------
+      let undoTimer = null;
+      let undoKeys = null;
+      function hideUndoBar() {
+        if (undoTimer) clearInterval(undoTimer);
+        undoTimer = null; undoKeys = null;
+        document.getElementById('undo-bar').style.display = 'none';
+      }
+      function showUndoBar(keys, text) {
+        hideUndoBar();
+        undoKeys = keys;
+        let left = 30;
+        document.getElementById('undo-text').textContent = text;
+        document.getElementById('undo-count').textContent = left;
+        document.getElementById('undo-bar').style.display = 'flex';
+        undoTimer = setInterval(() => {
+          left--;
+          document.getElementById('undo-count').textContent = left;
+          if (left <= 0) hideUndoBar();
+        }, 1000);
+      }
+      document.getElementById('btn-undo-last').onclick = async () => {
+        if (!undoKeys) return;
+        const updates = {};
+        undoKeys.forEach(k => { updates[getGroupPath(`history/${k}`)] = null; });
+        hideUndoBar();
+        await update(ref(db), updates);
+        showToast("↩️ Match annulé : les points sont revenus comme avant", "warning");
+        trackPresence();
+      };
+
+      // ---------- Suggestion d'adversaires ----------
+      function renderSuggestions() {
+        const box = document.getElementById('suggest-box');
+        if (!box) return;
+        const id1 = document.getElementById('p1-select').value;
+        const id2 = document.getElementById('p2-select').value;
+        const chosen = id1 && !id2 ? id1 : (!id1 && id2 ? id2 : null);
+        if (!chosen || !players[chosen]) { box.style.display = 'none'; return; }
+        const me = players[chosen];
+        const busy = busyElsewhere();
+        const facedThisSession = new Set();
+        const sessionCount = {};
+        playedMatches.forEach(m => {
+          if ((m.session || 1) !== sessionNumber) return;
+          sessionCount[m.winnerId] = (sessionCount[m.winnerId] || 0) + 1;
+          sessionCount[m.loserId] = (sessionCount[m.loserId] || 0) + 1;
+          if (m.winnerId === chosen) facedThisSession.add(m.loserId);
+          if (m.loserId === chosen) facedThisSession.add(m.winnerId);
+        });
+        const candidates = Object.values(players)
+          .filter(p => p.id !== chosen && !p.absent && !facedThisSession.has(p.id) && !busy.has(p.id))
+          .sort((a, b) => (Math.abs(a.points - me.points) - Math.abs(b.points - me.points)) || ((sessionCount[a.id] || 0) - (sessionCount[b.id] || 0)))
+          .slice(0, 5);
+        if (!candidates.length) {
+          box.innerHTML = `<div class="suggest-title">Aucun adversaire libre que ${escapeHtml(me.name)} n'a pas encore affronté.</div>`;
+          box.style.display = 'block';
+          return;
+        }
+        box.innerHTML = `
+          <div class="suggest-title">💡 Adversaires conseillés pour ${escapeHtml(me.name)} <small>(niveau proche, pas encore affrontés, libres)</small></div>
+          <div class="suggest-list">
+            ${candidates.map(c => {
+              const o = calculatePointsDelta(me.points, c.points, isFlashActive);
+              return `<button class="suggest-chip" data-id="${escapeHtml(c.id)}">
+                <strong>${escapeHtml(c.name)}</strong>
+                <span>${c.points} pts · victoire +${o.gainWinner}</span>
+              </button>`;
+            }).join('')}
+          </div>`;
+        box.style.display = 'block';
+      }
+
       document.getElementById('app').addEventListener('click', (e) => {
         const id1 = document.getElementById('p1-select').value;
         const id2 = document.getElementById('p2-select').value;
         if (e.target.closest('#btn-p1-win')) recordMatch(id1, id2);
         if (e.target.closest('#btn-p2-win')) recordMatch(id2, id1);
+
+        const chip = e.target.closest('.suggest-chip');
+        if (chip) {
+          const target = id1 ? document.getElementById('p2-select') : document.getElementById('p1-select');
+          target.value = chip.dataset.id;
+          target.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        const bilanBtn = e.target.closest('.btn-open-bilan');
+        if (bilanBtn) openBilanModal(bilanBtn.dataset.id, players, allHistory, cfgCache);
       });
     }
 
@@ -2846,15 +3745,18 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           <div class="prof-shell">
           <nav class="nav-tabs no-print" aria-label="Sections">
             <button class="tab-btn active" data-tab="ranking"><span class="tab-ico">🏆</span>Classement</button>
+            <button class="tab-btn" data-tab="live"><span class="tab-ico">📡</span>Tables en direct</button>
             <button class="tab-btn" data-tab="poules"><span class="tab-ico">📊</span>Poules et barrages</button>
             <button class="tab-btn" data-tab="eval"><span class="tab-ico">🎯</span>Évaluation /12</button>
             <button class="tab-btn" data-tab="progress"><span class="tab-ico">🚀</span>Progressions</button>
+            <button class="tab-btn" data-tab="records"><span class="tab-ico">🏅</span>Records</button>
             <button class="tab-btn" data-tab="history"><span class="tab-ico">📜</span>Historique</button>
             <div class="nav-sep"></div>
             <button class="tab-btn" data-tab="groups"><span class="tab-ico">👥</span>Élèves</button>
             <button class="tab-btn" data-tab="setup"><span class="tab-ico">⚙️</span>Séance et options</button>
             <button class="tab-btn" data-tab="rules"><span class="tab-ico">📖</span>Barème et règles</button>
             <a href="${getSupabaseConfigUrl({ role: 'hub' })}" target="_blank" class="tab-btn" style="text-decoration:none;"><span class="tab-ico">🖨️</span>Planche QR</a>
+            <a href="${getSupabaseConfigUrl({ role: 'board' })}" target="_blank" class="tab-btn" style="text-decoration:none;"><span class="tab-ico">📺</span>Écran projeté</a>
           </nav>
           <main class="prof-main">
 
@@ -2892,17 +3794,47 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             </div>
           </div>
 
+          <!-- TAB : TABLES EN DIRECT -->
+          <div id="tab-live" style="display:none;">
+            <div class="card">
+              <div class="toolbar" style="margin-bottom:6px;">
+                <h3 style="margin:0;">📡 Tables en direct</h3>
+                <span id="live-summary" class="connection-badge"></span>
+              </div>
+              <p class="rule-line">Chaque iPad ouvert sur une table apparaît ici. Mise à jour en temps réel.</p>
+              <div id="live-tables" class="live-grid"></div>
+            </div>
+          </div>
+
+          <!-- TAB : RECORDS -->
+          <div id="tab-records" style="display:none;">
+            <div class="card">
+              <h3>🏅 Records de la classe</h3>
+              <p class="rule-line">Calculés sur toutes les séances de la classe.</p>
+              <div id="records-container"></div>
+            </div>
+          </div>
+
           <!-- TAB 2: EVALUATION PAR ÉLÈVE (/12 PTS UNIQUEMENT) -->
           <div id="tab-eval" style="display:none;">
             <div class="card">
-              <h3>🎯 Évaluation du niveau de jeu (/12)</h3>
-              <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-                Saisissez la note sur 12 points de chaque élève (<strong id="eval-grade-indicator">6EME</strong>). Intervalles de 0.5 pt acceptés.
-              </p>
+              <div class="toolbar">
+                <h3 style="margin:0;">🎯 Évaluation du niveau de jeu (/12) · <span id="eval-grade-indicator">6EME</span></h3>
+                <div class="segmented" style="margin:0; min-width:360px;" role="tablist">
+                  <button class="seg-btn is-active" id="eval-mode-direct">Note directe</button>
+                  <button class="seg-btn" id="eval-mode-grille">Grille d'observation</button>
+                  <span></span>
+                </div>
+              </div>
+              <p class="rule-line" id="eval-mode-help">Choisissez la note sur 12 de chaque élève (par demi-point).</p>
               <div class="search-bar-box no-print" style="max-width:340px; margin:0 0 14px 0;">
                 <input type="search" id="eval-search" class="search-input" placeholder="Rechercher un élève" style="margin-top:0;">
               </div>
               <div id="eval-students-list" class="eval-grid"></div>
+              <div id="eval-grille" class="obs-layout" style="display:none;">
+                <div id="obs-list" class="obs-list"></div>
+                <div id="obs-panel" class="obs-panel"></div>
+              </div>
             </div>
           </div>
 
@@ -3179,11 +4111,29 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 <h5 style="margin:8px 0 4px 0; color:var(--muted); font-size:0.85rem;">Banque des Quêtes Disponibles :</h5>
                 <div id="quest-list-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
                 
-                <div style="display:flex; gap:6px;">
-                  <input type="text" id="new-quest-text" placeholder="Nouvelle quête (ex: Réaliser 3 amortis)" style="margin:0;">
-                  <input type="number" id="new-quest-bonus" value="3" min="1" max="5" style="width:70px; margin:0;" title="Bonus en points">
+                <div class="add-quest-row">
+                  <input type="text" id="new-quest-text" placeholder="Nouvelle quête (ex. : Réaliser 3 amortis)" style="margin:0;">
+                  <select id="new-quest-type" style="margin:0;" title="Comment la quête est vérifiée">
+                    ${Object.entries(QUEST_TYPES).map(([k, v]) => `<option value="${k}" ${k === 'manual' ? 'selected' : ''}>${v.auto ? 'Auto : ' : ''}${escapeHtml(v.label)}</option>`).join('')}
+                  </select>
+                  <input type="number" id="new-quest-bonus" value="3" min="1" max="5" style="width:80px; margin:0;" title="Bonus en points">
                   <button class="btn btn-sm btn-purple" id="btn-add-quest" style="width:auto;">+ Ajouter</button>
                 </div>
+              </div>
+
+              <!-- NOMS COURTS -->
+              <label class="checkbox-label" style="margin-top:12px;">
+                <input type="checkbox" id="opt-shortnames">
+                <span><strong>4. Noms courts sur les tablettes et l'écran projeté</strong> (« Léa M. » au lieu du nom complet)</span>
+              </label>
+              <div id="shortnames-settings-box" style="background:var(--well); border:1px solid var(--border); border-radius:10px; padding:12px; margin-top:8px; display:none;">
+                <label style="font-size:0.9rem; font-weight:600;">Les noms de la liste sont saisis sous la forme :</label>
+                <select id="opt-name-order" style="max-width:320px;">
+                  <option value="nom-prenom">NOM Prénom (comme Pronote)</option>
+                  <option value="prenom-nom">Prénom NOM</option>
+                </select>
+                <p class="rule-line" style="margin:8px 0 0 0;">Un mot écrit tout en majuscules est toujours reconnu comme le nom de famille. Les noms complets restent dans la vue prof et l'export Pronote.</p>
+                <div id="shortnames-preview" class="shortnames-preview"></div>
               </div>
 
               <button class="btn btn-success" id="btn-save-options" style="margin-top:15px;">💾 Enregistrer les options</button>
@@ -3211,6 +4161,24 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
             <div class="card" style="margin-top:15px;">
               <h3>🔄 Séance</h3>
               <button class="btn btn-warning" id="btn-next-session">Passer à la séance suivante</button>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+              <h3>💾 Sauvegarde et restauration</h3>
+              <p class="rule-line">Téléchargez la classe dans un fichier (élèves, matchs, poules, notes) pour la garder en sécurité ou la transférer sur un autre appareil.</p>
+              <div class="btn-row">
+                <button class="btn btn-success" id="btn-backup-class">⬇️ Sauvegarder cette classe</button>
+                <button class="btn btn-secondary" id="btn-backup-all">⬇️ Sauvegarder toutes les classes</button>
+                <button class="btn btn-secondary" id="btn-restore">⬆️ Restaurer depuis un fichier</button>
+              </div>
+              <input type="file" id="restore-file" accept=".json,application/json" style="display:none;">
+              <p class="rule-line" id="last-backup-info" style="margin:10px 0 0 0;"></p>
+            </div>
+
+            <div class="card" style="margin-top:15px;">
+              <h3>📄 Dupliquer la classe</h3>
+              <p class="rule-line">Crée une nouvelle classe avec les mêmes élèves et les mêmes options, mais sans matchs, notes ni poules. Pratique pour un nouveau cycle.</p>
+              <button class="btn btn-secondary" id="btn-duplicate-class">📄 Dupliquer « <span id="dup-class-label"></span> »</button>
             </div>
           </div>
 
@@ -3276,10 +4244,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         <!-- MODAL 2: DISTRIBUTION DES QUÊTES SECRÈTES PAR ÉLÈVE -->
         <div class="modal-overlay" id="quest-assign-modal">
           <div class="modal-content">
-            <h3 style="color:#a855f7; margin-bottom:5px;">🎯 Attribution des Quêtes Secrètes</h3>
-            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">Définissez la quête de chaque élève pour cette séance.</p>
+            <h3 style="color:#a855f7; margin-bottom:5px;">🎯 Quêtes secrètes des élèves</h3>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">Choisissez la quête de chaque élève. Les quêtes « manuelles » se valident ici d'un clic.</p>
 
-            <button class="btn btn-sm btn-purple" id="btn-randomize-quests" style="margin-bottom:12px; width:100%;">🎲 Distribuer Aléatoirement à Tous</button>
+            <button class="btn btn-sm btn-purple" id="btn-randomize-quests" style="margin-bottom:12px; width:100%;">🎲 Distribuer au hasard à tous</button>
 
             <div id="quest-student-assign-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;"></div>
 
@@ -3291,7 +4259,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       `;
 
       window.switchTab = (tab) => {
-        const tabs = ['ranking', 'eval', 'poules', 'progress', 'rules', 'history', 'setup', 'groups'];
+        const tabs = ['ranking', 'live', 'eval', 'poules', 'progress', 'records', 'rules', 'history', 'setup', 'groups'];
         tabs.forEach(t => {
           const el = document.getElementById(`tab-${t}`);
           if (el) el.style.display = t === tab ? 'block' : 'none';
@@ -3319,6 +4287,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       let rankingSearchQuery = "";
       let evalSearchQuery = "";
       let flashActive = false;
+      let currentConfig = {};
+      let profPresenceChannel = null;
+      let livePresence = {};
 
       function renderFlashButton() {
         const btn = document.getElementById('btn-toggle-flash');
@@ -3373,14 +4344,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           const formatted = newName.trim().replace(/\s+/g, '_');
           if (formatted === currentGroup) return;
 
+          if (localCache.groups[formatted] && !confirm(`La classe "${formatted.replace(/_/g, ' ')}" existe déjà. La remplacer ?`)) return;
+          const raw = getRawGroup(currentGroup);
+          raw.config = { ...(raw.config || {}), flashMode: false };
           const updates = {};
-          updates[`groups/${formatted}`] = {
-            players: playersData,
-            history: historyMatches.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {}),
-            config: { sessionNumber: currentSession, gradeLevel: currentGradeLevel, flashMode: false, options, quests: questBank },
-            poules: activePoulesData,
-            barrages: activeBarragesData
-          };
+          updates[`groups/${formatted}`] = raw;
           updates[`groups/${currentGroup}`] = null;
           updates['activeGroup'] = formatted;
 
@@ -3416,9 +4384,14 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           loadGroupFromSupabase(currentGroup);
           subscribeToGroup(currentGroup);
         }
+        migrateGroupIfNeeded(currentGroup);
+        setupProfPresence();
+        onSupabaseReady(() => { if (!profPresenceChannel) setupProfPresence(); });
+        renderBackupInfo();
 
         profListeners.push(onValue(ref(db, getGroupPath('config')), (snap) => {
           const cfg = snap.val() || {};
+          currentConfig = cfg;
           currentSession = cfg.sessionNumber || 1;
           currentGradeLevel = cfg.gradeLevel || '6eme';
           options = cfg.options || { handicap: false, handicapMinDiff: 6, handicapRatio: 3, handicapMax: 4, referee: false, quests: false };
@@ -3439,14 +4412,19 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           document.getElementById('opt-referee').checked = !!options.referee;
           document.getElementById('opt-quests').checked = !!options.quests;
           document.getElementById('quest-management-box').style.display = options.quests ? 'block' : 'none';
+          document.getElementById('opt-shortnames').checked = !!options.shortNames;
+          document.getElementById('opt-name-order').value = options.nameOrder || 'nom-prenom';
+          document.getElementById('shortnames-settings-box').style.display = options.shortNames ? 'block' : 'none';
+          renderShortNamesPreview();
+          setEvalMode(cfg.evalMode || 'direct', false);
 
           renderQuestBankManager();
         }));
 
         profListeners.push(onValue(ref(db, getGroupPath('history')), (snap) => {
-          historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, ...val }));
+          historyMatches = Object.entries(snap.val() || {}).map(([key, val]) => ({ key, id: key, ...val }));
           playerMatchesMap = {};
-          historyMatches.forEach(m => {
+          historyMatches.filter(isMatchEntry).forEach(m => {
             if (!playerMatchesMap[m.winnerId]) playerMatchesMap[m.winnerId] = [];
             if (!playerMatchesMap[m.loserId]) playerMatchesMap[m.loserId] = [];
             playerMatchesMap[m.winnerId].push(m);
@@ -3463,6 +4441,11 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           renderProgressTable();
           renderStudentManageList();
           renderProfBarragesOverview();
+          renderProfPoulesOverview();
+          renderRecords();
+          renderLiveTables();
+          renderHistoryTable();
+          renderShortNamesPreview();
         }));
 
         profListeners.push(onValue(ref(db, getGroupPath('poules')), (snap) => {
@@ -3476,7 +4459,6 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }));
       }
 
-      attachListeners();
 
       document.getElementById('opt-handicap').onchange = (e) => {
         document.getElementById('handicap-settings-box').style.display = e.target.checked ? 'block' : 'none';
@@ -3501,17 +4483,24 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         if (sorted.length === 0) {
           container.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Aucun élève enregistré dans cette classe.</p>';
         } else {
-          container.innerHTML = sorted.map(p => `
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--well); padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
-              <span style="font-size:0.88rem; font-weight:bold; flex:1;">${escapeHtml(p.name)}</span>
-              <select class="quest-assign-select" data-id="${escapeHtml(p.id)}" style="width:60%; margin:0; font-size:0.82rem;">
-                <option value="">-- Aucune quête --</option>
-                ${questBank.map(q => `
-                  <option value="${escapeHtml(q.id)}" ${p.questId === q.id ? 'selected' : ''}>${escapeHtml(q.text)} (+${q.bonus} pts)</option>
+          container.innerHTML = sorted.map(p => {
+            const q = questBank.find(x => x.id === p.questId);
+            const statusHtml = !q ? '' : (p.questCompleted
+              ? `<span class="quest-status done">✅ Réussie</span>${!isAutoQuest(q) ? `<button class="btn btn-sm btn-secondary btn-quest-unvalidate" data-id="${escapeHtml(p.id)}">Annuler</button>` : ''}`
+              : (isAutoQuest(q) ? '<span class="quest-status auto">Vérifiée par l\'appli</span>'
+                 : `<button class="btn btn-sm btn-success btn-quest-validate" data-id="${escapeHtml(p.id)}">✅ Valider</button>`));
+            return `
+            <div class="quest-row">
+              <span style="font-size:0.92rem; font-weight:700; flex:1; min-width:120px;">${escapeHtml(p.name)}</span>
+              <select class="quest-assign-select" data-id="${escapeHtml(p.id)}" style="flex:2; margin:0; font-size:0.88rem;">
+                <option value="">Aucune quête</option>
+                ${questBank.map(q2 => `
+                  <option value="${escapeHtml(q2.id)}" ${p.questId === q2.id ? 'selected' : ''}>${escapeHtml(q2.text)} (+${q2.bonus} pts)${isAutoQuest(q2) ? '' : ' · manuelle'}</option>
                 `).join('')}
               </select>
-            </div>
-          `).join('');
+              <div class="quest-status-box">${statusHtml}</div>
+            </div>`;
+          }).join('');
         }
 
         document.getElementById('quest-assign-modal').style.display = 'flex';
@@ -3539,7 +4528,34 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           updates[getGroupPath(`players/${studentId}/questCompleted`)] = false;
           await update(ref(db), updates);
           showToast("Quête mise à jour");
+          openQuestModal();
         }
+      });
+
+      // Validation à la main des quêtes « manuelles »
+      document.getElementById('quest-student-assign-list').addEventListener('click', async (e) => {
+        const vBtn = e.target.closest('.btn-quest-validate');
+        const uBtn = e.target.closest('.btn-quest-unvalidate');
+        if (!vBtn && !uBtn) return;
+        const id = (vBtn || uBtn).dataset.id;
+        const p = playersData[id];
+        const q = p && questBank.find(x => x.id === p.questId);
+        if (!q) return;
+        const updates = {};
+        if (vBtn) {
+          const k = push(ref(db, getGroupPath('history'))).key;
+          updates[getGroupPath(`history/${k}`)] = {
+            type: 'bonus', reason: 'quest', playerId: id, playerName: p.name, questId: q.id, questText: q.text,
+            points: Number(q.bonus) || 3, session: currentSession, table: null, timestamp: Date.now()
+          };
+        } else {
+          historyMatches.filter(x => isBonusEntry(x) && x.playerId === id && x.questId === q.id && (x.session || 1) === currentSession)
+            .forEach(x => { updates[getGroupPath(`history/${x.key}`)] = null; });
+          updates[getGroupPath(`players/${id}/questCompleted`)] = false;
+        }
+        await update(ref(db), updates);
+        showToast(vBtn ? `🎯 Quête validée pour ${p.name} (+${q.bonus} pts)` : 'Validation retirée', vBtn ? 'success' : 'warning');
+        openQuestModal();
       });
 
       document.getElementById('btn-randomize-quests').onclick = async () => {
@@ -3558,8 +4574,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       function renderQuestBankManager() {
         const container = document.getElementById('quest-list-container');
         container.innerHTML = questBank.map((q, idx) => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:6px 10px; border-radius:6px; font-size:0.82rem;">
-            <span>${escapeHtml(q.text)} (<strong>+${q.bonus} pts</strong>)</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; background:var(--card); padding:8px 10px; border-radius:8px; font-size:0.88rem;">
+            <span>${escapeHtml(q.text)} (<strong>+${q.bonus} pts</strong>)
+              <span class="quest-tag ${isAutoQuest(q) ? 'auto' : ''}">${isAutoQuest(q) ? 'auto : ' + escapeHtml(QUEST_TYPES[questType(q)].label) : 'validée par le prof'}</span></span>
             <button class="btn btn-sm btn-danger btn-remove-quest" data-index="${idx}" style="padding:4px 8px;">🗑️</button>
           </div>
         `).join('');
@@ -3580,7 +4597,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         const bonus = parseInt(document.getElementById('new-quest-bonus').value) || 3;
         if (!text) return showToast("Saisir un texte de quête", "danger");
 
-        const newQ = { id: `q_${Date.now()}`, text, bonus };
+        const newQ = { id: `q_${Date.now()}`, text, bonus, type: document.getElementById('new-quest-type').value || 'manual' };
         questBank.push(newQ);
         await set(ref(db, getGroupPath('config/quests')), questBank);
 
@@ -3599,6 +4616,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       };
 
       function renderEvalStudentsList() {
+        renderObservationGrid();
         const container = document.getElementById('eval-students-list');
         let sorted = Object.entries(playersData)
           .map(([id, p]) => ({ id, ...p }))
@@ -3645,24 +4663,153 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }).join('');
       }
 
+      // Enregistre une note /12 (+ historique de niveau par séance pour le bilan élève)
+      async function saveNote12(studentId, noteVal, extraUpdates) {
+        const updates = extraUpdates || {};
+        if (noteVal === "" || noteVal === null || noteVal === undefined) {
+          updates[getGroupPath(`players/${studentId}/note12`)] = null;
+          updates[getGroupPath(`players/${studentId}/level`)] = null;
+          updates[getGroupPath(`players/${studentId}/evalHistory/${currentSession}`)] = null;
+        } else {
+          const noteNum = parseFloat(noteVal);
+          const calculatedLvl = getLevelFromNote(currentGradeLevel, noteNum);
+          updates[getGroupPath(`players/${studentId}/note12`)] = noteNum;
+          updates[getGroupPath(`players/${studentId}/level`)] = calculatedLvl;
+          updates[getGroupPath(`players/${studentId}/evalHistory/${currentSession}`)] = { note: noteNum, level: calculatedLvl, at: Date.now() };
+        }
+        await update(ref(db), updates);
+      }
+
       document.getElementById('eval-students-list').addEventListener('change', async (e) => {
         const select = e.target.closest('.eval-note-select');
         if (select) {
-          const studentId = select.dataset.id;
-          const noteVal = select.value;
-          const updates = {};
-          if (noteVal === "") {
-            updates[getGroupPath(`players/${studentId}/note12`)] = null;
-            updates[getGroupPath(`players/${studentId}/level`)] = null;
-          } else {
-            const noteNum = parseFloat(noteVal);
-            const calculatedLvl = getLevelFromNote(currentGradeLevel, noteNum);
-            updates[getGroupPath(`players/${studentId}/note12`)] = noteNum;
-            updates[getGroupPath(`players/${studentId}/level`)] = calculatedLvl;
-          }
-          await update(ref(db), updates);
-          showToast(`Note ${noteVal}/12 enregistrée`);
+          await saveNote12(select.dataset.id, select.value);
+          showToast(select.value === '' ? 'Note effacée' : `Note ${select.value}/12 enregistrée`);
         }
+      });
+
+      // ---------- Grille d'observation ----------
+      const OBS_CRITERIA = [
+        { key: 'service', label: 'Service' },
+        { key: 'deplacements', label: 'Déplacements' },
+        { key: 'actions', label: 'Actions sur la balle' },
+        { key: 'tactique', label: 'Intention tactique' }
+      ];
+      const GRADE_BANDS = {
+        '6eme': [[0, 4], [5, 8], [9, 10], [11, 11], [12, 12]],
+        '5eme': [[0, 2], [3, 6], [7, 10], [11, 11], [12, 12]],
+        '4eme': [[0, 1], [2, 5], [6, 8], [9, 11], [12, 12]],
+        '3eme': [[0, 1], [2, 4], [5, 7], [8, 10], [11, 12]]
+      };
+      // Moyenne des critères (1 à 5) convertie en note /12 selon le barème du niveau de classe
+      function noteFromObservation(obs, grade) {
+        const vals = OBS_CRITERIA.map(c => Number(obs && obs[c.key]) || 0).filter(v => v > 0);
+        if (!vals.length) return null;
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const bands = GRADE_BANDS[grade] || GRADE_BANDS['6eme'];
+        const mids = bands.map(b => (b[0] + b[1]) / 2);
+        mids[4] = 12;
+        const i = Math.min(4, Math.floor(avg)) - 1;
+        const f = avg - Math.floor(avg);
+        const raw = i >= 4 ? mids[4] : mids[i] + f * (mids[i + 1] - mids[i]);
+        return { note: Math.round(raw * 2) / 2, complete: vals.length === OBS_CRITERIA.length, avg };
+      }
+
+      let evalMode = 'direct';
+      let obsSelectedId = null;
+      function setEvalMode(mode, save) {
+        evalMode = mode === 'grille' ? 'grille' : 'direct';
+        document.getElementById('eval-mode-direct').classList.toggle('is-active', evalMode === 'direct');
+        document.getElementById('eval-mode-grille').classList.toggle('is-active', evalMode === 'grille');
+        document.getElementById('eval-students-list').style.display = evalMode === 'direct' ? '' : 'none';
+        document.getElementById('eval-grille').style.display = evalMode === 'grille' ? '' : 'none';
+        document.getElementById('eval-mode-help').textContent = evalMode === 'direct'
+          ? 'Choisissez la note sur 12 de chaque élève (par demi-point).'
+          : 'Touchez le niveau observé pour chaque critère : la note /12 est proposée automatiquement selon le barème de la classe. Vous pouvez l\'ajuster.';
+        if (evalMode === 'grille') renderObservationGrid();
+        if (save) set(ref(db, getGroupPath('config/evalMode')), evalMode);
+      }
+      document.getElementById('eval-mode-direct').onclick = () => setEvalMode('direct', true);
+      document.getElementById('eval-mode-grille').onclick = () => setEvalMode('grille', true);
+
+      function renderObservationGrid() {
+        if (evalMode !== 'grille') return;
+        let list = Object.values(playersData).filter(p => !p.absent).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        if (evalSearchQuery) list = list.filter(p => p.name.toLowerCase().includes(evalSearchQuery));
+        if (!obsSelectedId || !playersData[obsSelectedId]) obsSelectedId = list.length ? list[0].id : null;
+
+        document.getElementById('obs-list').innerHTML = list.map(p => {
+          const done = OBS_CRITERIA.filter(c => p.obs && p.obs[c.key]).length;
+          return `<button class="obs-item ${p.id === obsSelectedId ? 'is-active' : ''}" data-id="${escapeHtml(p.id)}">
+            <span>${escapeHtml(p.name)}</span>
+            <span class="obs-item-note">${p.note12 !== undefined && p.note12 !== null && p.note12 !== '' ? p.note12 : '–'}<small>${done}/4</small></span>
+          </button>`;
+        }).join('') || '<p style="color:var(--muted);">Aucun élève.</p>';
+
+        const panel = document.getElementById('obs-panel');
+        const p = playersData[obsSelectedId];
+        if (!p) { panel.innerHTML = ''; return; }
+        const obs = p.obs || {};
+        const proposal = noteFromObservation(obs, currentGradeLevel);
+        const lvl = getLevelFromNote(currentGradeLevel, p.note12);
+        const desc = LEVEL_DESCRIPTIONS[lvl] || LEVEL_DESCRIPTIONS[0];
+        const noteOptions = []; for (let i = 0; i <= 24; i++) noteOptions.push(i / 2);
+        panel.innerHTML = `
+          <div class="obs-head">
+            <div>
+              <h3 style="margin:0;">${escapeHtml(p.name)}</h3>
+              <span class="level-badge ${desc.class}" style="margin-top:6px;">${escapeHtml(desc.name)}</span>
+            </div>
+            <div class="obs-note">
+              <label style="font-size:0.85rem; color:var(--muted);">Note /12</label>
+              <select class="obs-note-select" data-id="${escapeHtml(p.id)}" style="width:110px; margin:0; font-weight:800; font-size:1.15rem; color:var(--accent);">
+                <option value="">–</option>
+                ${noteOptions.map(n => `<option value="${n}" ${p.note12 !== undefined && p.note12 !== null && p.note12 !== '' && parseFloat(p.note12) === n ? 'selected' : ''}>${n}</option>`).join('')}
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="obs-next">Élève suivant ▶</button>
+          </div>
+          ${proposal ? `<div class="obs-proposal">Note proposée par la grille : <strong>${proposal.note} / 12</strong>${proposal.complete ? '' : ' <small>(provisoire : tous les critères ne sont pas renseignés)</small>'}</div>` : ''}
+          ${OBS_CRITERIA.map(c => `
+            <div class="obs-criterion">
+              <div class="obs-crit-label">${c.label}</div>
+              <div class="obs-levels">
+                ${[1, 2, 3, 4, 5].map(l => `
+                  <button class="obs-level lvl-btn-${l} ${Number(obs[c.key]) === l ? 'is-active' : ''}" data-id="${escapeHtml(p.id)}" data-crit="${c.key}" data-level="${l}">
+                    <strong>${LEVEL_DESCRIPTIONS[l].name.replace(/^\d\.\s*/, '')}</strong>
+                    <span>${escapeHtml(LEVEL_DESCRIPTIONS[l][c.key])}</span>
+                  </button>`).join('')}
+              </div>
+            </div>`).join('')}
+        `;
+      }
+
+      document.getElementById('eval-grille').addEventListener('click', async (e) => {
+        const item = e.target.closest('.obs-item');
+        if (item) { obsSelectedId = item.dataset.id; renderObservationGrid(); return; }
+        if (e.target.closest('#obs-next')) {
+          const ids = Array.from(document.querySelectorAll('.obs-item')).map(x => x.dataset.id);
+          const i = ids.indexOf(obsSelectedId);
+          obsSelectedId = ids[(i + 1) % ids.length];
+          renderObservationGrid();
+          return;
+        }
+        const lvlBtn = e.target.closest('.obs-level');
+        if (lvlBtn) {
+          const id = lvlBtn.dataset.id;
+          const p = playersData[id];
+          const level = Number(lvlBtn.dataset.level);
+          const obs = { ...(p.obs || {}) };
+          obs[lvlBtn.dataset.crit] = obs[lvlBtn.dataset.crit] === level ? null : level;
+          const updates = {};
+          updates[getGroupPath(`players/${id}/obs`)] = obs;
+          const proposal = noteFromObservation(obs, currentGradeLevel);
+          await saveNote12(id, proposal ? proposal.note : '', updates);
+        }
+      });
+      document.getElementById('eval-grille').addEventListener('change', async (e) => {
+        const sel = e.target.closest('.obs-note-select');
+        if (sel) { await saveNote12(sel.dataset.id, sel.value); showToast(sel.value === '' ? 'Note effacée' : `Note ajustée : ${sel.value}/12`); }
       });
 
       function renderProfPoulesOverview() {
@@ -3836,11 +4983,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           updates[getGroupPath(`barrages/${k}/scoreB`)] = valB;
           updates[getGroupPath(`barrages/${k}/winnerId`)] = winnerId;
           updates[getGroupPath(`barrages/${k}/completed`)] = true;
-
-          updates[getGroupPath(`players/${winnerId}/barrageBonus`)] = 1;
-          if (loserId && playersData[loserId]) {
-            updates[getGroupPath(`players/${loserId}/barrageBonus`)] = 0;
-          }
+          // Le bonus +1 est calculé à partir du barrage validé
 
           historyMatches.filter(m => m.isBarrage && m.barrageTitle === b.title && (m.session || 1) === currentSession)
             .forEach(m => { updates[getGroupPath(`history/${m.key}`)] = null; });
@@ -3866,6 +5009,22 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           showToast(`Barrage Table ${b.table} validé ! +1 pt bonus accordé.`);
         }
       });
+
+      // Fige dans la fiche élève les notes calculées (poule /6, bonus barrage) avant d'effacer poules ou barrages
+      function bakeDerivedNotes(updates, what) {
+        const touchedIds = new Set();
+        if (what.poules) Object.values(activePoulesData).forEach(pl => { if (computePouleStandings(pl).finished) (pl.players || []).forEach(id => touchedIds.add(id)); });
+        if (what.barrages) Object.values(activeBarragesData).forEach(b => { if (b && b.completed) { touchedIds.add(b.p1); touchedIds.add(b.p2); } });
+        touchedIds.forEach(id => {
+          const p = playersData[id];
+          if (!p) return;
+          if (what.poules && p.pouleNote !== undefined) updates[getGroupPath(`players/${id}/pouleNote`)] = p.pouleNote;
+          if (what.barrages && p.barrageBonus !== undefined) updates[getGroupPath(`players/${id}/barrageBonus`)] = p.barrageBonus;
+        });
+      }
+
+      // Pour un nouvel élève : 0 (il n'a aucun historique). Fonction gardée pour la lisibilité.
+      function sessionDeltaBeforeNow() { return 0; }
 
       // ALGORITHME DE GÉNÉRATION DES BARRAGES D'AFFINAGE INTER-POULES
       async function generateBarrages() {
@@ -4065,11 +5224,12 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }
 
         const updates = {};
+        bakeDerivedNotes(updates, { barrages: true });
         updates[getGroupPath('barrages')] = barrages;
         if (officialReferee) {
           updates[getGroupPath('config/barrageOfficialReferee')] = officialReferee;
-          const currentRef = (playersData[officialReferee.id] && playersData[officialReferee.id].refereeCount) || 0;
-          updates[getGroupPath(`players/${officialReferee.id}/refereeCount`)] = currentRef + 1;
+          const extra = (playersData[officialReferee.id] && Number(playersData[officialReferee.id].refereeExtra)) || 0;
+          updates[getGroupPath(`players/${officialReferee.id}/refereeExtra`)] = extra + 1;
         } else {
           updates[getGroupPath('config/barrageOfficialReferee')] = null;
         }
@@ -4137,6 +5297,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         }
 
         const updates = {};
+        bakeDerivedNotes(updates, { poules: true, barrages: true });
         updates[getGroupPath('poules')] = poules;
         updates[getGroupPath('barrages')] = null;
         await update(ref(db), updates);
@@ -4182,7 +5343,7 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
                 <td>${p.matches || 0}</td>
                 <td>${badges}</td>
                 <td class="no-print">
-                  <button class="btn btn-sm btn-secondary btn-qr-student" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}" style="padding:4px 8px;">🪪</button>
+                  <button class="btn btn-sm btn-secondary btn-bilan-student" data-id="${escapeHtml(p.id)}" title="Bilan de ${escapeHtml(p.name)}" style="padding:4px 10px;">📈</button>
                 </td>
               </tr>
             `;
@@ -4193,11 +5354,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
         document.getElementById('ranking-body-2').innerHTML = createRowsHtml(col2, half);
       }
 
-      document.getElementById('tab-ranking').addEventListener('click', (e) => {
-        const btn = e.target.closest('.btn-qr-student');
-        if (btn) {
-          openStudentQR(btn.dataset.id, btn.dataset.name);
-        }
+      // Bilan élève : depuis le classement, la liste des élèves ou les progressions
+      document.getElementById('app').addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-bilan-student');
+        if (btn) openBilanModal(btn.dataset.id, playersData, historyMatches, currentConfig);
       });
 
       function openStudentQR(studentId, studentName) {
@@ -4278,8 +5438,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
         container.innerHTML = sorted.map(p => `
           <div class="student-manage-item ${p.absent ? 'is-absent' : ''}">
-            <span><strong>${escapeHtml(p.name)}</strong> (${p.points} pts)</span>
-            <div style="display:flex; gap:6px;">
+            <span style="min-width:0; overflow:hidden; text-overflow:ellipsis;"><strong>${escapeHtml(p.name)}</strong> (${p.points} pts)</span>
+            <div style="display:flex; gap:6px; flex-shrink:0;">
+              <button class="btn btn-sm btn-secondary btn-rename-student" data-id="${escapeHtml(p.id)}" title="Modifier le nom">✏️</button>
+              <button class="btn btn-sm btn-secondary btn-bilan-student" data-id="${escapeHtml(p.id)}" title="Bilan">📈</button>
               <button class="btn btn-sm ${p.absent ? 'btn-success' : 'btn-warning'} btn-toggle-absent" data-id="${escapeHtml(p.id)}" data-absent="${!p.absent}">
                 ${p.absent ? '👁️ Présent' : '🙈 Absent'}
               </button>
@@ -4292,6 +5454,8 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       }
 
       document.getElementById('student-manage-container').addEventListener('click', async (e) => {
+        const renameBtn = e.target.closest('.btn-rename-student');
+        if (renameBtn) { renameStudent(renameBtn.dataset.id); return; }
         const toggleBtn = e.target.closest('.btn-toggle-absent');
         if (toggleBtn) {
           const playerId = toggleBtn.dataset.id;
@@ -4314,75 +5478,279 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       function renderHistoryTable() {
         const tbody = document.getElementById('history-body');
-        const entries = [...historyMatches].reverse();
-
-        tbody.innerHTML = entries.map((m) => `
+        if (!tbody) return;
+        const nameOf = (id, fallback) => playersData[id] ? playersData[id].name : (fallback || '?');
+        const entries = [...historyMatches].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        if (!entries.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:18px;">Aucun match pour l\'instant.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = entries.map((m) => {
+          if (isBonusEntry(m)) {
+            return `
+              <tr class="history-bonus">
+                <td>S${m.session || 1}</td>
+                <td>${m.table ? 'T' + escapeHtml(m.table) : 'Prof'}</td>
+                <td colspan="3">🎯 <strong>${escapeHtml(nameOf(m.playerId, m.playerName))}</strong> réussit sa quête : ${escapeHtml(m.questText || '')} <span class="gain-positive">+${m.points}</span></td>
+                <td class="no-print"><button class="btn btn-secondary btn-sm btn-cancel-match" data-key="${escapeHtml(m.key)}">Retirer</button></td>
+              </tr>`;
+          }
+          return `
           <tr>
             <td>S${m.session || 1}</td>
             <td>T${escapeHtml(m.table)} ${m.isFlash ? '⚡' : ''}${m.isBarrage ? ' ⚔️' : ''}</td>
-            <td><strong>${escapeHtml(m.winnerName)}</strong> (+${m.gainWinner}${m.questBonusEarned ? ' 🎯' : ''})</td>
-            <td>${escapeHtml(m.loserName)} (${m.lossLoser})</td>
-            <td>${escapeHtml(m.refereeName || '-')}</td>
+            <td><strong>${escapeHtml(nameOf(m.winnerId, m.winnerName))}</strong> ${m.isBarrage ? `<small>${escapeHtml(m.scoreA)}–${escapeHtml(m.scoreB)}</small>` : `<span class="gain-positive">+${m.gainWinner}</span>`}</td>
+            <td>${escapeHtml(nameOf(m.loserId, m.loserName))} ${m.isBarrage ? '' : `<span class="gain-negative">${m.lossLoser}</span>`}</td>
+            <td>${m.refereeId ? escapeHtml(nameOf(m.refereeId, m.refereeName)) : '–'}</td>
             <td class="no-print">
-              <button class="btn btn-danger btn-sm btn-cancel-match" data-key="${escapeHtml(m.key)}" data-wid="${escapeHtml(m.winnerId)}" data-lid="${escapeHtml(m.loserId)}" data-gw="${m.gainWinner}" data-ll="${m.lossLoser}" data-ref="${escapeHtml(m.refereeId || '')}" data-barrage="${m.isBarrage ? '1' : ''}" data-title="${escapeHtml(m.barrageTitle || '')}">
-                Annuler
-              </button>
+              <button class="btn btn-danger btn-sm btn-cancel-match" data-key="${escapeHtml(m.key)}">Annuler</button>
             </td>
-          </tr>
-        `).join('');
+          </tr>`;
+        }).join('');
       }
 
       document.getElementById('history-body').addEventListener('click', async (e) => {
         const btn = e.target.closest('.btn-cancel-match');
-        if (btn) {
-          if (confirm("Annuler ce match et corriger le classement ?")) {
-            const matchKey = btn.dataset.key;
-            const wId = btn.dataset.wid;
-            const lId = btn.dataset.lid;
-            const gainW = parseInt(btn.dataset.gw) || 0;
-            const lossL = parseInt(btn.dataset.ll) || 0;
-            const refId = btn.dataset.ref;
+        if (!btn) return;
+        const m = historyMatches.find(x => x.key === btn.dataset.key);
+        if (!m) return;
+        const msg = isBonusEntry(m) ? "Retirer ce bonus de quête ?" : (m.isBarrage ? "Annuler ce barrage et le rouvrir ?" : "Annuler ce match ? Les points seront recalculés.");
+        if (!confirm(msg)) return;
 
-            const w = playersData[wId];
-            const l = playersData[lId];
+        const updates = {};
+        updates[getGroupPath(`history/${m.key}`)] = null;
+        if (m.isBarrage) {
+          Object.keys(activeBarragesData).forEach(k => {
+            const b = activeBarragesData[k];
+            if (b && b.title === m.barrageTitle && ((b.p1 === m.winnerId && b.p2 === m.loserId) || (b.p1 === m.loserId && b.p2 === m.winnerId))) {
+              updates[getGroupPath(`barrages/${k}/completed`)] = false;
+              updates[getGroupPath(`barrages/${k}/winnerId`)] = null;
+              updates[getGroupPath(`barrages/${k}/scoreA`)] = "";
+              updates[getGroupPath(`barrages/${k}/scoreB`)] = "";
+            }
+          });
+        } else if (!isBonusEntry(m)) {
+          // Les quêtes obtenues grâce à ce match sont retirées aussi
+          historyMatches.filter(x => isBonusEntry(x) && x.linkedMatch === m.key).forEach(x => { updates[getGroupPath(`history/${x.key}`)] = null; });
+        }
+        await update(ref(db), updates);
+        showToast(isBonusEntry(m) ? "Bonus retiré" : (m.isBarrage ? "Barrage annulé" : "Match annulé, points recalculés"), "warning");
+      });
 
-            const updates = {};
-            // Un barrage ne modifie pas les points de défi : on retire seulement le bonus et on rouvre le barrage
-            if (btn.dataset.barrage === '1') {
-              if (w) updates[getGroupPath(`players/${wId}/barrageBonus`)] = null;
-              if (l) updates[getGroupPath(`players/${lId}/barrageBonus`)] = null;
-              Object.keys(activeBarragesData).forEach(k => {
-                const b = activeBarragesData[k];
-                if (b && b.title === btn.dataset.title && ((b.p1 === wId && b.p2 === lId) || (b.p1 === lId && b.p2 === wId))) {
-                  updates[getGroupPath(`barrages/${k}/completed`)] = false;
-                  updates[getGroupPath(`barrages/${k}/winnerId`)] = null;
-                  updates[getGroupPath(`barrages/${k}/scoreA`)] = "";
-                  updates[getGroupPath(`barrages/${k}/scoreB`)] = "";
-                }
-              });
-              updates[getGroupPath(`history/${matchKey}`)] = null;
-              await update(ref(db), updates);
-              showToast("Barrage annulé", "warning");
-              return;
-            }
-            if (w) {
-              updates[getGroupPath(`players/${wId}/points`)] = w.points - gainW;
-              updates[getGroupPath(`players/${wId}/matches`)] = Math.max(0, (w.matches || 1) - 1);
-            }
-            if (l) {
-              updates[getGroupPath(`players/${lId}/points`)] = l.points - lossL;
-              updates[getGroupPath(`players/${lId}/matches`)] = Math.max(0, (l.matches || 1) - 1);
-            }
-            if (refId && playersData[refId]) {
-              updates[getGroupPath(`players/${refId}/refereeCount`)] = Math.max(0, (playersData[refId].refereeCount || 1) - 1);
-            }
-            updates[getGroupPath(`history/${matchKey}`)] = null;
+      // ---------- Noms courts : aperçu ----------
+      function renderShortNamesPreview() {
+        const box = document.getElementById('shortnames-preview');
+        if (!box) return;
+        const order = document.getElementById('opt-name-order').value || 'nom-prenom';
+        const shorts = buildShortNames(playersData, order);
+        const sample = Object.values(playersData).sort((a, b) => (a.name || '').localeCompare(b.name || '')).slice(0, 8);
+        box.innerHTML = sample.length
+          ? `<div style="font-size:0.85rem; color:var(--muted); margin:10px 0 6px;">Aperçu :</div>` +
+            sample.map(p => `<span class="sn-chip">${escapeHtml(p.name)} <b>→ ${escapeHtml(shorts[p.id])}</b></span>`).join('')
+          : '';
+      }
+      document.getElementById('opt-shortnames').onchange = (e) => {
+        document.getElementById('shortnames-settings-box').style.display = e.target.checked ? 'block' : 'none';
+        renderShortNamesPreview();
+      };
+      document.getElementById('opt-name-order').onchange = renderShortNamesPreview;
 
-            await update(ref(db), updates);
-            showToast("Match annulé", "warning");
+      // ---------- Modifier le nom d'un élève ----------
+      async function renameStudent(id) {
+        const p = playersData[id];
+        if (!p) return;
+        const newName = prompt("Nouveau nom de l'élève :", p.name);
+        if (newName === null) return;
+        const clean = newName.trim().replace(/\s+/g, ' ');
+        if (!clean || clean === p.name) return;
+        const clash = Object.values(playersData).some(x => x.id !== id && (x.name || '').trim().toLowerCase() === clean.toLowerCase());
+        if (clash && !confirm(`Un autre élève s'appelle déjà « ${clean} ». Garder ce nom quand même ?`)) return;
+        await set(ref(db, getGroupPath(`players/${id}/name`)), clean);
+        showToast(`✏️ ${p.name} s'appelle maintenant ${clean}`);
+      }
+
+      // ---------- Sauvegarde / restauration ----------
+      function downloadJSON(obj, filename) {
+        const blob = new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      function stamp() {
+        const d = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}h${pad(d.getMinutes())}`;
+      }
+      function downloadBackup() {
+        const payload = { app: 'tournoi-tt-eps', format: 2, exportedAt: new Date().toISOString(), groups: { [currentGroup]: getRawGroup(currentGroup) } };
+        downloadJSON(payload, `sauvegarde_${currentGroup}_${stamp()}.json`);
+        safeStorage.setItem(`eps_last_backup_${currentGroup}`, new Date().toISOString());
+        renderBackupInfo();
+        showToast('💾 Sauvegarde téléchargée');
+      }
+      function renderBackupInfo() {
+        const el = document.getElementById('last-backup-info');
+        if (!el) return;
+        const last = safeStorage.getItem(`eps_last_backup_${currentGroup}`);
+        el.textContent = last ? `Dernière sauvegarde de cette classe sur cet appareil : ${new Date(last).toLocaleString('fr-FR')}` : 'Aucune sauvegarde de cette classe sur cet appareil.';
+        const dup = document.getElementById('dup-class-label');
+        if (dup) dup.textContent = currentGroup.replace(/_/g, ' ');
+      }
+      document.getElementById('btn-backup-class').onclick = downloadBackup;
+      document.getElementById('btn-backup-all').onclick = () => {
+        const groups = {};
+        Object.keys(localCache.groups || {}).forEach(g => { groups[g] = getRawGroup(g); });
+        downloadJSON({ app: 'tournoi-tt-eps', format: 2, exportedAt: new Date().toISOString(), groups }, `sauvegarde_toutes_classes_${stamp()}.json`);
+        showToast(`💾 ${Object.keys(groups).length} classe(s) sauvegardée(s)`);
+      };
+      document.getElementById('btn-restore').onclick = () => document.getElementById('restore-file').click();
+      document.getElementById('restore-file').onchange = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        e.target.value = '';
+        if (!file) return;
+        let data;
+        try { data = JSON.parse(await file.text()); } catch (err) { return showToast("⚠️ Ce fichier n'est pas une sauvegarde valide", 'danger'); }
+        const groups = data && data.groups && typeof data.groups === 'object' ? data.groups : null;
+        if (!groups || !Object.keys(groups).length) return showToast("⚠️ Aucune classe trouvée dans ce fichier", 'danger');
+        const names = Object.keys(groups);
+        const when = data.exportedAt ? new Date(data.exportedAt).toLocaleString('fr-FR') : 'date inconnue';
+        let restored = 0;
+        for (const g of names) {
+          let target = g;
+          if (localCache.groups[g]) {
+            const choice = prompt(`La classe « ${g.replace(/_/g, ' ')} » existe déjà (sauvegarde du ${when}).\n\n` +
+              `• Laissez ce nom pour REMPLACER la classe actuelle par la sauvegarde.\n• Ou tapez un autre nom pour la restaurer à côté.`, g.replace(/_/g, ' '));
+            if (choice === null) continue;
+            target = choice.trim().replace(/\s+/g, '_') || g;
+            if (target === g && !confirm(`Remplacer « ${g.replace(/_/g, ' ')} » par la sauvegarde ? Les données actuelles de cette classe seront perdues.`)) continue;
+          }
+          const src = groups[g] || {};
+          const updates = {};
+          updates[`groups/${target}`] = {
+            config: src.config || {},
+            players: src.players || {},
+            history: src.history || {},
+            poules: src.poules || {},
+            barrages: src.barrages || {}
+          };
+          await update(ref(db), updates);
+          await migrateGroupIfNeeded(target);
+          restored++;
+          if (names.length === 1) {
+            currentGroup = target;
+            safeStorage.setItem('eps_current_group', currentGroup);
+            await set(ref(db, 'activeGroup'), currentGroup);
+            attachListeners();
           }
         }
-      });
+        if (restored) showToast(`✅ ${restored} classe(s) restaurée(s)`);
+      };
+
+      // ---------- Dupliquer la classe ----------
+      document.getElementById('btn-duplicate-class').onclick = async () => {
+        const proposal = `${currentGroup.replace(/_/g, ' ')} (copie)`;
+        const name = prompt("Nom de la nouvelle classe :", proposal);
+        if (!name || !name.trim()) return;
+        const formatted = name.trim().replace(/\s+/g, '_');
+        if (localCache.groups[formatted]) return showToast("⚠️ Une classe porte déjà ce nom", 'warning');
+        const raw = getRawGroup(currentGroup);
+        // Même ordre de départ que la classe d'origine (capital initial 100, 99, 98…)
+        const order = Object.entries(raw.players || {}).sort((a, b) => (Number(b[1].basePoints) || 0) - (Number(a[1].basePoints) || 0));
+        const players = {};
+        let pts = 100;
+        order.forEach(([id, p]) => {
+          players[id] = { name: p.name, basePoints: pts--, refereeExtra: 0, absent: false, questCompleted: false, questId: p.questId || null };
+        });
+        const cfg = { ...(raw.config || {}), sessionNumber: 1, flashMode: false };
+        delete cfg.barrageOfficialReferee;
+        const updates = {};
+        updates[`groups/${formatted}`] = { config: cfg, players, history: {}, poules: {}, barrages: {} };
+        await update(ref(db), updates);
+        if (confirm(`Classe « ${name.trim()} » créée avec ${order.length} élèves. L'ouvrir maintenant ?`)) {
+          currentGroup = formatted;
+          safeStorage.setItem('eps_current_group', currentGroup);
+          await set(ref(db, 'activeGroup'), currentGroup);
+          attachListeners();
+        }
+      };
+
+      // ---------- Records ----------
+      function renderRecords() {
+        const c = document.getElementById('records-container');
+        if (c) c.innerHTML = recordsHTML(computeRecords(playersData, historyMatches));
+      }
+
+      // ---------- Tables en direct (présence Supabase) ----------
+      function setupProfPresence() {
+        if (!supabaseClient || !isSupabaseConfigured()) { renderLiveTables(); return; }
+        if (profPresenceChannel) { try { supabaseClient.removeChannel(profPresenceChannel); } catch (e) {} profPresenceChannel = null; }
+        livePresence = {};
+        profPresenceChannel = supabaseClient.channel(`presence_${currentGroup}`, { config: { presence: { key: 'prof' } } });
+        profPresenceChannel
+          .on('presence', { event: 'sync' }, () => { livePresence = profPresenceChannel.presenceState() || {}; renderLiveTables(); })
+          .subscribe();
+      }
+      setInterval(() => { if (document.getElementById('tab-live') && document.getElementById('tab-live').style.display !== 'none') renderLiveTables(); }, 15000);
+
+      function renderLiveTables() {
+        const box = document.getElementById('live-tables');
+        const summary = document.getElementById('live-summary');
+        if (!box) return;
+        if (!supabaseClient || !isSupabaseConfigured()) {
+          box.innerHTML = '<p style="color:var(--muted);">Le suivi en direct a besoin de la synchronisation Supabase (onglet Séance et options).</p>';
+          if (summary) summary.textContent = 'Hors ligne';
+          return;
+        }
+        const nameOf = id => playersData[id] ? playersData[id].name : '';
+        const tables = Object.entries(livePresence)
+          .filter(([k]) => k.startsWith('table_'))
+          .map(([k, metas]) => (metas || [])[0])
+          .filter(Boolean)
+          .sort((a, b) => (parseInt(a.table) || 0) - (parseInt(b.table) || 0));
+        if (summary) summary.textContent = `${tables.length} table${tables.length > 1 ? 's' : ''} connectée${tables.length > 1 ? 's' : ''}`;
+        if (!tables.length) {
+          box.innerHTML = '<p style="color:var(--muted);">Aucune tablette ouverte sur une table pour cette classe. Ouvrez l\'appli sur les iPad avec « Connecter les tablettes ».</p>';
+          return;
+        }
+        const ago = ts => {
+          if (!ts) return 'aucun match';
+          const m = Math.round((Date.now() - ts) / 60000);
+          return m < 1 ? 'dernier match à l\'instant' : `dernier match il y a ${m} min`;
+        };
+        box.innerHTML = tables.map(t => {
+          let status = '', cls = 'idle', detail = '';
+          if (t.mode === 'poule') {
+            const pl = activePoulesData[t.poule];
+            const st = pl ? computePouleStandings(pl) : null;
+            const idx = Object.keys(activePoulesData).indexOf(t.poule) + 1;
+            status = pl ? `Poule ${idx}` : 'Mode poule';
+            detail = st ? `${st.played} / ${st.total} matchs${st.finished ? ' · terminée ✅' : ''}` : 'Aucune poule choisie';
+            cls = st && st.finished ? 'done' : 'play';
+          } else if (t.mode === 'barrage') {
+            const b = activeBarragesData[t.barrage];
+            status = 'Barrage';
+            detail = b ? `${nameOf(b.p1)} – ${nameOf(b.p2)}${b.completed ? ' · validé ✅' : ''}` : 'Aucun barrage choisi';
+            cls = b && b.completed ? 'done' : 'play';
+          } else if (t.p1 && t.p2) {
+            status = 'Match en cours'; cls = 'play';
+            detail = `${nameOf(t.p1)} – ${nameOf(t.p2)}`;
+          } else if (t.p1 || t.p2) {
+            status = 'Choix de l\'adversaire'; cls = 'wait';
+            detail = nameOf(t.p1 || t.p2);
+          } else {
+            status = 'Table libre'; cls = 'idle';
+            detail = 'En attente de joueurs';
+          }
+          return `
+            <div class="live-card ${cls}">
+              <div class="live-top"><span class="live-num">🏓 ${escapeHtml(t.table)}</span><span class="live-status">${escapeHtml(status)}</span></div>
+              <div class="live-detail">${escapeHtml(detail)}</div>
+              <div class="live-foot">${escapeHtml(ago(t.lastMatchAt))}${t.pending ? ` · <span style="color:var(--warning);">${t.pending} en attente d'envoi</span>` : ''}${t.online === false ? ' · <span style="color:var(--warning);">hors ligne</span>' : ''}</div>
+            </div>`;
+        }).join('');
+      }
 
       // Export CSV Pronote avec Note /20, Bonus Barrage et BOM UTF-8
       document.getElementById('btn-export-csv').onclick = () => {
@@ -4450,7 +5818,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           handicapRatio: hRatio,
           handicapMax: 4,
           referee: r, 
-          quests: q 
+          quests: q,
+          shortNames: document.getElementById('opt-shortnames').checked,
+          nameOrder: document.getElementById('opt-name-order').value || 'nom-prenom'
         };
 
         if (q) {
@@ -4507,9 +5877,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
 
       document.getElementById('btn-next-session').onclick = async () => {
         if (confirm("Passer à la séance suivante ? Les scores actuels deviendront le nouveau capital de départ.")) {
+          if (confirm("Télécharger d'abord une sauvegarde de la classe ? (conseillé)")) downloadBackup();
           const updates = {};
+          bakeDerivedNotes(updates, { barrages: true, poules: true });
           for (let id in playersData) {
-            updates[getGroupPath(`players/${id}/startPoints`)] = playersData[id].points;
             if (options.quests && questBank.length > 0) {
               const randomQuest = questBank[Math.floor(Math.random() * questBank.length)];
               updates[getGroupPath(`players/${id}/questId`)] = randomQuest.id;
@@ -4565,13 +5936,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           // Chemin propre à l'élève : seuls ses champs sont écrits, les autres élèves ne sont pas touchés
           updates[getGroupPath(`players/${id}`)] = {
             name,
-            points: pts,
-            startPoints: pts,
-            matches: 0,
-            refereeCount: 0,
+            basePoints: pts - sessionDeltaBeforeNow(),
+            refereeExtra: 0,
             absent: false,
             questCompleted: false,
-            barrageBonus: 0,
             questId: randomQuest ? randomQuest.id : null
           };
           pts--;
@@ -4644,15 +6012,12 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           names.forEach((name, idx) => {
             const id = `p_${idx + 1}`;
             const randomQuest = questBank.length > 0 ? questBank[Math.floor(Math.random() * questBank.length)] : null;
-            newPlayers[id] = { 
-              name: name, 
-              points: startPoints, 
-              startPoints: startPoints, 
-              matches: 0,
-              refereeCount: 0,
+            newPlayers[id] = {
+              name: name,
+              basePoints: startPoints,
+              refereeExtra: 0,
               absent: false,
               questCompleted: false,
-              barrageBonus: 0,
               questId: randomQuest ? randomQuest.id : null
             };
             startPoints--;
@@ -4679,10 +6044,9 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           updates[getGroupPath('poules')] = null;
           updates[getGroupPath('barrages')] = null;
           for (let id in playersData) {
-            const startPts = playersData[id].startPoints !== undefined ? playersData[id].startPoints : 100;
-            updates[getGroupPath(`players/${id}/points`)] = startPts;
-            updates[getGroupPath(`players/${id}/matches`)] = 0;
-            updates[getGroupPath(`players/${id}/refereeCount`)] = 0;
+            // Les points repartent du capital du début de la séance en cours
+            updates[getGroupPath(`players/${id}/basePoints`)] = playersData[id].startPoints;
+            updates[getGroupPath(`players/${id}/refereeExtra`)] = 0;
             updates[getGroupPath(`players/${id}/questCompleted`)] = false;
             updates[getGroupPath(`players/${id}/barrageBonus`)] = null;
             updates[getGroupPath(`players/${id}/pouleNote`)] = null;
@@ -4714,6 +6078,10 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
           showToast("Classe supprimée", "warning");
         }
       };
+
+      // Démarrage : tout est déclaré, on branche les données
+      attachListeners();
+      renderBackupInfo();
     }
   </script>
 </head>
@@ -4854,6 +6222,16 @@ CREATE POLICY "Accès Public EPS Tournoi" ON public.tournoi_data
       <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
         <button class="btn btn-secondary" id="btn-close-connect-modal">Fermer</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL BILAN ÉLÈVE (vue prof, tablettes) -->
+  <div class="modal-overlay" id="bilan-modal" onclick="if (event.target.id === 'bilan-modal') closeBilanModal()">
+    <div class="modal-content bilan-modal-content">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:-8px;">
+        <button class="btn btn-sm btn-secondary" onclick="closeBilanModal()" aria-label="Fermer">✕ Fermer</button>
+      </div>
+      <div id="bilan-modal-body"></div>
     </div>
   </div>
 
